@@ -1,0 +1,16 @@
+# Install resources in "argocd" namespace
+namespaceOverride: argocd
+
+server:
+  # Disable Argocd's internal TLS to avoid redirect loops (cloudflare now handles tls termination)
+  insecure: true
+
+  # Enable Ingress and set it to use strrl cloudflare ingress controller
+  ingress:
+    enabled: true
+    hostname: argocd.icantkube.help
+
+    ingressClassName: cloudflare-tunnel
+    annotations:
+      cloudflare-tunnel-ingress-controller.strrl.dev/backend-protocol: "https"
+      cloudflare-tunnel-ingress-controller.strrl.dev/proxy-ssl-verify: "on"
