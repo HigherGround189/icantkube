@@ -1,0 +1,10 @@
+cloudflare:
+  accountId:
+    existingSecret: cloudflare-credentials
+    key: accountId
+
+  apiToken:
+    existingSecret: cloudflare-credentials
+    key: apiToken
+
+  tunnelName: "icantkube-tunnel"
