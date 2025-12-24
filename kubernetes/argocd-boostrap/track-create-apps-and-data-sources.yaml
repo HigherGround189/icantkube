@@ -12,6 +12,7 @@ spec:
     targetRevision: main
     path: kubernetes/
     directory:
+      recurse: true
       include: "{create-apps/*, data-sources/*}"
       
 
