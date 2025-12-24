@@ -6,15 +6,11 @@ metadata:
 spec:
   project: default
 
-  sources:
-    - repoURL: https://github.com/HigherGround189/icantkube.git
-      chart: frontend-test
-      targetRevision: main
-      path: kubernetes/apps/frontend-test
-
-    - repoURL: https://github.com/HigherGround189/icantkube.git
-      targetRevision: main
-      ref: values
+  source:
+    repoURL: https://github.com/HigherGround189/icantkube.git
+    chart: frontend-test
+    targetRevision: main
+    path: kubernetes/apps/frontend-test
 
   destination:
     server: https://kubernetes.default.svc
