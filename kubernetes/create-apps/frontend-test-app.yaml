@@ -8,7 +8,6 @@ spec:
 
   source:
     repoURL: https://github.com/HigherGround189/icantkube.git
-    chart: frontend-test
     targetRevision: main
     path: kubernetes/apps/frontend-test
 
