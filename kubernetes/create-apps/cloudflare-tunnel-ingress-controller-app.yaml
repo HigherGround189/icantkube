@@ -1,8 +1,8 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: argocd
-  namespace: argocd
+  name: cloudflare-tunnel-ingress-controller
+  namespace: cloudflare-tunnel-ingress-controller
 spec:
   project: default
 
