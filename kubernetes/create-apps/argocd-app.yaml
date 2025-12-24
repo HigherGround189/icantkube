@@ -15,7 +15,7 @@ spec:
         valueFiles:
           - $values/kubernetes/apps/argocd/values-override.yaml
 
-    # cantkube repo containing values-override.yaml
+    # icantkube repo containing values-override.yaml
     - repoURL: https://github.com/HigherGround189/icantkube.git
       targetRevision: main
       ref: values
