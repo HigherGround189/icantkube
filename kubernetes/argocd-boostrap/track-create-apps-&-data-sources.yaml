@@ -1,18 +1,20 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: create-apps-root
+  name: argocd-bootstrap
   namespace: argocd
 spec:
   project: default
 
   source:
-    # Track create-apps/ folder, and auto deploy any yamls inside.
+    # Deploy all yamls in create-apps/ and data-sources/ (apps/ and argocd-bootstrap/ are ignored)
     repoURL: https://github.com/HigherGround189/icantkube.git
     targetRevision: main
-    path: kubernetes/create-apps/
+    path: kubernetes/
     directory:
       recurse: true
+      exclude: "{argocd-bootstrap/*, apps/*}"
+      
 
   destination:
     server: https://kubernetes.default.svc
