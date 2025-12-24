@@ -13,7 +13,7 @@ spec:
     path: kubernetes/
     directory:
       recurse: true
-      exclude: "{*/argocd-bootstrap/*, */apps/*, *.json}"
+      exclude: "{argocd-bootstrap/*, apps/**/*, *.json}"
       
 
   destination:
