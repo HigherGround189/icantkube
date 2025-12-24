@@ -1,28 +1,19 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: cloudflare-tunnel-ingress-controller
+  name: frontend-test
   namespace: argocd
 spec:
   project: default
 
-  sources:
-    # cloudflare-tunnel-ingress-controller Helm chart source
-    - repoURL: https://helm.strrl.dev
-      chart: cloudflare-tunnel-ingress-controller
-      targetRevision: "0.0.21"
-      helm:
-        valueFiles:
-          - $values/kubernetes/apps/cloudflare-tunnel-ingress-controller/values.yaml
-
-    # cantkube repo containing values-override.yaml
-    - repoURL: https://github.com/HigherGround189/icantkube.git
-      targetRevision: main
-      ref: values
+  source:
+    repoURL: https://github.com/HigherGround189/icantkube.git
+    targetRevision: main
+    path: kubernetes/apps/frontend-test
 
   destination:
     server: https://kubernetes.default.svc
-    namespace: cloudflare-tunnel-ingress-controller
+    namespace: frontend-test
 
   syncPolicy:
     automated:
