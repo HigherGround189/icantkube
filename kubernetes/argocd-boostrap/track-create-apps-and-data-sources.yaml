@@ -13,7 +13,7 @@ spec:
     path: kubernetes/
     directory:
       recurse: true
-      include: "{create-apps/*, data-sources/*}"
+      include: "{data-sources/*, create-apps/*}"
       
 
   destination:
