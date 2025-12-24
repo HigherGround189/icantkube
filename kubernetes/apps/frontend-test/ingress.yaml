@@ -2,7 +2,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: frontend-test
-  namespace: frontend-test
+  namespace: default
 spec:
   ingressClassName: cloudflare-tunnel
   rules:
