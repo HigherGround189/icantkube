@@ -2,6 +2,9 @@
 This folder contains YAMLs that declare ArgoCD Applications.
 Each Application defines what the resources to be deployed and their sources.
 
+> [!NOTE]
+> You must create an ArgoCD Application here to deploy your application on the cluster (and for it to appear on the ArgoCD Dashboard).
+
 ## Example
 
 ### Git Source
