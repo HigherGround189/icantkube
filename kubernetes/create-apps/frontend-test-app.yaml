@@ -9,11 +9,11 @@ spec:
   source:
     repoURL: https://github.com/HigherGround189/icantkube.git
     targetRevision: main
-    path: create-apps
+    path: kubernetes/apps/frontend-test
 
   destination:
     server: https://kubernetes.default.svc
-    namespace: default
+    namespace: frontend-test
 
   syncPolicy:
     automated:
