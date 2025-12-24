@@ -19,7 +19,7 @@ Contains application manifests for Kubernetes resources
 (e.g. Deployments, Services, Ingresses, ConfigMaps, etc).
 
 ## ```argocd-boostrap/```
-Contains the ArgoCD App of Apps bootstrap Application, ```argocd-bootstrap```.
+Contains the ArgoCD App of Apps Bootstrap Application, ```argocd-bootstrap```.
 This application is responsible for updating the cluster when new YAMLs are committed.
 
 ## ```create-apps/```

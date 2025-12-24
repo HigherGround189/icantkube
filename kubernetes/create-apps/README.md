@@ -18,7 +18,7 @@ spec:
     repoURL: <GIT-REPO-URL>
     targetRevision: <GIT-REPO-BRANCH>
     path: <FOLDER-APP-YAMLS-ARE-IN> 
-    #Eg: kubernetes/apps/frontend-test
+    # Eg: kubernetes/apps/frontend-test
 
   destination:
     server: https://kubernetes.default.svc
