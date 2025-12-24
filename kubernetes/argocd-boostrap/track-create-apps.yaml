@@ -1,0 +1,24 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: create-apps-root
+  namespace: argocd
+spec:
+  project: default
+
+  source:
+    # Track create-apps/ folder, and auto deploy any yamls inside.
+    repoURL: https://github.com/HigherGround189/icantkube.git
+    targetRevision: main
+    path: kubernetes/create-apps/
+    directory:
+      recurse: true
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
