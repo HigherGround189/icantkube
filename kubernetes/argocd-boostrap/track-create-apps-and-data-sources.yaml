@@ -12,8 +12,7 @@ spec:
     targetRevision: main
     path: kubernetes/
     directory:
-      recurse: true
-      exclude: "{argocd-bootstrap/**/*, apps/**/*, **/*.json}"
+      include: "{create-apps/*, data-sources/*}"
       
 
   destination:
