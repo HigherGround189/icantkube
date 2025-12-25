@@ -16,7 +16,7 @@ export default function App() {
     const [message, setMessage] = useState("");
 
     async function queryBackend() {
-        const res = await fetch(`http://api.localhost/api/${count.value}`);
+        const res = await fetch(`http://backend.backend.svc.cluster.local/api/${count.value}`);
         const data = await res.json();
         setMessage(data.message);
     }
