@@ -15,6 +15,6 @@ spec:
     spec:
       containers:
         - name: backend
-          image: mysticshirou/icantkube:backend-v0.2
+          image: mysticshirou/icantkube:backend-v0.3
           ports:
             - containerPort: 8000

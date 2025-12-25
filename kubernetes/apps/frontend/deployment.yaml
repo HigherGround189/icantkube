@@ -15,6 +15,6 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: mysticshirou/icantkube:frontend-v0.2
+          image: mysticshirou/icantkube:frontend-v0.3
           ports:
             - containerPort: 80
