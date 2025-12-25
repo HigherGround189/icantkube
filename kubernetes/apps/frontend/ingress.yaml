@@ -6,7 +6,7 @@ metadata:
 spec:
   ingressClassName: cloudflare-tunnel
   rules:
-    - host: icantkube.help
+    - host: frontend.icantkube.help
       http:
         paths:
           - path: /
