@@ -2,7 +2,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: frontend-server
-  namespace: fronfrontend-servertend
+  namespace: frontend-server
 spec:
   ingressClassName: cloudflare-tunnel
   rules:
