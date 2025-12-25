@@ -1,18 +1,18 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: frontend-test
-  namespace: frontend-test
+  name: frontend
+  namespace: frontend
 spec:
   ingressClassName: cloudflare-tunnel
   rules:
-    - host: frontend-test.icantkube.help
+    - host: icantkube.help
       http:
         paths:
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: frontend-test
+                name: frontend
                 port:
                   number: 80
