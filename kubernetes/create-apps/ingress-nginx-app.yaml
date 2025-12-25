@@ -8,7 +8,7 @@ spec:
 
   source:
     # ingress-nginx Helm chart source
-    repoURL: https://kubernetes.github.io
+    repoURL: https://kubernetes.github.io/ingress-nginx
     chart: ingress-nginx
     targetRevision: "1"
 
