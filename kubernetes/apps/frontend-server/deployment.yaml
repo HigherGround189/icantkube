@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: frontend
-  namespace: frontend
+  name: frontend-server
+  namespace: frontend-server
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: frontend
+      app: frontend-server
   template:
     metadata:
       labels:
-        app: frontend
+        app: frontend-server
     spec:
       containers:
-        - name: frontend
-          image: mysticshirou/icantkube:frontend-v0.4
+        - name: frontend-server
+          image: mysticshirou/icantkube:frontend-server-v0.1
           ports:
             - containerPort: 80

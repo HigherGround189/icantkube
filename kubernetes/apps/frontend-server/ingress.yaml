@@ -1,18 +1,18 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: frontend
-  namespace: frontend
+  name: frontend-server
+  namespace: fronfrontend-servertend
 spec:
   ingressClassName: cloudflare-tunnel
   rules:
-    - host: frontend.icantkube.help
+    - host: home.icantkube.help
       http:
         paths:
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: frontend
+                name: frontend-server
                 port:
                   number: 80
