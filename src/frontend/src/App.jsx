@@ -13,7 +13,7 @@ export default function App() {
 
     return (
         <>
-        <div>Count: {count}</div>
+        <div>Count: {count.value}</div>
         <button onClick={() => dispatch({ type: "inc" })}>+1</button>
         <button onClick={() => dispatch({ type: "dec "})}>-1</button>
         </>
