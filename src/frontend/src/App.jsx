@@ -1,5 +1,5 @@
 import { useReducer } from "react";
-import { useQuery } from "@tanstack/react-query";
+// import { useQuery } from "@tanstack/react-query";
 
 function changeCount(count, action) {
     switch (action.type) {
@@ -11,7 +11,6 @@ function changeCount(count, action) {
 
 export default function App() {
     const [count, dispatch] = useReducer(changeCount, { value: 0 })
-    const []
 
     return (
         <>

@@ -1,4 +1,4 @@
-kubeclt create ns cloudflare-tunnel-ingress-controller
+kubectl create ns cloudflare-tunnel-ingress-controller
 kubeseal --format yaml < cloudflare-credentials-unsealed-secret.yaml > cloudflare-credentials.sealed.yaml 
 kubectl -n cloudflare-tunnel-ingress-controller create -f cloudflare-credentials.sealed.yaml
 
