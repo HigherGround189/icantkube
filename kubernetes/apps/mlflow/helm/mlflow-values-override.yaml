@@ -2,21 +2,21 @@ auth:
   # Mlflow user facing authentication
   enabled: true
   existingAdminSecret:
-    name: mlflow-auth-external-secret
+    name: mlflow-auth-credentials-external-secret
     usernameKey: username
     passwordKey: password
 
   # Postgesql information
   postgres:
     enabled: true
-    host: 
-    port:
-    database:
+    host: "mlflow-postgresql.mlflow.svc.cluster.local"
+    port: 5432
+    database: "mlflow"
 
+    user: mlflow
     existingSecret:
-      name: mlflow-postgres-external-secret
-      usernameKey:
-      passwordKey:
+      name: mlflow-postgres-credentials-external-secret
+      passwordKey: password
 
 # Ingress Configuration
 ingress:
