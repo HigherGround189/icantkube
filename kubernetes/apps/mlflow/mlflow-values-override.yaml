@@ -1,0 +1,33 @@
+auth:
+  # MLFlow user facing authentication
+  enabled: true
+  existingAdminSecret:
+    name: mlflow-auth-external-secret
+    usernameKey: admin_username
+    passwordKey: admin_password
+
+  # Postgesql information
+  postgres:
+    enabled: true
+    host: 
+    port:
+    database:
+
+    existingSecret:
+      name: mlflow-postgres-external-secret
+      usernameKey:
+      passwordKey:
+
+# Ingress Configuration
+ingress:
+  enabled: true
+  ingressClassName: cloudflare-tunnel
+  hosts:
+    - host: mlflow.icantkube.help
+      paths:
+        - path: /
+          pathType: Prefix
+  
+  annotations:
+    cloudflare-tunnel-ingress-controller.strrl.dev/backend-protocol: "http"
+    cloudflare-tunnel-ingress-controller.strrl.dev/proxy-ssl-verify: "on"
