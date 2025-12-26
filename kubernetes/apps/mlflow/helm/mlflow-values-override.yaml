@@ -15,7 +15,7 @@ auth:
 
     user: mlflow
     existingSecret:
-      name: mlflow-postgres-credentials-external-secret
+      name: mlflow-postgresql-credentials-external-secret
       passwordKey: password
 
 # Ingress Configuration
