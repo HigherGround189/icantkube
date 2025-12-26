@@ -13,7 +13,7 @@ spec:
       targetRevision: "18.2.0"
       helm:
         valueFiles:
-          - $values/kubernetes/apps/mlflow/mlflow-postgresql-values-override.yaml
+          - $values/kubernetes/apps/mlflow/helm/mlflow-postgresql-values-override.yaml
           #Eg: - $values/kubernetes/apps/sealed-secrets/values-override.yaml
 
     # Git Repo containing values.yaml
@@ -25,11 +25,8 @@ spec:
       targetRevision: main
       path: $values/kubernetes/apps/mlflow/
       directory:
-        recurse: true
-        include: 'mlflow-postgresql-credentials.sealed.yaml'
+        recurse: false
       
-
-
   destination:
     server: https://kubernetes.default.svc
     namespace: mlflow
