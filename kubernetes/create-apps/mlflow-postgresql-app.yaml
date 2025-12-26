@@ -9,7 +9,7 @@ spec:
   sources:
     # App Helm chart source
     - repoURL: https://charts.bitnami.com/bitnami
-      chart: my-postgresql
+      chart: postgresql 
       targetRevision: "18.2.0"
       helm:
         valueFiles:
