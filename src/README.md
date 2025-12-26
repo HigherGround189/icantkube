@@ -1,4 +1,4 @@
-# Apps
+# src
 This folder contains the source code for user-built microservices (AI inference, website, auth, etc..)
 
 > [!TIP]
