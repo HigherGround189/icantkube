@@ -1,0 +1,34 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: dynamic-localpv-provisioner
+  namespace: dynamic-localpv-provisioner
+spec:
+  project: default
+
+  sources:
+    # dynamic-localpv-provisioner Helm chart source
+    - repoURL: https://openebs.github.io/dynamic-localpv-provisioner
+      chart: localpv-provisioner
+      targetRevision: "4.4.0"
+      helm:
+        valueFiles:
+          - $values/kubernetes/apps/dynamic-localpv-provisioner/helm/values.yaml
+
+    # icantkube repo containing values-override.yaml
+    - repoURL: https://github.com/HigherGround189/icantkube.git
+      targetRevision: main
+      ref: values
+
+    - repoURL: https://github.com/HigherGround189/icantkube.git
+      targetRevision: main
+      path: kubernetes/apps/dynamic-localpv-provisioner/
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
