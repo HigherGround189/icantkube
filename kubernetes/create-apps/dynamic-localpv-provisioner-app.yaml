@@ -2,7 +2,7 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: dynamic-localpv-provisioner
-  namespace: dynamic-localpv-provisioner
+  namespace: argocd
 spec:
   project: default
 
