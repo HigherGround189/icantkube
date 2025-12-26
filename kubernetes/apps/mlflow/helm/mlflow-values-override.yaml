@@ -1,6 +1,5 @@
 extraArgs:
-  allowedHosts: "mlflow.icantkube.help"
-  corsAllowedOrigins: "https://mlflow.icantkube.help"
+  disableSecurityMiddleware: "true"
 
 auth:
   # Mlflow user facing authentication
