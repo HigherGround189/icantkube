@@ -1,0 +1,31 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: mlflow-postgresql
+  namespace: argocd
+spec:
+  project: default
+
+  sources:
+    # App Helm chart source
+    - repoURL: <APP-HELM-CHART-URL>
+      chart: <APP-HELM-CHART-NAME>
+      targetRevision: "<APP-HELM-CHART-VERSION>"
+      helm:
+        valueFiles:
+          - $values/kubernetes/apps/mlflow/mlflow-postgresql-values-override.yaml
+          #Eg: - $values/kubernetes/apps/sealed-secrets/values-override.yaml
+
+    # Git Repo containing values.yaml
+    - repoURL: https://github.com/HigherGround189/icantkube.git
+      targetRevision: main
+      ref: values
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: mlflow
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
