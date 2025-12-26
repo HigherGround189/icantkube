@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: frontend-server
+  name: frontend
   namespace: argocd
 spec:
   project: default
@@ -9,11 +9,11 @@ spec:
   source:
     repoURL: https://github.com/HigherGround189/icantkube.git
     targetRevision: main
-    path: kubernetes/apps/frontend-server
+    path: kubernetes/apps/frontend
 
   destination:
     server: https://kubernetes.default.svc
-    namespace: frontend-server
+    namespace: frontend
 
   syncPolicy:
     automated:
