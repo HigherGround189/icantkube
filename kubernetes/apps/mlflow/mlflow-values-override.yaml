@@ -1,10 +1,10 @@
 auth:
-  # MLFlow user facing authentication
+  # Mlflow user facing authentication
   enabled: true
   existingAdminSecret:
     name: mlflow-auth-external-secret
-    usernameKey: admin_username
-    passwordKey: admin_password
+    usernameKey: username
+    passwordKey: password
 
   # Postgesql information
   postgres:
