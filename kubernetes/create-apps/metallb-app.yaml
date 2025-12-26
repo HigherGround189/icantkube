@@ -18,6 +18,10 @@ spec:
       targetRevision: main
       ref: values
 
+    - repoURL: https://github.com/HigherGround189/icantkube.git
+      targetRevision: main
+      path: kubernetes/apps/metallb
+
   destination:
     server: https://kubernetes.default.svc
     namespace: metallb
