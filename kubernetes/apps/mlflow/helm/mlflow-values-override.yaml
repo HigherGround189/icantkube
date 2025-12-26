@@ -21,7 +21,7 @@ auth:
 # Ingress Configuration
 ingress:
   enabled: true
-  ingressClassName: cloudflare-tunnel
+  className: cloudflare-tunnel
   hosts:
     - host: mlflow.icantkube.help
       paths:
