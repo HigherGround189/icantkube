@@ -1,5 +1,5 @@
-speaker:
+controller:
   enabled: true
 
-controller:
+speaker:
   enabled: true
