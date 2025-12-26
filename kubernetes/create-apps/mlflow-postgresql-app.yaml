@@ -20,6 +20,9 @@ spec:
     - repoURL: https://github.com/HigherGround189/icantkube.git
       targetRevision: main
       ref: values
+
+    - repoURL: https://github.com/HigherGround189/icantkube.git
+      targetRevision: main
       path: kubernetes/apps/mlflow/
       
   destination:
