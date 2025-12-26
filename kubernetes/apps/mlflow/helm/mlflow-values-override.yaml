@@ -1,3 +1,6 @@
+extraArgs:
+  allowedHosts: "mlflow.icantkube.help"
+
 auth:
   # Mlflow user facing authentication
   enabled: true
@@ -22,7 +25,7 @@ ingress:
   enabled: true
   className: cloudflare-tunnel
   hosts:
-    - host: mlflow.icantkube.help
+    - host: "mlflow.icantkube.help"
       paths:
         - path: /
           pathType: Prefix
