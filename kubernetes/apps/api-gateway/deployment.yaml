@@ -15,6 +15,6 @@ spec:
     spec:
       containers:
         - name: api-gateway
-          image: mysticshirou/icantkube:api-gateway-v0.3
+          image: mysticshirou/icantkube:api-gateway-v0.5
           ports:
             - containerPort: 80

@@ -2,7 +2,7 @@ from fastapi import FastAPI, Request, HTTPException
 from app.config import load_services
 from app.gateway import forward_request
 
-app = FastAPI(title="API Gateway")
+app = FastAPI(title="API Gateway", redirect_slashes=False)
 
 SERVICES = load_services()
 
