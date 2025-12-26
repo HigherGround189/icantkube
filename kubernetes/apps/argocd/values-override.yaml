@@ -9,6 +9,9 @@ configs:
   params:
     server.insecure: true
 
+  cm:
+    exec.enabled: true
+
 server:
   # Enable Ingress and set it to use strrl cloudflare ingress controller
   ingress:
