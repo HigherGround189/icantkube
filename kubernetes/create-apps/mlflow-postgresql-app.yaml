@@ -23,7 +23,9 @@ spec:
 
     - repoURL: https://github.com/HigherGround189/icantkube.git
       targetRevision: main
-      path: $values/kubernetes/apps/mlflow/mlflow-postgresql-credentials.sealed.yaml
+      path: $values/kubernetes/apps/mlflow/
+      directory:
+        include: 'mlflow-postgresql-credentials.sealed.yaml'
 
 
   destination:
