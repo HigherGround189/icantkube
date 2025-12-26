@@ -1,5 +1,5 @@
 extraArgs:
-  disableSecurityMiddleware: "true"
+  disableSecurityMiddleware: ""
 
 auth:
   # Mlflow user facing authentication
