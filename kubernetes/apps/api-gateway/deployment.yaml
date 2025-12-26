@@ -15,6 +15,14 @@ spec:
     spec:
       containers:
         - name: api-gateway
-          image: mysticshirou/icantkube:api-gateway-v1.2
+          image: mysticshirou/icantkube:api-gateway-v1.3
           ports:
             - containerPort: 80
+          volumeMounts:
+            - name: api-gateway-config
+              mountPath: /config
+              readOnly: true
+      volumes:
+        - name: api-gateway-config
+          configMap:
+            name: api-gateway-config

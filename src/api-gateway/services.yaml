@@ -1,3 +1,0 @@
-services:
-  sample-echo-microservice:
-    url: http://sample-echo-microservice.sample-echo-microservice.svc.cluster.local

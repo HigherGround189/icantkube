@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: api-gateway-config
+  namespace: api-gateway
+data:
+  services.yaml: |
+    services:
+      sample-echo-microservice:
+        url: http://sample-echo-microservice.sample-echo-microservice.svc.cluster.local

@@ -10,7 +10,6 @@ COPY pyproject.toml .
 RUN uv pip install --system --no-cache fastapi uvicorn httpx pyyaml
 
 COPY app ./app
-COPY services.yaml .
 
 EXPOSE 80
 
