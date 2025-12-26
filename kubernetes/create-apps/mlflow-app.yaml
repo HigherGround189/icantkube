@@ -7,7 +7,7 @@ spec:
   project: default
 
   sources:
-    # App Helm chart source
+    # Postgresql Helm chart source
     - repoURL: https://charts.bitnami.com/bitnami
       chart: postgresql 
       targetRevision: "18.2.0"
@@ -15,6 +15,14 @@ spec:
         valueFiles:
           - $values/kubernetes/apps/mlflow/helm/mlflow-postgresql-values-override.yaml
           #Eg: - $values/kubernetes/apps/sealed-secrets/values-override.yaml
+
+    # Mlflow Helm chart source
+    - repoURL: https://community-charts.github.io/helm-charts
+      chart: mlflow 
+      targetRevision: "1.8.1"
+      helm:
+        valueFiles:
+          - $values/kubernetes/apps/mlflow/helm/mlflow-values-override.yaml
 
     # Git Repo containing values.yaml
     - repoURL: https://github.com/HigherGround189/icantkube.git
