@@ -1,5 +1,7 @@
-extraArgs:
-  disableSecurityMiddleware: ""
+extraEnvVars:
+  - name: MLFLOW_SERVER_DISABLE_SECURITY_MIDDLEWARE
+    value: "true"
+
 
 auth:
   # Mlflow user facing authentication
