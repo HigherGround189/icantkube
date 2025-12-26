@@ -16,7 +16,7 @@ export default function App() {
     const [message, setMessage] = useState("");
 
     async function queryBackend() {
-        const res = await fetch(`/api/${count.value}`);
+        const res = await fetch(`/api/sample-echo-microservice/${count.value}`);
         const data = await res.json();
         setMessage(data.message);
     }

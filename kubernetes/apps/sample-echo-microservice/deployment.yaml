@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sample-echo-microservice
+  namespace: sample-echo-microservice
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sample-echo-microservice
+  template:
+    metadata:
+      labels:
+        app: sample-echo-microservice
+    spec:
+      containers:
+        - name: sample-echo-microservice
+          image: mysticshirou/icantkube:sample-echo-microservice-v1.0
+          ports:
+            - containerPort: 80
