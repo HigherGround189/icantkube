@@ -8,6 +8,7 @@ spec:
 
   sources:
     # Postgresql Helm chart source
+    # https://artifacthub.io/packages/helm/bitnami/postgresql
     - repoURL: https://charts.bitnami.com/bitnami
       chart: postgresql 
       targetRevision: "18.2.0"
@@ -17,6 +18,7 @@ spec:
           #Eg: - $values/kubernetes/apps/sealed-secrets/values-override.yaml
 
     # Mlflow Helm chart source
+    # https://artifacthub.io/packages/helm/community-charts/mlflow
     - repoURL: https://community-charts.github.io/helm-charts
       chart: mlflow 
       targetRevision: "1.8.1"

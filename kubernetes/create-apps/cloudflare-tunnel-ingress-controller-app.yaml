@@ -8,6 +8,7 @@ spec:
 
   sources:
     # cloudflare-tunnel-ingress-controller Helm chart source
+    # https://github.com/STRRL/cloudflare-tunnel-ingress-controller
     - repoURL: https://helm.strrl.dev
       chart: cloudflare-tunnel-ingress-controller
       targetRevision: "0.0.21"
