@@ -13,7 +13,7 @@ cd /kubernetes/apps/cloudflare-tunnel-ingress-controller
 kubeseal --format yaml < cloudflare-credentials-unsealed-secret.yaml > cloudflare-credentials.sealed.yaml
 
 cd /kubernetes/apps/mlflow
-kubeseal --format yaml < mlflow-auth-credential-unsealed-secret > mlflow-auth-credential.sealed.yaml
+kubeseal --format yaml < mlflow-auth-credential-unsealed-secret.yaml > mlflow-auth-credential.sealed.yaml
 kubeseal --format yaml < mlflow-postgresql-credentials-unsealed-secret.yaml > mlflow-postgresql-credentials.sealed.yaml
 
 cd /kubernetes/argocd-boostrap/
