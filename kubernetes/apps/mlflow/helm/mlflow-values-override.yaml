@@ -13,7 +13,7 @@ auth:
   # Postgesql information
   postgres:
     enabled: true
-    host: "mlflow-postgresql.mlflow.svc.cluster.local"
+    host: "mlflow-mlflow-postgresql.mlflow.svc.cluster.local"
     port: 5432
     database: "mlflow"
 
