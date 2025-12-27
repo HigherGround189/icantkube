@@ -2,7 +2,7 @@
 namespaceOverride: argocd
 
 global:
-  domain: argocd.example.com
+  domain: argocd.icantkube.help
 
 # Disable Argocd's internal TLS to avoid redirect loops (cloudflare now handles tls termination)
 configs:
