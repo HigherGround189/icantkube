@@ -1,5 +1,3 @@
-## Frontend Model-Train PoC
-
 This UI uploads a CSV directly to the model-train microservice and polls for results.
 
 - **Start training**: `POST /api/model-train/start?filename=<originalFilename>`  
