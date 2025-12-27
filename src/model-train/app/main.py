@@ -6,9 +6,9 @@ app = Flask(__name__)
 def start_training():
     return jsonify({"action":'initiate training...'})
 
-@app.route('/status/<trackingId>', methods=["GET"])
-def retrieve_status(trackingId):
-    return jsonify({'status':'completed'})
+@app.route('/status/<int:trackingId>', methods=["GET"])
+def retrieve_status(trackingId: int):
+    return jsonify({'trackingId':trackingId, 'status':'completed'})
 
 if __name__=="__main__":
     app.run(port=80)
