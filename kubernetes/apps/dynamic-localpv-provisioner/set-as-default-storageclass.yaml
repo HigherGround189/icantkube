@@ -5,3 +5,6 @@ metadata:
   annotations:
     storageclass.kubernetes.io/is-default-class: "true"
     argocd.argoproj.io/sync-wave: "-1"
+provisioner: openebs.io/local
+volumeBindingMode: WaitForFirstConsumer
+reclaimPolicy: Delete
