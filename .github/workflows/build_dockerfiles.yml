@@ -25,7 +25,7 @@ jobs:
       - name: Find Dockerfiles in changed directories
         id: find-dockerfiles
         run: |
-          dockerfiles=$(find find ${{ steps.detect.outputs.changed }} -type f -name "*.Dockerfile" -print0 | jq -Rsc 'split("\u0000")[:-1]')
+          dockerfiles=$(find ${{ steps.detect.outputs.changed }} -type f -name "*.Dockerfile" -print0 | jq -Rsc 'split("\u0000")[:-1]')
           echo "dockerfiles=$dockerfiles" >> "$GITHUB_OUTPUT"
 
       - name: Show changed directories
