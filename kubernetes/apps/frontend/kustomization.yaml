@@ -3,6 +3,9 @@ kind: Kustomization
 
 resources:
   - deployment.yaml
+  - ingress.yaml
+  - namespace.yaml
+  - service.yaml
 
 images:
   - name: icantkube/frontend
