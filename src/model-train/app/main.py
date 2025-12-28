@@ -15,7 +15,7 @@ class Status(Enum):
 
 @app.get("/health")
 def health():
-    return {"status": "healthy"}
+    return {"status": "running"}
 
 @app.route("/")
 def index():    # Temporary
