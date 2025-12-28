@@ -124,7 +124,7 @@ jobs:
       - name: Upload image info
         uses: actions/upload-artifact@v4
         with:
-          name: update-images
+          name: ${{ matrix.imageName }}-info
           path: images/
 
       - name: Commit & push changes
