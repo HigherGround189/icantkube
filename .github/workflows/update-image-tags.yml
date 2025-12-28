@@ -187,7 +187,12 @@ jobs:
 
       - name: Restore modified kustomize files
         run: |
-          rsync -av kustomize-files/**/kustomization.yaml .
+          rsync -av kustomize-files/**/kubernetes/ .
+
+      - name: Remove artifact folders
+        run: |
+          rm -rf images/
+          rm -rf kustomize-files/
 
       - name: Commit & push changes
         uses: actions-js/push@master
