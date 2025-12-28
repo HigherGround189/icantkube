@@ -11,7 +11,9 @@ jobs:
     runs-on: ubuntu-latest
 
     outputs:
-      changed: ${{ steps.detect.outputs.changed }}
+      changed-directories: ${{ steps.detect.outputs.changed }}
+      # dockerfiles: ${{  }}
+
 
     steps:
       - name: Checkout
@@ -21,17 +23,23 @@ jobs:
         id: detect
         uses: tchupp/actions-detect-directory-changes@v1
 
+      - name: Show changed directories
+        run: |
+          echo "Changed directories:"
+          echo "${{ steps.detect.outputs.changed }}"
+
+      # - name: Find Dockerfiles in changed directories
+      #   run: |
+
+
   build:
     needs: list-changed-directories
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        project: ${{ fromJSON(needs.list-changed-directories.outputs.changed) }}
+        project: ${{ fromJSON(needs.list-changed-directories.outputs.changed-directories) }}
 
     steps:
-      - name: Debug
-        run: echo ${{ matrix.project }}
-
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
