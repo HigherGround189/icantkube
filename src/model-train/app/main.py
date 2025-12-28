@@ -5,6 +5,7 @@ import pandas as pd
 
 app = Flask(__name__)
 
+counter = 0
 jobCounter = 1
 stateTracker = {}
 
@@ -27,8 +28,8 @@ def index():    # Temporary
 def start_training():
     global jobCounter
     file = request.files.get('filename', None)
-    jobCounter += 1
     trackingId = jobCounter
+    jobCounter += 1
 
     stateTracker[trackingId] = {'status':Status.PENDING.value, 'progress':0, 'result':None, 'error':None}    
 
@@ -51,10 +52,14 @@ def start_training():
         return jsonify({'trackingId':trackingId})
     
     stateTracker[trackingId]['progress'] = 100
-    return jsonify({'trackingId':1})
+    return jsonify({'trackingId':trackingId})
+
+@app.route('/status', methods=["GET"])
+def retrieve_all_status():
+    return jsonify({'trackingID':stateTracker})
 
 @app.route('/status/<int:trackingId>', methods=["GET"])
-def retrieve_status(trackingId: int):
+def retrieve_id_status(trackingId: int):
     global counter
     counter += 1
     if counter % 5 == 0:
