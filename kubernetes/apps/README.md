@@ -19,3 +19,4 @@ apps/
 > [!IMPORTANT]
 > Remember to create an ArgoCD Application in [create-apps](/kubernetes/create-apps), or your App will not be deployed.
 
+
