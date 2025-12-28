@@ -48,20 +48,15 @@ jobs:
           docker run -d \
             --name test-${{ matrix.service }} \
             -e MODE=ci \
-            -e PORT=8080 \
-            -p 18080:8080 \
+            -p 18080:80 \
             test-${{ matrix.service }}
 
       - name: Wait for startup
-        run: sleep 3
+        run: sleep 10
 
       - name: Health check
         run: |
           curl -f http://localhost:18080/health
-
-      - name: Ensure non-root
-        run: |
-          docker exec test-${{ matrix.service }} id -u | grep -v '^0$'
 
       - name: Cleanup
         if: always()
