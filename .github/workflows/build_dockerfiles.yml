@@ -36,49 +36,49 @@ jobs:
         id: find-dockerfiles
         run: |
           uv run --with pyyaml python -c '
-            import os
-            import json
-            import yaml
-            from pathlib import Path
+          import os
+          import json
+          import yaml
+          from pathlib import Path
 
-            with open("imageConfig.yaml", "r") as file:
-                yaml = yaml.safe_load(file)
+          with open("imageConfig.yaml", "r") as file:
+              yaml = yaml.safe_load(file)
 
-            dirs = os.environ.get("DIRS")
-            print(f"Dirs: {dirs}")
+          dirs = os.environ.get("DIRS")
+          print(f"Dirs: {dirs}")
 
-            cleaned_dirs = dirs[1:-1].split(",")
-            cleaned_paths = [Path(dirs) for dirs in cleaned_dirs]
+          cleaned_dirs = dirs[1:-1].split(",")
+          cleaned_paths = [Path(dirs) for dirs in cleaned_dirs]
 
-            matrix = {"include": []}
-            for path in cleaned_paths:
-                try:
-                    dockerfile_path = next(path.rglob("*.Dockerfile"))
-                    dockerfile_name = dockerfile_path.name.rstrip(".Dockerfile")
-                    dockerfile_autobuild = yaml[dockerfile_name]["autoBuild"] 
-                    dockerfile_current_tag = yaml[dockerfile_name]["currentTag"]
-                    temp_tag = dockerfile_current_tag.lstrip("v").split(".")
-                    temp_tag[-1] = str(int(temp_tag[-1]) + 1)
-                    dockerfile_updated_tag = "v" + ".".join(temp_tag)
+          matrix = {"include": []}
+          for path in cleaned_paths:
+              try:
+                  dockerfile_path = next(path.rglob("*.Dockerfile"))
+                  dockerfile_name = dockerfile_path.name.rstrip(".Dockerfile")
+                  dockerfile_autobuild = yaml[dockerfile_name]["autoBuild"] 
+                  dockerfile_current_tag = yaml[dockerfile_name]["currentTag"]
+                  temp_tag = dockerfile_current_tag.lstrip("v").split(".")
+                  temp_tag[-1] = str(int(temp_tag[-1]) + 1)
+                  dockerfile_updated_tag = "v" + ".".join(temp_tag)
 
-                    print(f"Dockerfile Path: {dockerfile_path}")
-                    print(f"Dockerfile Name: {dockerfile_name}")
-                    print(f"Dockerfile Autobuild: {dockerfile_autobuild}")
-                    print(f"Dockerfile Tag: {dockerfile_updated_tag}\n")
+                  print(f"Dockerfile Path: {dockerfile_path}")
+                  print(f"Dockerfile Name: {dockerfile_name}")
+                  print(f"Dockerfile Autobuild: {dockerfile_autobuild}")
+                  print(f"Dockerfile Tag: {dockerfile_updated_tag}\n")
 
-                    if dockerfile_autobuild:
-                        matrix["include"].append({
-                            "buildContext": str(path),
-                            "dockerfile": str(dockerfile_path),
-                            "tag": str(dockerfile_updated_tag)
-                        })
+                  if dockerfile_autobuild:
+                      matrix["include"].append({
+                          "buildContext": str(path),
+                          "dockerfile": str(dockerfile_path),
+                          "tag": str(dockerfile_updated_tag)
+                      })
 
-                except StopIteration:
-                    continue
+              except StopIteration:
+                  continue
 
-            print(f"matrix={json.dumps(matrix)}", flush=True)
-            with open(os.environ["GITHUB_OUTPUT"], "a") as f:
-                f.write(f"matrix={json.dumps(matrix)}\n")
+          print(f"matrix={json.dumps(matrix)}", flush=True)
+          with open(os.environ["GITHUB_OUTPUT"], "a") as f:
+              f.write(f"matrix={json.dumps(matrix)}\n")
           '
 
   build:
