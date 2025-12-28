@@ -32,7 +32,7 @@ jobs:
           echo "${{ steps.detect.outputs.changed }}"
 
       - name: Declare directory changes as environmental variable
-        run: echo "DIRS=${{ steps.detect.outputs.changed }}" >> "$GITHUB_OUTPUT"
+        run: echo "DIRS=${{ steps.detect.outputs.changed }}" >> "$GITHUB_ENV"
 
       - name: Create Matrix
         id: find-dockerfiles
