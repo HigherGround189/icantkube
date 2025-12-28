@@ -1,6 +1,6 @@
 api-gateway:
   autoUpdate: false
-  autoBuild: false
+  autoBuild: true
   currentTag: "v0.1"
 
 frontend:
