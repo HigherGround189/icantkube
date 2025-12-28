@@ -3,7 +3,10 @@ kind: Kustomization
 
 resources:
   - deployment.yaml
+  - ingress.yaml
+  - namespace.yaml
+  - service.yaml
 
 images:
-  - name: icantkube/model-train
+  - name: icantkube/frontend
     newTag: v0.3
