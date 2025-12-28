@@ -24,6 +24,7 @@ jobs:
         id: images-to-update
         run: |
           uv run --with pyyaml python -c '
+          import os
           import yaml
           import json
           from pathlib import Path
