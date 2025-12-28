@@ -16,14 +16,25 @@ jobs:
       services: ${{ steps.set-services.outputs.services }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - id: set-services
+        shell: bash
         run: |
-          SERVICES=$(git diff --name-only origin/main...HEAD \
-            | grep '^src/' \
-            | cut -d/ -f2 \
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            BASE="${{ github.event.pull_request.base.sha }}"
+            HEAD="${{ github.event.pull_request.head.sha }}"
+          else
+            BASE="${{ github.event.before }}"
+            HEAD="${{ github.sha }}"
+          fi
+
+          SERVICES=$(git diff --name-only "$BASE" "$HEAD" \
+            | awk -F/ '/^src\/[^/]+\// {print $2}' \
             | sort -u \
-            | jq -R -s -c 'split("\n")[:-1]')
+            | jq -R -s -c 'split("\n") | map(select(length>0))')
+
           echo "services=$SERVICES" >> "$GITHUB_OUTPUT"
 
   healthcheck:
@@ -31,6 +42,7 @@ jobs:
     if: needs.detect-changes.outputs.services != '[]'
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         service: ${{ fromJson(needs.detect-changes.outputs.services) }}
 
@@ -52,7 +64,7 @@ jobs:
             test-${{ matrix.service }}
 
       - name: Wait for startup
-        run: sleep 10
+        run: sleep 3
 
       - name: Health check
         run: |
