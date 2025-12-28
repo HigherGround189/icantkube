@@ -1,13 +1,10 @@
-FROM python:3.11-slim
-
-# Install uv
-COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
+FROM ghcr.io/astral-sh/uv:python3.11-trixie-slim
 
 WORKDIR /app
 
 COPY pyproject.toml .
 
-RUN uv pip install --system --no-cache fastapi uvicorn httpx pyyaml
+RUN uv add fastapi uvicorn httpx pyyaml
 
 COPY app ./app
 
