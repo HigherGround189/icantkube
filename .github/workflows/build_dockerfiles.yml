@@ -12,8 +12,7 @@ jobs:
 
     outputs:
       changed-directories: ${{ steps.detect.outputs.changed }}
-      # dockerfiles: ${{  }}
-
+      dockerfiles: ${{ steps.find-dockerfiles.outputs.dockerfiles }}
 
     steps:
       - name: Checkout
@@ -23,14 +22,16 @@ jobs:
         id: detect
         uses: tchupp/actions-detect-directory-changes@v1
 
+      - name: Find Dockerfiles in changed directories
+        id: find-dockerfiles
+        run: |
+          dockerfiles=$(find find ${{ steps.detect.outputs.changed }} -type f -name "*.Dockerfile" -print0 | jq -Rsc 'split("\u0000")[:-1]')
+          echo "dockerfiles=$dockerfiles" >> "$GITHUB_OUTPUT"
+
       - name: Show changed directories
         run: |
           echo "Changed directories:"
           echo "${{ steps.detect.outputs.changed }}"
-
-      # - name: Find Dockerfiles in changed directories
-      #   run: |
-
 
   build:
     needs: list-changed-directories
