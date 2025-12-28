@@ -72,6 +72,8 @@ jobs:
                           "dockerfile": str(dockerfile_path),
                           "tag": f"icantkube/{dockerfile_name}:{str(dockerfile_updated_tag)}"
                       })
+                  else:
+                      print(f"Skipping {dockerfile_name}")
 
               except StopIteration:
                   continue
@@ -83,6 +85,7 @@ jobs:
 
   build:
     needs: list-changed-directories
+    if: ${{ fromJSON(needs.list-changed-directories.outputs.matrix).include[0] != null }}
     runs-on: ubuntu-latest
     strategy:
       matrix: ${{ fromJSON(needs.list-changed-directories.outputs.matrix) }}
