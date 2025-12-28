@@ -35,15 +35,13 @@ def start_training():
     global jobCounter
     file = request.files.get('filename', None)
     trackingId = jobCounter
-    jobCounter += 1
 
     stateTracker[trackingId] = {'status':Status.PENDING.value, 'progress':0, 'result':None, 'error':None}    
 
     if file in [None, '']:
-        stateTracker[trackingId]['status'] = Status.FAILED.value
-        stateTracker[trackingId]['error'] = 'File not detected'
-        return jsonify({'trackingId':trackingId})
+        return jsonify({'error':'File not provided'}), 400
     
+    jobCounter += 1
     data = file.read()
     if not data:
         stateTracker[trackingId]['status'] = Status.FAILED.value
@@ -65,7 +63,8 @@ def retrieve_all_status():
 
 @app.route('/status/<int:trackingId>', methods=["GET"])
 def retrieve_id_status(trackingId: int):
-    return jsonify(stateTracker.get(trackingId, None))
+    job = stateTracker.get(trackingId, None)
+    return 
 
 if __name__=="__main__":
     app.run(port=80)
