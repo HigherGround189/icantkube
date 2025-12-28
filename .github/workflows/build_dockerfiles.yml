@@ -25,8 +25,12 @@ jobs:
       - name: Find Dockerfiles in changed directories
         id: find-dockerfiles
         run: |
-          dockerfiles=$(find ${{ steps.detect.outputs.changed }} -type f -name "*.Dockerfile" -print0 | jq -Rsc 'split("\u0000")[:-1]')
-          echo "dockerfiles=$dockerfiles" >> "$GITHUB_OUTPUT"
+          CLEANED_DIRS=$(echo "${{ steps.detect.outputs.changed }}" | sed 's/^\[\(.*\)\]$/\1/' | tr ',' ' ' )
+          echo "CLEANED_DIRS: $CLEANED_DIRS"
+
+          DOCKERFILE=$(find $CLEANED_DIRS -type f -name "*.Dockerfile" -print0 | jq -Rsc 'split("\u0000")')
+          echo "DOCKERFILE: $DOCKERFILE"
+          echo "dockerfiles=$DOCKERFILE" >> "$GITHUB_OUTPUT"
 
       - name: Show changed directories
         run: |
@@ -38,9 +42,15 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        project: ${{ fromJSON(needs.list-changed-directories.outputs.changed-directories) }}
+        buildContext: ${{ fromJSON(needs.list-changed-directories.outputs.changed-directories) }}
+        dockerfileName: ${{ fromJSON(needs.list-changed-directories.outputs.dockerfiles) }}
 
     steps:
+      - name: Debug
+        run:
+          echo ${{ matrix.buildContext }}
+          echo ${{ matrix.dockerfileName }}
+
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
