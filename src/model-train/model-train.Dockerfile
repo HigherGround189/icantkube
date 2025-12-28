@@ -1,9 +1,8 @@
-FROM python:3.11-slim
+FROM ghcr.io/astral-sh/uv:python3.11-trixie-slim
 
-# Install uv
-COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
+COPY pyproject.toml .
 
-RUN uv pip install --system --no-cache flask gunicorn httpx pyyaml pandas
+RUN uv sync
 
 COPY app ./app
 
