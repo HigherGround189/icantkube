@@ -42,7 +42,7 @@ jobs:
           from pathlib import Path
 
           with open("imageConfig.yaml", "r") as file:
-              yaml = yaml.safe_load(file)
+              imageConfig = yaml.safe_load(file)
 
           dirs = os.environ.get("DIRS")
           print(f"Dirs: {dirs}")
@@ -55,8 +55,8 @@ jobs:
               try:
                   dockerfile_path = next(path.rglob("*.Dockerfile"))
                   dockerfile_name = dockerfile_path.name.rstrip(".Dockerfile")
-                  dockerfile_autobuild = yaml[dockerfile_name]["autoBuild"] 
-                  dockerfile_current_tag = yaml[dockerfile_name]["currentTag"]
+                  dockerfile_autobuild = imageConfig[dockerfile_name]["autoBuild"] 
+                  dockerfile_current_tag = imageConfig[dockerfile_name]["currentTag"]
                   temp_tag = dockerfile_current_tag.lstrip("v").split(".")
                   temp_tag[-1] = str(int(temp_tag[-1]) + 1)
                   dockerfile_updated_tag = "v" + ".".join(temp_tag)

@@ -1,0 +1,186 @@
+name: Update Images
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "kubernetes/**/*"
+
+jobs:
+  list-images-to-update:
+    runs-on: ubuntu-latest
+
+    outputs:
+      matrix: ${{ steps.images-to-update.outputs.matrix }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+
+      - name: Create Matrix
+        id: images-to-update
+        run: |
+          uv run --with pyyaml python -c '
+          import yaml
+          import json
+          from pathlib import Path
+
+          with open("imageConfig.yaml", "r") as f:
+              imageConfig = yaml.safe_load(f)
+
+          update_list = [] 
+          for image in imageConfig:
+              if imageConfig[image]["autoUpdate"]:
+                  update_list.append(image)
+
+          print(update_list)
+
+          kustomizations = [str(files) for files in Path(".").rglob("kustomization.yaml")]
+          matrix = {"include": []}
+          for kustomize in kustomizations:
+              with open(kustomize, "r") as f:
+                  kustomize_yaml = yaml.safe_load(f)
+
+              image_name = kustomize_yaml["images"][0]["name"].removeprefix(r"icantkube/")
+              print(kustomize_yaml)
+              print(f"{image_name=}")
+
+              if image_name in update_list:
+                  matrix["include"].append({
+                      "kustomizeFile": kustomize,
+                      "imageName": image_name,
+                  })
+
+          print(f"matrix={json.dumps(matrix)}", flush=True)
+          with open(os.environ["GITHUB_OUTPUT"], "a") as f:
+              f.write(f"matrix={json.dumps(matrix)}\n")
+          '
+
+  update-kustomize-files:
+    needs: list-images-to-update
+    runs-on: ubuntu-latest
+    strategy:
+      matrix: ${{ fromJSON(needs.list-images-to-update.outputs.matrix) }}
+
+    steps:
+      - name: Debug
+        run:
+          echo "kustomizeFile:${{ matrix.kustomizeFile }} imageName:${{ matrix.imageName }}"
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+
+      - name: Update kustomize.yaml
+        id: update-image
+        env:
+          kustomizeFile: ${{ matrix.kustomizeFile }}
+          imageName: ${{ matrix.imageName }}
+        run: |
+          uv run --with ruamel.yaml --with requests python -c '
+          import os
+          import requests
+          from ruamel.yaml import YAML
+
+          kustomize_file = os.environ.get("kustomizeFile")
+          image_name = os.environ.get("imageName")
+          print(kustomize_file)
+          print(image_name)
+
+          url = f"https://hub.docker.com/v2/repositories/icantkube/{image_name}/tags/"
+          params = {
+              "page_size": 1,
+              "ordering": "last_updated",
+          }
+
+          response = requests.get(url, params=params)
+          data = response.json()
+          new_tag = data["results"][0]["name"]
+          print(new_tag)
+
+          yaml = YAML()
+          yaml.preserve_quotes = True  
+
+          with open(kustomize_file, "r") as f:
+              kustomize_yaml = yaml.load(f)
+
+          kustomize_yaml["images"][0]["newTag"] = new_tag
+
+          with open(kustomize_file, "w") as f:
+              yaml.dump(kustomize_yaml, f)
+
+          os.makedirs("images", exist_ok=True)
+          result = {"imageName": image_name, "tag": new_tag}
+          with open(f"images/{image_name}.json", "w") as f:
+              json.dump(result, f)
+          '
+      - name: Upload image info
+        uses: actions/upload-artifact@v4
+        with:
+          name: update-images
+          path: images/
+
+      - name: Commit & push changes
+        uses: actions-js/push@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          rebase: true
+          message: 'Updated ${{ matrix.imageName }} in kustomize.yaml'
+
+  update-image-config-file:
+    needs: update-kustomize-files
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all image info artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: update-images
+          path: all-images
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+
+      - name: Update imageConfig.yaml
+        run: |
+          uv run --with ruamel.yaml python -c '
+          import os
+          import json
+          from pathlib import Path
+          from ruamel.yaml import YAML
+
+          yaml = YAML()
+          yaml.preserve_quotes = True  
+
+          with open("imageConfig.yaml", "r") as f:
+              imageConfig = yaml.load(f)
+
+          images_folder = Path("all-images/")
+          for json_files in os.listdir(images_folder):
+              with open(images_folder / json_files, "r") as file:
+                  newImageData = json.load(file)
+                  print(newImageData)
+
+              image_name = newImageData["imageName"]
+              new_tag = newImageData["tag"]
+              imageConfig[image_name]["currentTag"] = new_tag
+              print(imageConfig) 
+
+          with open("imageConfig.yaml", "w") as file:
+              yaml.dump(imageConfig, file)    
+          '
+
+      - name: Commit & push changes
+        uses: actions-js/push@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          rebase: true
+          message: 'Updated image versions in imageConfig.yaml'
+
