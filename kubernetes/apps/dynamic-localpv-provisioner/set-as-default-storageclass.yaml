@@ -5,6 +5,12 @@ metadata:
   annotations:
     storageclass.kubernetes.io/is-default-class: "true"
     argocd.argoproj.io/sync-wave: "-1"
+    openebs.io/cas-type: local
+    cas.openebs.io/config: |
+      - name: StorageType
+        value: hostpath
+      - name: BasePath
+        value: /var/lib/local-storage
 provisioner: openebs.io/local
 volumeBindingMode: WaitForFirstConsumer
 reclaimPolicy: Delete
