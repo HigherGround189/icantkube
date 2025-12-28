@@ -1,0 +1,14 @@
+api-gateway:
+  autoUpdate: false
+  autoBuild: true
+  currentTag: "v0.1"
+
+frontend:
+  autoUpdate: false
+  autoBuild: true
+  currentTag: "v0.3"
+
+model-train:
+  autoUpdate: false
+  autoBuild: true
+  currentTag: "v0.3"
