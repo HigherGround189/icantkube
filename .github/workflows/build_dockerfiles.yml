@@ -1,0 +1,35 @@
+name: Build & Push Images to Dockerhub
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "/src"
+
+jobs:
+  list-changed-directories:
+    runs-on: ubuntu-latest
+
+    outputs:
+      changed: ${{ steps.detect.outputs.changed }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Detect Directory Changes
+        id: detect
+        uses: tchupp/actions-detect-directory-changes@v1
+
+  build:
+    needs: list-changed-directories
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        project: ${{ fromJSON(needs.list-changed-directories.outputs.changed) }}
+
+    steps:
+      - name: Debug
+        run: echo "Hello"
+      
