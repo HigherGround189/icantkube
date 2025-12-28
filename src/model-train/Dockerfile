@@ -3,7 +3,7 @@ FROM python:3.11-slim
 # Install uv
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
 
-RUN uv pip install --system --no-cache flask gunicorn httpx pyyaml
+RUN uv pip install --system --no-cache flask gunicorn httpx pyyaml pandas
 
 COPY app ./app
 

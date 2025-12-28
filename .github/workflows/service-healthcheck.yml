@@ -1,0 +1,76 @@
+name: Service Health Check
+
+on:
+  pull_request:
+    paths:
+      - "src/**"
+  push:
+    branches: [main]
+    paths:
+      - "src/**"
+
+jobs:
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      services: ${{ steps.set-services.outputs.services }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - id: set-services
+        shell: bash
+        run: |
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            BASE="${{ github.event.pull_request.base.sha }}"
+            HEAD="${{ github.event.pull_request.head.sha }}"
+          else
+            BASE="${{ github.event.before }}"
+            HEAD="${{ github.sha }}"
+          fi
+
+          SERVICES=$(git diff --name-only "$BASE" "$HEAD" \
+            | awk -F/ '/^src\/[^/]+\// {print $2}' \
+            | sort -u \
+            | jq -R -s -c 'split("\n") | map(select(length>0))')
+
+          echo "services=$SERVICES" >> "$GITHUB_OUTPUT"
+
+  healthcheck:
+    needs: detect-changes
+    if: needs.detect-changes.outputs.services != '[]'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        service: ${{ fromJson(needs.detect-changes.outputs.services) }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build image
+        run: |
+          docker build \
+            -t test-${{ matrix.service }} \
+            src/${{ matrix.service }}
+
+      - name: Run container
+        run: |
+          docker run -d \
+            --name test-${{ matrix.service }} \
+            -e MODE=ci \
+            -p 18080:80 \
+            test-${{ matrix.service }}
+
+      - name: Wait for startup
+        run: sleep 3
+
+      - name: Health check
+        run: |
+          curl -f http://localhost:18080/health
+
+      - name: Cleanup
+        if: always()
+        run: |
+          docker rm -f test-${{ matrix.service }}
