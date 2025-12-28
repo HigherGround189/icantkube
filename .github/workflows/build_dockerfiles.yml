@@ -11,39 +11,56 @@ jobs:
     runs-on: ubuntu-latest
 
     outputs:
-      changed-directories: ${{ steps.detect.outputs.changed }}
-      dockerfiles: ${{ steps.find-dockerfiles.outputs.dockerfiles }}
+      matrix: ${{ steps.find-dockerfiles.outputs.matrix }}
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
       - name: Detect Directory Changes
         id: detect
         uses: tchupp/actions-detect-directory-changes@v1
-
-      - name: Find Dockerfiles in changed directories
-        id: find-dockerfiles
-        run: |
-          CLEANED_DIRS=$(echo "${{ steps.detect.outputs.changed }}" | sed 's/^\[\(.*\)\]$/\1/' | tr ',' ' ' )
-          echo "CLEANED_DIRS: $CLEANED_DIRS"
-
-          DOCKERFILE=$(find $CLEANED_DIRS -type f -name "*.Dockerfile" -print0 | jq -Rsc 'split("\u0000")')
-          echo "DOCKERFILE: $DOCKERFILE"
-          echo "dockerfiles=$DOCKERFILE" >> "$GITHUB_OUTPUT"
 
       - name: Show changed directories
         run: |
           echo "Changed directories:"
           echo "${{ steps.detect.outputs.changed }}"
 
+      - name: Declare directory changes as environmental variable
+        run: echo "DIRS=${{ steps.detect.outputs.changed }}"" >> "$GITHUB_OUTPUT"
+
+      - name: Create Matrix
+        id: find-dockerfiles
+        shell: python
+        run: |
+          import os
+          from pathlib import Path
+
+          dirs = os.environ.get("DIRS")
+          cleaned_dirs = dirs[1:-1].split(",")
+          cleaned_paths = [Path(dirs) for dirs in cleaned_dirs]
+
+          matrix = []
+          for path in cleaned_paths:
+            matrix.append({
+                "buildContext": str(path),
+                "dockerfile": str(next(path.rglob('*.Dockerfile')))
+            })
+
+          print(f"matrix={json.dumps(matrix)}", flush=True)
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+              f.write(f"matrix={json.dumps(matrix)}\n")
+
   build:
     needs: list-changed-directories
     runs-on: ubuntu-latest
     strategy:
-      matrix:
-        buildContext: ${{ fromJSON(needs.list-changed-directories.outputs.changed-directories) }}
-        dockerfileName: ${{ fromJSON(needs.list-changed-directories.outputs.dockerfiles) }}
+      matrix: ${{ fromJSON(needs.list-changed-directories.outputs.matrix) }}
 
     steps:
       - name: Debug
