@@ -6,6 +6,10 @@ on:
     paths:
       - "kubernetes/**/*"
 
+permissions:
+  contents: write
+  actions: read
+
 jobs:
   list-images-to-update:
     runs-on: ubuntu-latest
