@@ -8,4 +8,4 @@ COPY app ./app
 
 EXPOSE 80
 
-CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:80", "app.main:app"]
+CMD ["uv", "run", "gunicorn", "-w", "4", "-b", "0.0.0.0:80", "app.main:app"]
