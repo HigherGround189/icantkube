@@ -24,6 +24,12 @@ def index():    # Temporary
     """Testing file upload locally"""
     return render_template("index.html")
 
+def check_valid_id():
+    pass
+
+def model_training():
+    pass
+
 @app.route('/start', methods=["POST"])
 def start_training():
     global jobCounter
@@ -51,7 +57,6 @@ def start_training():
         stateTracker[trackingId]['error'] = f'Failed to read CSV: {e}'
         return jsonify({'trackingId':trackingId})
     
-    stateTracker[trackingId]['progress'] = 100
     return jsonify({'trackingId':trackingId})
 
 @app.route('/status', methods=["GET"])
@@ -60,11 +65,7 @@ def retrieve_all_status():
 
 @app.route('/status/<int:trackingId>', methods=["GET"])
 def retrieve_id_status(trackingId: int):
-    global counter
-    counter += 1
-    if counter % 5 == 0:
-        return jsonify({'status':'completed', 'result':{'accuracy':100}})
-    return jsonify({'status':'running', 'progress':counter%5*20})
+    return jsonify(stateTracker.get(trackingId, None))
 
 if __name__=="__main__":
     app.run(port=80)
