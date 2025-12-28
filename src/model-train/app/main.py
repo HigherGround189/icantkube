@@ -1,6 +1,7 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, render_template
 from io import BytesIO
 from enum import Enum
+import pandas as pd
 
 app = Flask(__name__)
 
@@ -12,9 +13,25 @@ class Status(Enum):
     COMPLETED = "completed"
     FAILED = "failed"
 
+@app.route("/")
+def index():    # Temporary
+    """Testing file upload locally"""
+    return render_template("index.html")
+
 @app.route('/start', methods=["POST"])
 def start_training():
-    return jsonify({'trackingId':1})
+    file = request.files.get('filename', None)
+    if file in [None, '']:
+        return jsonify({'status':Status.FAILED.value, 'error':'file not detected'}), 400
+    
+    data = file.read()
+    if data:
+        df = pd.read_csv(BytesIO(data))
+        df_json = df.to_json(orient='records')
+        return jsonify({"data": df_json})
+    else:
+        return jsonify({'status':Status.FAILED.value, 'error':'Issue reading file'}), 400
+    # return jsonify({'trackingId':1})
 
 @app.route('/status/<int:trackingId>', methods=["GET"])
 def retrieve_status(trackingId: int):
