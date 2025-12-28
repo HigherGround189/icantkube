@@ -56,7 +56,7 @@ jobs:
                       "dockerfile": str(next(path.rglob('*.Dockerfile')))
                   })
 
-              except
+              except:
                   continue
 
           print(f"matrix={json.dumps(matrix)}", flush=True)
