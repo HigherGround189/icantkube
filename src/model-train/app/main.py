@@ -5,7 +5,6 @@ import pandas as pd
 
 app = Flask(__name__)
 
-counter = 0
 jobCounter = 1
 stateTracker = {}
 
@@ -24,8 +23,8 @@ def index():    # Temporary
     """Testing file upload locally"""
     return render_template("index.html")
 
-def check_valid_id():
-    pass
+def retrieve_id(trackingId: int):
+    return stateTracker.get(trackingId, None)
 
 def model_training():
     pass
@@ -34,14 +33,13 @@ def model_training():
 def start_training():
     global jobCounter
     file = request.files.get('filename', None)
-    trackingId = jobCounter
-
-    stateTracker[trackingId] = {'status':Status.PENDING.value, 'progress':0, 'result':None, 'error':None}    
-
     if file in [None, '']:
         return jsonify({'error':'File not provided'}), 400
     
+    trackingId = jobCounter
     jobCounter += 1
+    stateTracker[trackingId] = {'status':Status.PENDING.value, 'progress':0, 'result':None, 'error':None}   
+
     data = file.read()
     if not data:
         stateTracker[trackingId]['status'] = Status.FAILED.value
@@ -63,8 +61,10 @@ def retrieve_all_status():
 
 @app.route('/status/<int:trackingId>', methods=["GET"])
 def retrieve_id_status(trackingId: int):
-    job = stateTracker.get(trackingId, None)
-    return 
+    job = retrieve_id(trackingId)
+    if job is None:
+        return jsonify({'error': f'Tracking ID ({trackingId}) does not exist'}), 404
+    return jsonify(job)
 
 if __name__=="__main__":
     app.run(port=80)
