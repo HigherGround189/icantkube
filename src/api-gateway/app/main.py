@@ -6,6 +6,10 @@ app = FastAPI(title="API Gateway", redirect_slashes=False)
 
 SERVICES = load_services()
 
+@app.get("/health")
+def health():
+    return {"status": "healthy"}
+
 @app.api_route(
     "/api/{service}/{path:path}",
     methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],

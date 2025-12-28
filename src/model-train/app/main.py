@@ -13,6 +13,10 @@ class Status(Enum):
     COMPLETED = "completed"
     FAILED = "failed"
 
+@app.get("/health")
+def health():
+    return {"status": "healthy"}
+
 @app.route("/")
 def index():    # Temporary
     """Testing file upload locally"""
