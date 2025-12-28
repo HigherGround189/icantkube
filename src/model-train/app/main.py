@@ -1,8 +1,16 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
+from io import BytesIO
+from enum import Enum
 
 app = Flask(__name__)
 
 counter = 0
+
+class Status(Enum):
+    PENDING = "pending"
+    RUNNING = "running"
+    COMPLETED = "completed"
+    FAILED = "failed"
 
 @app.route('/start', methods=["POST"])
 def start_training():
