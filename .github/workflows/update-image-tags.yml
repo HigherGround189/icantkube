@@ -144,7 +144,6 @@ jobs:
       - name: Download all image info artifacts
         uses: actions/download-artifact@v4
         with:
-          name: update-images
           path: all-images
 
       - name: Checkout repository
@@ -156,7 +155,6 @@ jobs:
       - name: Update imageConfig.yaml
         run: |
           uv run --with ruamel.yaml python -c '
-          import os
           import json
           from pathlib import Path
           from ruamel.yaml import YAML
@@ -168,7 +166,7 @@ jobs:
               imageConfig = yaml.load(f)
 
           images_folder = Path("all-images/")
-          for json_files in os.listdir(images_folder):
+          for json_files in images_folder.rglob("*.json"):
               with open(images_folder / json_files, "r") as file:
                   newImageData = json.load(file)
                   print(newImageData)
