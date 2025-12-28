@@ -39,6 +39,7 @@ jobs:
         shell: python
         run: |
           import os
+          import json
           from pathlib import Path
 
           dirs = os.environ.get("DIRS")
