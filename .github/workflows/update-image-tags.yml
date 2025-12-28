@@ -131,12 +131,11 @@ jobs:
           name: ${{ matrix.imageName }}-info
           path: images/
 
-      - name: Commit & push changes
-        uses: actions-js/push@master
+      - name: Upload modified kustomize file
+        uses: actions/upload-artifact@v4
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          rebase: true
-          message: 'Updated ${{ matrix.imageName }} in kustomize.yaml'
+          name: kustomize-${{ matrix.imageName }}
+          path: ${{ matrix.kustomizeFile }}
 
   update-image-config-file:
     needs: update-kustomize-files
@@ -183,10 +182,19 @@ jobs:
               yaml.dump(imageConfig, file)    
           '
 
+      - name: Download all kustomize artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: kustomize-files
+
+      - name: Restore modified kustomize files
+        run: |
+          rsync -av kustomize-files/**/kustomization.yaml .
+
       - name: Commit & push changes
         uses: actions-js/push@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           rebase: true
-          message: 'Updated image versions in imageConfig.yaml'
+          message: 'Updated image versions in imageConfig.yaml & kustomize.yaml'
 
