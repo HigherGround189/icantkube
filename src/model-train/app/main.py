@@ -5,7 +5,8 @@ import pandas as pd
 
 app = Flask(__name__)
 
-counter = 0
+jobCounter = 1
+stateTracker = {}
 
 class Status(Enum):
     PENDING = "pending"
@@ -20,18 +21,33 @@ def index():    # Temporary
 
 @app.route('/start', methods=["POST"])
 def start_training():
+    global jobCounter
     file = request.files.get('filename', None)
+    jobCounter += 1
+    trackingId = jobCounter
+
+    stateTracker[trackingId] = {'status':Status.PENDING.value, 'progress':0, 'result':None, 'error':None}    
+
     if file in [None, '']:
-        return jsonify({'status':Status.FAILED.value, 'error':'file not detected'}), 400
+        stateTracker[trackingId]['status'] = Status.FAILED.value
+        stateTracker[trackingId]['error'] = 'File not detected'
+        return jsonify({'trackingId':trackingId})
     
     data = file.read()
-    if data:
+    if not data:
+        stateTracker[trackingId]['status'] = Status.FAILED.value
+        stateTracker[trackingId]['error'] = 'File is empty'
+        return jsonify({'trackingId':trackingId})
+    
+    try:
         df = pd.read_csv(BytesIO(data))
-        df_json = df.to_json(orient='records')
-        return jsonify({"data": df_json})
-    else:
-        return jsonify({'status':Status.FAILED.value, 'error':'Issue reading file'}), 400
-    # return jsonify({'trackingId':1})
+    except Exception as e:
+        stateTracker[trackingId]['status'] = Status.FAILED.value
+        stateTracker[trackingId]['error'] = f'Failed to read CSV: {e}'
+        return jsonify({'trackingId':trackingId})
+    
+    stateTracker[trackingId]['progress'] = 100
+    return jsonify({'trackingId':1})
 
 @app.route('/status/<int:trackingId>', methods=["GET"])
 def retrieve_status(trackingId: int):
