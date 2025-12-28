@@ -85,6 +85,7 @@ jobs:
         run: |
           uv run --with ruamel.yaml --with requests python -c '
           import os
+          import json
           import requests
           from ruamel.yaml import YAML
 
