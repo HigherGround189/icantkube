@@ -1,10 +1,10 @@
 name: Update Images
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - "kubernetes/**/*"
+  workflow_dispatch:
+  workflow_run:
+    workflows: ["build"]
+    types: [completed]
 
 permissions:
   contents: write
