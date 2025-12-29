@@ -9,8 +9,9 @@ app = Flask(__name__)
 try:
     print("Connecting to Redis...")
     r = redis.Redis(
-        host="redis-master.redis.svc.cluster.local",
-        port=6379,
+        # host="redis-master.redis.svc.cluster.local",
+        host="localhost", #local testing
+        port=6370,
         decode_responses=True
     )
     response = r.ping()
