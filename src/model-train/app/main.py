@@ -1,10 +1,11 @@
 from flask import Flask, jsonify, request, render_template
 from io import BytesIO
-from enum import Enum
 import pandas as pd
 import redis
 import json
 from typing import Optional
+
+from constants import Status
 
 app = Flask(__name__)
 
@@ -24,13 +25,6 @@ except redis.ConnectionError as conerr:
 
 jobCounter = 1
 # stateTracker = {}
-
-class Status(Enum):
-    """ Set up statuses to improve readability and reusability """
-    PENDING = "pending"
-    RUNNING = "running"
-    COMPLETED = "completed"
-    FAILED = "failed"
 
 @app.get("/health")
 def health():

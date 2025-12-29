@@ -6,7 +6,7 @@ from sklearn.decomposition import PCA
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
 
-from main import Status
+from constants import Status
 
 class ModelTrainingPipeline():
     def __init__(self, X, y, sample_dataset: bool=False, test_size: float=0.2 , random_number: int=42):
