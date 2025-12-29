@@ -67,6 +67,12 @@ class ModelTrainingPipeline():
 
                 mlflow.log_metric("accuracy", acc)
 
+                mlflow.sklearn.log_model(
+                    sk_model=self.pipeline,
+                    name="iris_pipeline_model",
+                    registered_model_name="IrisPipelineModel"
+                )
+
                 self.result = {"accuracy": acc}
                 self.status = Status.COMPLETED.value
                 self.progress = 100
