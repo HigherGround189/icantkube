@@ -11,11 +11,8 @@ permissions:
   actions: read
 
 jobs:
-  list-images-to-update:
+  update-images:
     runs-on: ubuntu-latest
-
-    outputs:
-      matrix: ${{ steps.images-to-update.outputs.matrix }}
 
     steps:
       - name: Checkout
@@ -61,7 +58,7 @@ jobs:
                   kustomize_yaml = yaml.load(f)
               print(f"\nKustomization.yaml: {kustomize_yaml}")
               
-              # Get all images from kustomization.yaml's images field
+              # Get all images from kustomization.yaml`s images field
               kustomize_images = kustomize_yaml["images"]
               print(f"Kustomize Images: {kustomize_images}") 
 
@@ -91,10 +88,10 @@ jobs:
                       
           print(f"\nImage List: {image_list}")
 
-          # Update each image's kustomization.yaml with the new tag
+          # Update each image`s kustomization.yaml with the new tag
           for image_name, image_data in image_list.items():
-              kustomize_file_location = image_data['kustomizeFile']
-              new_tag = image_data['tag']
+              kustomize_file_location = image_data["kustomizeFile"]
+              new_tag = image_data["tag"]
               print(f"\nImage Name: {image_name}")
               print(f"Kustomization.yaml Location: {kustomize_file_location}")
               print(f"New Tag: {new_tag}")
