@@ -52,6 +52,7 @@ jobs:
       - name: Build image
         run: |
           docker build \
+            -f src/${{ matrix.service }}/${{ matrix.service }}.Dockerfile \
             -t test-${{ matrix.service }} \
             src/${{ matrix.service }}
 

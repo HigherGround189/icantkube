@@ -9,4 +9,4 @@ def echo(msg: str):
 
 @app.get("/health")
 def health():
-    return {"status": "healthy"}
+    return {"status": "up"}
