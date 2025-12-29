@@ -6,15 +6,21 @@ import redis
 import json
 
 app = Flask(__name__)
-
-r = redis.Redis(
-    host="redis-master.redis.svc.cluster.local",
-    port=6379,
-    decode_responses=True
-)
+try:
+    print("Connecting to Redis...")
+    r = redis.Redis(
+        host="redis-master.redis.svc.cluster.local",
+        port=6379,
+        decode_responses=True
+    )
+    response = r.ping()
+    print(f"Connected to Redis Successfully: {response}")
+except redis.ConnectionError as conerr:
+    print(f"Failed to connect to Redis: {conerr}")
+    exit()
 
 jobCounter = 1
-stateTracker = {}
+# stateTracker = {}
 
 class Status(Enum):
     PENDING = "pending"
@@ -32,7 +38,7 @@ def index():    # Temporary
     return render_template("index.html")
 
 def retrieve_id(trackingId: int):
-    return stateTracker.get(trackingId, None)
+    return r.hgetall(f'job:{trackingId}')
 
 def model_training():
     pass
@@ -44,28 +50,36 @@ def start_training():
     if file in [None, '']:
         return jsonify({'error':'File not provided'}), 400
     
-    trackingId = jobCounter
+    trackingId = f'job:{jobCounter}'
     jobCounter += 1
-    stateTracker[trackingId] = {'status':Status.PENDING.value, 'progress':0, 'result':None, 'error':None}   
+    newIdInstance = {'status':Status.PENDING.value, 'progress':0, 'result':None, 'error':None}
+    newIdString = json.dumps(newIdInstance, indent=4)
+    r.set(trackingId, newIdString)
 
     data = file.read()
     if not data:
-        stateTracker[trackingId]['status'] = Status.FAILED.value
-        stateTracker[trackingId]['error'] = 'File is empty'
+        r.hset(trackingId, 'status', Status.FAILED.value)
+        r.hset(trackingId, 'error', 'File is empty')
         return jsonify({'trackingId':trackingId})
     
     try:
         df = pd.read_csv(BytesIO(data))
+
     except Exception as e:
-        stateTracker[trackingId]['status'] = Status.FAILED.value
-        stateTracker[trackingId]['error'] = f'Failed to read CSV: {e}'
+        r.hset(trackingId, 'status', Status.FAILED.value)
+        r.hset(trackingId, 'error', f'Failed to read CSV: {e}')
         return jsonify({'trackingId':trackingId})
     
     return jsonify({'trackingId':trackingId})
 
 @app.route('/status', methods=["GET"])
 def retrieve_all_status():
-    return jsonify({'trackingId':stateTracker})
+    jobs = []
+    for key in r.scan_iter('job:*'):
+        trackingId = int(key.split(":")[1])
+        status = r.hget(key, 'status')
+        jobs.append({'trackingId':trackingId, 'status':status})
+    return jsonify(jobs)
 
 @app.route('/status/<int:trackingId>', methods=["GET"])
 def retrieve_id_status(trackingId: int):
