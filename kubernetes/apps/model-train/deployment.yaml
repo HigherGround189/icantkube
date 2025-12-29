@@ -15,6 +15,6 @@ spec:
     spec:
       containers:
         - name: model-train
-          image: icantkube/model-train:v0.4
+          image: icantkube/model-train:v0.5
           ports:
             - containerPort: 80
