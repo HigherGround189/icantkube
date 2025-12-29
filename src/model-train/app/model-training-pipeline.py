@@ -6,6 +6,16 @@ from sklearn.decomposition import PCA
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
 
+import mlflow
+try:
+    print("Connecting to MLflow...")
+    mlflow.set_tracking_uri("http://localhost:5200")
+    uri = mlflow.get_tracking_uri()
+    experiments = mlflow.search_experiments()
+    print(f"Connected to MLflow! Found {len(experiments)} experiments.")
+except Exception as e:
+    print(f"Failed to connect to MLflow: {e}")
+
 from constants import Status
 
 class ModelTrainingPipeline():
@@ -21,6 +31,8 @@ class ModelTrainingPipeline():
 
         self.random_number = random_number
         self.test_size = test_size
+
+        self.pipeline = None
     
     def data_preparation(self):
         X_train, X_test, y_train, y_test = train_test_split(self.X, 
@@ -39,19 +51,24 @@ class ModelTrainingPipeline():
 
             X_train, X_test, y_train, y_test = self.data_preparation()
 
-            pipeline = Pipeline([
+            self.pipeline = Pipeline([
                 ('scaler', StandardScaler()),
                 ('pca', PCA(n_components=2)),
                 ('classifier', LogisticRegression())
             ])
 
-            pipeline.fit(X_train, y_train)
-            y_pred = pipeline.predict(X_test)
+            mlflow.set_experiment("sample_training_pipeline")
+            with mlflow.start_run() as run:
+                self.pipeline.fit(X_train, y_train)
+                y_pred = self.pipeline.predict(X_test)
 
-            acc = self.metrics(y_pred, y_test)
-            self.result = {"accuracy": acc}
-            self.status = Status.COMPLETED.value
-            self.progress = 100
+                acc = self.metrics(y_pred, y_test)
+
+                mlflow.log_metric("accuracy", acc)
+
+                self.result = {"accuracy": acc}
+                self.status = Status.COMPLETED.value
+                self.progress = 100
 
         except Exception as e:
             self.status = Status.FAILED.value
@@ -64,6 +81,8 @@ class ModelTrainingPipeline():
     def run(self) -> None:
         if self.sample_dataset:
             self.train_sample()
+        else:
+            pass
         
 if __name__ == "__main__":
     pipeline = ModelTrainingPipeline(X=None, y=None, sample_dataset=True)
