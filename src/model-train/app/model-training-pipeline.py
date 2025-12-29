@@ -9,7 +9,8 @@ from sklearn.metrics import accuracy_score
 import mlflow
 try:
     print("Connecting to MLflow...")
-    mlflow.set_tracking_uri("http://localhost:5200")
+    # mlflow.set_tracking_uri("http://mlflow/mlflow/svc/cluster/local:80")
+    mlflow.set_tracking_uri("http://localhost:5200") # local testing
     uri = mlflow.get_tracking_uri()
     experiments = mlflow.search_experiments()
     print(f"Connected to MLflow! Found {len(experiments)} experiments.")
