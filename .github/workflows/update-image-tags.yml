@@ -3,7 +3,7 @@ name: Update Images
 on:
   workflow_dispatch:
   workflow_run:
-    workflows: ["build"]
+    workflows: ["Build & Push Images to Dockerhub"]
     types: [completed]
 
 permissions:
