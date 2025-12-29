@@ -4,8 +4,10 @@ from enum import Enum
 import pandas as pd
 import redis
 import json
+from typing import Optional
 
 app = Flask(__name__)
+
 try:
     print("Connecting to Redis...")
     r = redis.Redis(
@@ -24,6 +26,7 @@ jobCounter = 1
 # stateTracker = {}
 
 class Status(Enum):
+    """ Set up statuses to improve readability and reusability """
     PENDING = "pending"
     RUNNING = "running"
     COMPLETED = "completed"
@@ -38,7 +41,14 @@ def index():    # Temporary
     """Testing file upload locally"""
     return render_template("index.html")
 
-def retrieve_id(trackingId: int):
+def retrieve_id(trackingId: int) -> Optional[dict]:
+    """ 
+    Retrieve job state based on specified trackingId.
+    
+    Returns:
+        dict: Job data if trackingId exist
+        None: If job does not exist
+    """
     job = r.hgetall(f'job:{trackingId}')
     if not job:
         return None
@@ -48,7 +58,15 @@ def model_training():
     pass
 
 @app.route('/start', methods=["POST"])
-def start_training():
+def job_initiation():
+    """
+    Process uploaded file, assign and create a new training job.
+
+    Returns:
+        Json: {
+            trackingId: int
+        }
+    """
     global jobCounter
     file = request.files.get('filename', None)
     if file in [None, '']:
@@ -77,6 +95,15 @@ def start_training():
 
 @app.route('/status', methods=["GET"])
 def retrieve_all_status():
+    """
+    Retrieve all available jobs and their status.
+
+    Return:
+        JSON: {
+            'trackingId': int
+            'status': str   # pending | running | completed | failed
+        }
+    """
     jobs = []
     for key in r.scan_iter('job:*'):
         trackingId = int(key.split(":")[1])
@@ -86,6 +113,21 @@ def retrieve_all_status():
 
 @app.route('/status/<int:trackingId>', methods=["GET"])
 def retrieve_id_status(trackingId: int):
+    """
+    Retrieve the current state of job.
+
+    Parameters:
+        trackingId: int
+            Unique ID of the job to check
+
+    Return:
+        JSON: {
+            'status': str,      # pending | running | completed | failed
+            'progress': int,    # 0-100
+            'result': str,
+            'error': str
+        }
+    """
     job = retrieve_id(trackingId)
     if job is None:
         return jsonify({'error': f'Tracking ID ({trackingId}) does not exist'}), 404

@@ -7,4 +7,5 @@ dependencies = [
     "gunicorn>=23.0.0",
     "pandas>=2.3.3",
     "redis>=7.1.0",
+    "scikit-learn>=1.8.0",
 ]
