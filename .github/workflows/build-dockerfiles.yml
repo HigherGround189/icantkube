@@ -65,8 +65,14 @@ jobs:
           matrix = {"include": []}
           for path in cleaned_paths:
               try:
-                  print(f"\nPath: {path}")
-                  dockerfile_path = next(path.rglob("*.Dockerfile"))
+                  # Remove every directory that is not a direct child of src/
+                  print(f"\nRaw Path: {path}")
+                  src_index = path.parts.index("src")
+                  processed_path = Path(*path.parts[:src_index + 2])
+                  print(f"Processed Path: {processed_path}")
+                  
+                  # Calculate dockerfile info
+                  dockerfile_path = next(processed_path.rglob("*.Dockerfile"))
                   dockerfile_name = dockerfile_path.name.rstrip(".Dockerfile")
                   dockerfile_autobuild = imageConfig[dockerfile_name]["autoBuild"]
                   dockerfile_current_tag = imageConfig[dockerfile_name]["currentTag"]
@@ -95,7 +101,7 @@ jobs:
           # Convert to JSON
           print(f"\nMatrix: {json.dumps(matrix)}", flush=True)
           with open(os.environ["GITHUB_OUTPUT"], "a") as f:
-              f.write(f"matrix={json.dumps(matrix)}\n") 
+              f.write(f"matrix={json.dumps(matrix)}\n")
           '
 
   build:
