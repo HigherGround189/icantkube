@@ -2,8 +2,16 @@ from flask import Flask, jsonify, request, render_template
 from io import BytesIO
 from enum import Enum
 import pandas as pd
+import redis
+import json
 
 app = Flask(__name__)
+
+r = redis.Redis(
+    host="redis-master.redis.svc.cluster.local",
+    port=6379,
+    decode_responses=True
+)
 
 jobCounter = 1
 stateTracker = {}
@@ -57,7 +65,7 @@ def start_training():
 
 @app.route('/status', methods=["GET"])
 def retrieve_all_status():
-    return jsonify({'trackingID':stateTracker})
+    return jsonify({'trackingId':stateTracker})
 
 @app.route('/status/<int:trackingId>', methods=["GET"])
 def retrieve_id_status(trackingId: int):
