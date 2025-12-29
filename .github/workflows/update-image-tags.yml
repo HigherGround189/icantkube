@@ -24,180 +24,114 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v7
 
-      - name: Create Matrix
+      - name: Update kustomization.yaml & ImageConfig.yaml
         id: images-to-update
         run: |
-          uv run --with pyyaml python -c '
-          import os
-          import yaml
+          uv run --with ruamel.yaml --with requests python -c '
           import json
+          import requests
           from pathlib import Path
+          from ruamel.yaml import YAML
 
+          # Create yaml object
+          yaml = YAML()
+          yaml.preserve_quotes = True
+
+          # Read imageConfig file
           with open("imageConfig.yaml", "r") as f:
-              imageConfig = yaml.safe_load(f)
+              imageConfig = yaml.load(f)
+          print(f"ImageConfig: {imageConfig}")
 
-          update_list = [] 
+          # Create list of images to update
+          update_list = []
           for image in imageConfig:
               if imageConfig[image]["autoUpdate"]:
                   update_list.append(image)
+          print(f"Update List: {update_list}")
 
-          print(update_list)
-
+          # Get all "kustomization.yaml" files
           kustomizations = [str(files) for files in Path(".").rglob("kustomization.yaml")]
-          matrix = {"include": []}
+
+          # Loop through each kustomization.yaml files
+          image_list = {}
           for kustomize in kustomizations:
+
+              # Read kustomization.yaml
               with open(kustomize, "r") as f:
-                  kustomize_yaml = yaml.safe_load(f)
+                  kustomize_yaml = yaml.load(f)
+              print(f"\nKustomization.yaml: {kustomize_yaml}")
+              
+              # Get all images from kustomization.yaml's images field
+              kustomize_images = kustomize_yaml["images"]
+              print(f"Kustomize Images: {kustomize_images}") 
 
-              image_name = kustomize_yaml["images"][0]["name"].removeprefix(r"icantkube/")
-              print(kustomize_yaml)
-              print(f"{image_name=}")
+              # Loop through all images for image_list
+              for image in kustomize_images:
+                  # Get name of image    
+                  image_name = image["name"].removeprefix(r"icantkube/")
+                  print(f"Image Name: {image_name}")
+              
+                  # If image is in update_list, get latest tag from dockerhub
+                  if image_name in update_list:
+                      url = f"https://hub.docker.com/v2/repositories/icantkube/{image_name}/tags/"
+                      params = {
+                          "page_size": 1,
+                          "ordering": "last_updated",
+                      }
+                      response = requests.get(url, params=params)
+                      data = response.json()
+                      print(f"Dockerhub Response: {data}")
+                      tag = data["results"][0]["name"]
+                      print(f"Tag: {tag}")
 
-              if image_name in update_list:
-                  matrix["include"].append({
-                      "kustomizeFile": kustomize,
-                      "imageName": image_name,
-                  })
+                      image_list[image_name] = {
+                          "kustomizeFile": kustomize,
+                          "tag": tag
+                      }
+                      
+          print(f"\nImage List: {image_list}")
 
-          print(f"matrix={json.dumps(matrix)}", flush=True)
-          with open(os.environ["GITHUB_OUTPUT"], "a") as f:
-              f.write(f"matrix={json.dumps(matrix)}\n")
-          '
+          # Update each image's kustomization.yaml with the new tag
+          for image_name, image_data in image_list.items():
+              kustomize_file_location = image_data['kustomizeFile']
+              new_tag = image_data['tag']
+              print(f"\nImage Name: {image_name}")
+              print(f"Kustomization.yaml Location: {kustomize_file_location}")
+              print(f"New Tag: {new_tag}")
 
-  update-kustomize-files:
-    needs: list-images-to-update
-    runs-on: ubuntu-latest
-    strategy:
-      matrix: ${{ fromJSON(needs.list-images-to-update.outputs.matrix) }}
+              # Load kustomization.yaml
+              with open(kustomize_file_location, "r") as f:
+                  kustomize_yaml = yaml.load(f)
+              print(f"Kustomization.yaml: {kustomize_yaml}")
 
-    steps:
-      - name: Debug
-        run:
-          echo "kustomizeFile:${{ matrix.kustomizeFile }} imageName:${{ matrix.imageName }}"
+              # Loop through all images in the image field to match the current one
+              for kustomize_image in kustomize_yaml["images"]:
+                  if image_name == kustomize_image["name"].removeprefix(r"icantkube/"):
 
-      - name: Checkout repository
-        uses: actions/checkout@v4
+                      # Update image tag
+                      kustomize_image["newTag"] = new_tag
+                      print(f"Updated Kustomization.yaml: {kustomize_yaml}")
 
-      - name: Install uv
-        uses: astral-sh/setup-uv@v7
+                      # Write changes back to kustomization.yaml
+                      with open(kustomize_file_location, "w") as f:
+                          yaml.dump(kustomize_yaml, f)
 
-      - name: Update kustomize.yaml
-        id: update-image
-        env:
-          kustomizeFile: ${{ matrix.kustomizeFile }}
-          imageName: ${{ matrix.imageName }}
-        run: |
-          uv run --with ruamel.yaml --with requests python -c '
-          import os
-          import json
-          import requests
-          from ruamel.yaml import YAML
+              # Load imageConfig.yaml
+              with open("imageConfig.yaml", "r") as f:
+                  imageConfig = yaml.load(f)
 
-          kustomize_file = os.environ.get("kustomizeFile")
-          image_name = os.environ.get("imageName")
-          print(kustomize_file)
-          print(image_name)
-
-          url = f"https://hub.docker.com/v2/repositories/icantkube/{image_name}/tags/"
-          params = {
-              "page_size": 1,
-              "ordering": "last_updated",
-          }
-
-          response = requests.get(url, params=params)
-          data = response.json()
-          new_tag = data["results"][0]["name"]
-          print(new_tag)
-
-          yaml = YAML()
-          yaml.preserve_quotes = True  
-
-          with open(kustomize_file, "r") as f:
-              kustomize_yaml = yaml.load(f)
-
-          kustomize_yaml["images"][0]["newTag"] = new_tag
-
-          with open(kustomize_file, "w") as f:
-              yaml.dump(kustomize_yaml, f)
-
-          os.makedirs("images", exist_ok=True)
-          result = {"imageName": image_name, "tag": new_tag}
-          with open(f"images/{image_name}.json", "w") as f:
-              json.dump(result, f)
-          '
-      - name: Upload image info
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ matrix.imageName }}-info
-          path: images/
-
-      - name: Upload modified kustomize file
-        uses: actions/upload-artifact@v4
-        with:
-          name: kustomize-${{ matrix.imageName }}
-          path: ${{ matrix.kustomizeFile }}
-
-  update-image-config-file:
-    needs: update-kustomize-files
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download all image info artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: all-images
-
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v7
-
-      - name: Update imageConfig.yaml
-        run: |
-          uv run --with ruamel.yaml python -c '
-          import json
-          from pathlib import Path
-          from ruamel.yaml import YAML
-
-          yaml = YAML()
-          yaml.preserve_quotes = True  
-
-          with open("imageConfig.yaml", "r") as f:
-              imageConfig = yaml.load(f)
-
-          images_folder = Path("all-images/")
-          for json_files in images_folder.rglob("*.json"):
-              with open(images_folder / json_files, "r") as file:
-                  newImageData = json.load(file)
-                  print(newImageData)
-
-              image_name = newImageData["imageName"]
-              new_tag = newImageData["tag"]
+              # Update imageConfig.yaml with new tag
               imageConfig[image_name]["currentTag"] = new_tag
-              print(imageConfig) 
+              print(f"Updated ImageConfig: {imageConfig}")
 
-          with open("imageConfig.yaml", "w") as file:
-              yaml.dump(imageConfig, file)    
+              # Write changes back to imageConfig.yaml
+              with open("imageConfig.yaml", "w") as file:
+                  yaml.dump(imageConfig, file)
           '
-
-      - name: Download all kustomize artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: kustomize-files
-
-      - name: Restore modified kustomize files
-        run: |
-          rsync -av kustomize-files/**/kubernetes/ .
-
-      - name: Remove artifact folders
-        run: |
-          rm -rf images/
-          rm -rf kustomize-files/
 
       - name: Commit & push changes
         uses: actions-js/push@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           rebase: true
-          message: 'Updated image versions in imageConfig.yaml & kustomize.yaml'
-
+          message: 'Updated image versions in imageConfig.yaml & kustomization.yaml'
