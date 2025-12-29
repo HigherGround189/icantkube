@@ -38,7 +38,10 @@ def index():    # Temporary
     return render_template("index.html")
 
 def retrieve_id(trackingId: int):
-    return r.hgetall(f'job:{trackingId}')
+    job = r.hgetall(f'job:{trackingId}')
+    if not job:
+        return None
+    return job
 
 def model_training():
     pass
@@ -52,9 +55,8 @@ def start_training():
     
     trackingId = f'job:{jobCounter}'
     jobCounter += 1
-    newIdInstance = {'status':Status.PENDING.value, 'progress':0, 'result':None, 'error':None}
-    newIdString = json.dumps(newIdInstance, indent=4)
-    r.set(trackingId, newIdString)
+    newIdInstance = {'status':Status.PENDING.value, 'progress':0, 'result':'', 'error':''}
+    r.hset(trackingId, mapping=newIdInstance)
 
     data = file.read()
     if not data:
