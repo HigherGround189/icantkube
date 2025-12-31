@@ -7,7 +7,7 @@ from typing import Optional
 
 from tasks import start_model_training
 
-from app.constants import Status
+from constants import Status
 
 app = Flask(__name__)
 
@@ -51,9 +51,6 @@ def retrieve_id(trackingId: int) -> Optional[dict]:
         return None
     return job
 
-def model_training():
-    pass
-
 @app.route('/start', methods=["POST"])
 def job_initiation():
     """
@@ -65,6 +62,8 @@ def job_initiation():
         }
     """
     global jobCounter
+
+    print("Reading uploaded file...")
     file = request.files.get('filename', None)
     if file in [None, '']:
         return jsonify({'error':'File not provided'}), 400

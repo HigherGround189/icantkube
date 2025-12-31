@@ -21,12 +21,10 @@ from constants import Status
 
 class ModelTrainingPipeline():
     def __init__(self, data, sample_dataset: bool=False, test_size: float=0.2 , random_number: int=42):
-        self.X = None
-        self.y = None
-        self.data = data
+        self.data = True if data else False
         self.sample_dataset = sample_dataset
 
-        self.status = "pending"
+        self.status = Status.PENDING.value
         self.progress = 0
         self.result = ''
         self.error = ''
@@ -36,23 +34,22 @@ class ModelTrainingPipeline():
 
         self.pipeline = None
     
-    def data_preparation(self):
-        self.X, self.y = self.data[:-1], self.data[-1]
-        X_train, X_test, y_train, y_test = train_test_split(self.X, 
-                                                            self.y,
+    def data_preparation(self, X, y):
+        X_train, X_test, y_train, y_test = train_test_split(X, 
+                                                            y,
                                                             test_size=self.test_size, 
                                                             random_state=self.random_number)
         return X_train, X_test, y_train, y_test
 
-    def train_sample(self) -> None:
+    def model_train_sample(self) -> None:
         try:
             self.status = Status.RUNNING.value
 
             iris = datasets.load_iris()
-            self.X = iris.data
-            self.y = iris.target 
+            X = iris.data
+            y = iris.target 
 
-            X_train, X_test, y_train, y_test = self.data_preparation()
+            X_train, X_test, y_train, y_test = self.data_preparation(X, y)
 
             self.pipeline = Pipeline([
                 ('scaler', StandardScaler()),
@@ -83,15 +80,18 @@ class ModelTrainingPipeline():
             self.status = Status.FAILED.value
             self.error = f"An error occurred: {e}"
     
+    def model_train():
+        pass
+    
     def metrics(self, y_pred, y_test) -> float:
         acc = accuracy_score(y_pred, y_test)
         return acc
     
     def run(self) -> None:
         if self.sample_dataset:
-            self.train_sample()
+            self.model_train_sample()
         else:
-            pass
+            self.model_train()
         
 if __name__ == "__main__":
     pipeline = ModelTrainingPipeline(data=None, sample_dataset=True)

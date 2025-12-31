@@ -8,6 +8,7 @@ app = Celery('tasks', broker='redis://localhost:6370/0', backend='redis://localh
 
 @app.task()
 def start_model_training(data):
-    pipeline = ModelTrainingPipeline(data=data)
+    print("Initiating Model Training...")
+    pipeline = ModelTrainingPipeline(data=data, sample_dataset=True)
     pipeline.run()
-    return pipeline.status
+    return f'Status: {pipeline.status}, Data Received: {pipeline.data}'
