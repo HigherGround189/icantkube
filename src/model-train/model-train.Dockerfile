@@ -6,7 +6,7 @@ COPY pyproject.toml .
 
 RUN uv sync
 
-COPY app /app
+COPY app ./app
 
 EXPOSE 80
 
