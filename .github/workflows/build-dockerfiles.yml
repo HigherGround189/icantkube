@@ -53,12 +53,19 @@ jobs:
           # Turn into list
           cleaned_dirs = dirs[1:-1].split(",")
 
-          # Remove root directory if exists 
+          # Remove root directory if exists
           if "." in cleaned_dirs:
               cleaned_dirs.remove(".")
 
+          def trim_to_src_child(path):
+              p = Path(path)
+              parts = p.parts
+              src_index = parts.index("src")
+
+              return Path(*parts[:src_index + 2])
+
           # Turn directories into Path objects
-          cleaned_paths = [Path(dirs) for dirs in cleaned_dirs]
+          cleaned_paths = {trim_to_src_child(dirs) for dirs in cleaned_dirs}
           print(f"Cleaned Paths: {cleaned_paths}")
 
           # Loop through Paths to calculate matrix
@@ -66,13 +73,10 @@ jobs:
           for path in cleaned_paths:
               try:
                   # Remove every directory that is not a direct child of src/
-                  print(f"\nRaw Path: {path}")
-                  src_index = path.parts.index("src")
-                  processed_path = Path(*path.parts[:src_index + 2])
-                  print(f"Processed Path: {processed_path}")
-                  
+                  print(f"\nPath: {path}")
+
                   # Calculate dockerfile info
-                  dockerfile_path = next(processed_path.rglob("*.Dockerfile"))
+                  dockerfile_path = next(path.rglob("*.Dockerfile"))
                   dockerfile_name = dockerfile_path.name.rstrip(".Dockerfile")
                   dockerfile_autobuild = imageConfig[dockerfile_name]["autoBuild"]
                   dockerfile_current_tag = imageConfig[dockerfile_name]["currentTag"]

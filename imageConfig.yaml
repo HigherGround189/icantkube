@@ -11,7 +11,7 @@ frontend:
 model-train:
   autoUpdate: true
   autoBuild: true
-  currentTag: "v0.7"
+  currentTag: "v0.9"
 
 sample-echo-microservice:
   autoUpdate: false
