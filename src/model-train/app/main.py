@@ -5,6 +5,8 @@ import redis
 import json
 from typing import Optional
 
+from tasks import start_model_training
+
 from app.constants import Status
 
 app = Flask(__name__)
@@ -80,6 +82,7 @@ def job_initiation():
     
     try:
         df = pd.read_csv(BytesIO(data))
+        start_model_training.delay(df)
 
     except Exception as e:
         r.hset(trackingId, 'status', Status.FAILED.value)
