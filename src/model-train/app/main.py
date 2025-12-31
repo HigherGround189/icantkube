@@ -3,7 +3,6 @@ from io import BytesIO
 import pandas as pd
 import redis
 import json
-import celery
 from typing import Optional
 
 from constants import Status
