@@ -1,6 +1,6 @@
 # Kubernetes
 This directory is the single source of truth for the Kubernetes cluster.
-ArgoCD continuously watches this folder and automatically reconciles the cluster state to match what is committed in Git.
+ArgoCD continuously watches this folder and automatically reconciles cluster resources to match what is committed in Git.
 
 > [!IMPORTANT]
 > **<u>Any YAML committed to this folder is automatically applied to the cluster.</u>**
