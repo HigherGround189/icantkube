@@ -126,6 +126,6 @@ jobs:
       - name: Build and push
         run: |
           docker build ${{ matrix.buildContext }} -f ${{ matrix.dockerfile }} -t ${{ matrix.tag }}
-          docker login --username=${{ vars.DOCKERHUB_USERNAME }} --email=${{ secrets.DOCKERHUB_TOKEN }}
+          docker login --username=${{ vars.DOCKERHUB_USERNAME }} --password-stdin=${{ secrets.DOCKERHUB_TOKEN }}
           docker push ${{ matrix.tag }}
         
