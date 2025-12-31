@@ -20,9 +20,10 @@ except Exception as e:
 from constants import Status
 
 class ModelTrainingPipeline():
-    def __init__(self, X, y, sample_dataset: bool=False, test_size: float=0.2 , random_number: int=42):
-        self.X = X
-        self.y = y
+    def __init__(self, data, sample_dataset: bool=False, test_size: float=0.2 , random_number: int=42):
+        self.X = None
+        self.y = None
+        self.data = data
         self.sample_dataset = sample_dataset
 
         self.status = "pending"
@@ -36,6 +37,7 @@ class ModelTrainingPipeline():
         self.pipeline = None
     
     def data_preparation(self):
+        self.X, self.y = self.data[:-1], self.data[-1]
         X_train, X_test, y_train, y_test = train_test_split(self.X, 
                                                             self.y,
                                                             test_size=self.test_size, 
@@ -92,7 +94,7 @@ class ModelTrainingPipeline():
             pass
         
 if __name__ == "__main__":
-    pipeline = ModelTrainingPipeline(X=None, y=None, sample_dataset=True)
+    pipeline = ModelTrainingPipeline(data=None, sample_dataset=True)
     pipeline.run()
     print("Status", pipeline.status)
     print("Result", pipeline.result)
