@@ -69,7 +69,7 @@ jobs:
 
       - name: Health check
         run: |
-          curl -f --max-time 30 http://localhost:18080/health
+          curl -f --max-time 15 http://localhost:18080/health
 
       - name: Cleanup
         if: always()
