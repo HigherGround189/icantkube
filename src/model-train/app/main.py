@@ -16,7 +16,7 @@ try:
         host="localhost", #local testing
         port=6370,
         decode_responses=True,
-        db=0
+        db=2
     )
     response = r.ping()
     print(f"Connected to Redis Successfully: {response}")

@@ -1,7 +1,7 @@
 from celery import Celery
 from time import sleep
 
-app = Celery('tasks', broker='redis://localhost:6370/1', backend='redis://localhost:6370/2')
+app = Celery('tasks', broker='redis://localhost:6370/0', backend='redis://localhost:6370/1')
 @app.task
 def add(x, y):
     i = 0
