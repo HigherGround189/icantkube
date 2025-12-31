@@ -11,20 +11,27 @@ from constants import Status
 
 app = Flask(__name__)
 
-try:
-    print("Connecting to Redis...")
-    r = redis.Redis(
-        # host="redis-master.redis.svc.cluster.local",
-        host="localhost", #local testing
-        port=6370,
-        decode_responses=True,
-        db=2
-    )
-    response = r.ping()
-    print(f"Connected to Redis Successfully: {response}")
-except redis.ConnectionError as conerr:
-    print(f"Failed to connect to Redis: {conerr}")
-    exit()
+candidates = [
+    {"host": "redis-master.redis.svc.cluster.local", "port":6379},
+    {"host": "localhost", "port":6370} # local testing
+]
+for i, cfg in enumerate(candidates):
+    try:
+        r = redis.Redis(
+            **cfg,
+            socket_connect_timeout=5,
+            socket_timeout=5,
+            decode_responses=True,
+            db=0
+        )
+        response = r.ping()
+        if response:
+            print(f"Connected to Redis Successfully at {cfg["host"]}:{cfg["port"]}")
+            break
+    except redis.ConnectionError as conerr:
+        print(f"Failed to connect to Redis at {cfg["host"]}:{cfg["port"]}: {conerr}")
+        if i < len(candidates) - 1:
+            print("Trying next redis candidate...")
 
 jobCounter = 1
 # stateTracker = {}
@@ -82,6 +89,7 @@ def job_initiation():
     try:
         df = pd.read_csv(BytesIO(data))
         start_model_training.delay(df)
+        print(f"Registered trackingId: {trackingId}")
 
     except Exception as e:
         r.hset(trackingId, 'status', Status.FAILED.value)
