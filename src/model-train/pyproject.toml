@@ -3,6 +3,7 @@ name = "model-train"
 version = "0.1.0"
 requires-python = ">=3.12"
 dependencies = [
+    "celery>=5.6.1",
     "flask>=3.1.2",
     "gunicorn>=23.0.0",
     "mlflow>=3.8.1",

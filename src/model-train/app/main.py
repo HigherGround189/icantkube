@@ -3,6 +3,7 @@ from io import BytesIO
 import pandas as pd
 import redis
 import json
+import celery
 from typing import Optional
 
 from constants import Status
@@ -15,7 +16,8 @@ try:
         # host="redis-master.redis.svc.cluster.local",
         host="localhost", #local testing
         port=6370,
-        decode_responses=True
+        decode_responses=True,
+        db=0
     )
     response = r.ping()
     print(f"Connected to Redis Successfully: {response}")
