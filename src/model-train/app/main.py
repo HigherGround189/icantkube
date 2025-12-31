@@ -5,7 +5,7 @@ import redis
 import json
 from typing import Optional
 
-from constants import Status
+from app.constants import Status
 
 app = Flask(__name__)
 
