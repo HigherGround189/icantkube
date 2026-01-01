@@ -1,5 +1,5 @@
 from celery import Celery
-from model_training_pipeline import ModelTrainingPipeline
+from app.model_training_pipeline import ModelTrainingPipeline
 import pandas as pd
 from time import sleep
 

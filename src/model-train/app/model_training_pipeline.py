@@ -8,10 +8,7 @@ from sklearn.metrics import accuracy_score
 
 from contextlib import nullcontext
 import os
-import socket
 import mlflow
-
-socket.setdefaulttimeout(2)
 
 def connect_mlflow():
     candidates = [
@@ -33,7 +30,7 @@ def connect_mlflow():
     print("MLflow unavailable, continuing without tracking")
     return False
 
-from constants import Status
+from app.constants import Status
 
 class ModelTrainingPipeline():
     def __init__(self, data, sample_dataset: bool=False, test_size: float=0.2 , random_number: int=42):

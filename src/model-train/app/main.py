@@ -6,9 +6,9 @@ import json
 from typing import Optional
 import uuid
 
-from tasks import start_model_training
+from app.tasks import start_model_training
 
-from constants import Status
+from app.constants import Status
 
 app = Flask(__name__)
 
