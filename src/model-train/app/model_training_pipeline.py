@@ -6,24 +6,32 @@ from sklearn.decomposition import PCA
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
 
-import mlflow
+from contextlib import nullcontext
 import os
-candidates = [
-    {"host": "https://mlflow.icantkube.help"},
-    {"host": "http://localhost:5200"} # local testing
-]
-os.environ["MLFLOW_HTTP_REQUEST_TIMEOUT"] = "5"
-for i, uri in enumerate(candidates):
-    try:
-        mlflow.set_tracking_uri(uri["host"])
-        experiments = mlflow.search_experiments()
-        if experiments:
-            print(f"Connected to MLflow! Found {len(experiments)} experiments.")
-            break
-    except Exception as e:
-        print(f"Failed to connect to MLflow: {uri["host"]}: {e}")
-        if i < len(candidates) - 1:
-            print("Trying next MLFlow candidate...")
+import socket
+import mlflow
+
+socket.setdefaulttimeout(2)
+
+def connect_mlflow():
+    candidates = [
+        {"host": "https://mlflow.icantkube.help"},
+        {"host": "http://localhost:5200"} # local testing
+    ]
+    for i, uri in enumerate(candidates):
+        try:
+            mlflow.set_tracking_uri(uri["host"])
+            experiments = mlflow.search_experiments(max_results=1)
+            if experiments:
+                print(f"Connected to MLflow Succefully!")
+                return True
+        except Exception as e:
+            print(f"Failed to connect to MLflow: {uri["host"]}: {e}")
+            if i < len(candidates) - 1:
+                print("Trying next MLFlow candidate...")
+
+    print("MLflow unavailable, continuing without tracking")
+    return False
 
 from constants import Status
 
@@ -41,6 +49,9 @@ class ModelTrainingPipeline():
         self.test_size = test_size
 
         self.pipeline = None
+
+        self.mlflow_enabled = connect_mlflow()
+
     
     def data_preparation(self, X, y):
         X_train, X_test, y_train, y_test = train_test_split(X, 
@@ -65,20 +76,25 @@ class ModelTrainingPipeline():
                 ('classifier', LogisticRegression())
             ])
 
-            mlflow.set_experiment("sample_training_pipeline")
-            with mlflow.start_run() as run:
+            run_context = nullcontext()
+
+            if self.mlflow_enabled:
+                mlflow.set_experiment("sample_training_pipeline")
+                run_context = mlflow.start_run()
+            
+            with run_context:
                 self.pipeline.fit(X_train, y_train)
                 y_pred = self.pipeline.predict(X_test)
 
                 acc = self.metrics(y_pred, y_test)
 
-                mlflow.log_metric("accuracy", acc)
-
-                mlflow.sklearn.log_model(
-                    sk_model=self.pipeline,
-                    name="iris_pipeline_model",
-                    registered_model_name="IrisPipelineModel"
-                )
+                if self.mlflow_enabled:
+                    mlflow.log_metric("accuracy", acc)
+                    mlflow.sklearn.log_model(
+                        sk_model=self.pipeline,
+                        name="iris_pipeline_model",
+                        registered_model_name="IrisPipelineModel"
+                    )
 
                 self.result = {"accuracy": acc}
                 self.status = Status.COMPLETED.value
