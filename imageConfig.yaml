@@ -13,6 +13,11 @@ model-train:
   autoBuild: true
   currentTag: "v0.22"
 
+celery-app:
+  autoUpdate: true
+  autoBuild: true
+  currentTag: "v0.1"
+
 sample-echo-microservice:
   autoUpdate: false
   autoBuild: false
