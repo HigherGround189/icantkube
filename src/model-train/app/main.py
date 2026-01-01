@@ -15,29 +15,10 @@ logging_setup()
 import logging
 logger = logging.getLogger(__name__)
 
-app = Flask(__name__)
+from app.connections import connect_redis
+r = connect_redis(db=0)
 
-candidates = [
-    {"host": "redis-master.redis.svc.cluster.local", "port":6379},
-    {"host": "localhost", "port":6370} # local testing
-]
-for i, cfg in enumerate(candidates):
-    try:
-        r = redis.Redis(
-            **cfg,
-            socket_connect_timeout=5,
-            socket_timeout=5,
-            decode_responses=True,
-            db=0
-        )
-        response = r.ping()
-        if response:
-            logger.info(f"Connected to Redis Successfully at {cfg["host"]}:{cfg["port"]}")
-            break
-    except redis.ConnectionError as conerr:
-        logger.warning(f"Failed to connect to Redis at {cfg["host"]}:{cfg["port"]}: {conerr}")
-        if i < len(candidates) - 1:
-            logger.info("Trying next redis candidate...")
+app = Flask(__name__)
 
 # jobCounter = 1
 # stateTracker = {}
