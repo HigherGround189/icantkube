@@ -42,7 +42,7 @@ jobs:
           import yaml
           from pathlib import Path
 
-          Read imageConfig.yaml
+          # Read imageConfig.yaml
           with open("imageConfig.yaml", "r") as file:
               imageConfig = yaml.safe_load(file)
 
