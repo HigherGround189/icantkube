@@ -17,6 +17,9 @@ logging_setup()
 import logging
 logger = logging.getLogger(__name__)
 
+os.environ['MLFLOW_TRACKING_USERNAME'] = os.environ.get("username")
+os.environ['MLFLOW_TRACKING_PASSWORD'] = os.environ.get("password")
+
 def connect_mlflow():
     candidates = [
         {"host": "https://mlflow.icantkube.help"},
