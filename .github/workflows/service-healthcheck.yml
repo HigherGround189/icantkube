@@ -83,6 +83,8 @@ jobs:
 
       - name: Show container logs
         run: |
+          docker ps -a
+          docker images
           docker logs test-${{ matrix.service }}
 
       - name: Fail job if health check failed
