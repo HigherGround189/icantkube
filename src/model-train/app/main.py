@@ -10,6 +10,11 @@ from app.tasks import start_model_training
 
 from app.constants import Status
 
+from app.logging import logging_setup
+logging_setup()
+import logging
+logger = logging.getLogger(__name__)
+
 app = Flask(__name__)
 
 candidates = [
@@ -27,12 +32,12 @@ for i, cfg in enumerate(candidates):
         )
         response = r.ping()
         if response:
-            print(f"Connected to Redis Successfully at {cfg["host"]}:{cfg["port"]}")
+            logger.info(f"Connected to Redis Successfully at {cfg["host"]}:{cfg["port"]}")
             break
     except redis.ConnectionError as conerr:
-        print(f"Failed to connect to Redis at {cfg["host"]}:{cfg["port"]}: {conerr}")
+        logger.warning(f"Failed to connect to Redis at {cfg["host"]}:{cfg["port"]}: {conerr}")
         if i < len(candidates) - 1:
-            print("Trying next redis candidate...")
+            logger.info("Trying next redis candidate...")
 
 # jobCounter = 1
 # stateTracker = {}
@@ -69,7 +74,7 @@ def job_initiation():
             trackingId: int
         }
     """
-    print("Reading uploaded file...")
+    logger.info("Reading uploaded file...")
     file = request.files.get('filename', None)
     if file in [None, '']:
         return jsonify({'error':'File not provided'}), 400
@@ -80,7 +85,7 @@ def job_initiation():
 
     data = file.read()
     if not data:
-        print("Retrieving Content...", flush=True)
+        logger.info("Retrieving Content...")
         r.hset(trackingId, 'status', Status.FAILED.value)
         r.hset(trackingId, 'error', 'File is empty')
         return jsonify({'trackingId':trackingId})
@@ -88,8 +93,8 @@ def job_initiation():
     try:
         df = pd.read_csv(BytesIO(data))
         task = start_model_training.delay(df)
-        print(f"Task: {task}", flush=True)
-        print(f"Registered trackingId: {trackingId}", flush=True)
+        logger.info(f"Task: {task}")
+        logger.info(f"Registered trackingId: {trackingId}")
 
     except Exception as e:
         r.hset(trackingId, 'status', Status.FAILED.value)

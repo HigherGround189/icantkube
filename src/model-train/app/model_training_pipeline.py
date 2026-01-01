@@ -10,6 +10,13 @@ from contextlib import nullcontext
 import os
 import mlflow
 
+from app.constants import Status
+
+from app.logging import logging_setup
+logging_setup()
+import logging
+logger = logging.getLogger(__name__)
+
 def connect_mlflow():
     candidates = [
         {"host": "https://mlflow.icantkube.help"},
@@ -20,17 +27,15 @@ def connect_mlflow():
             mlflow.set_tracking_uri(uri["host"])
             experiments = mlflow.search_experiments(max_results=1)
             if experiments:
-                print(f"Connected to MLflow Succefully!")
+                logger.info(f"Connected to MLflow Succefully!")
                 return True
         except Exception as e:
-            print(f"Failed to connect to MLflow: {uri["host"]}: {e}")
+            logger.warning(f"Failed to connect to MLflow: {uri["host"]}: {e}")
             if i < len(candidates) - 1:
-                print("Trying next MLFlow candidate...")
+                logger.info("Trying next MLFlow candidate...")
 
-    print("MLflow unavailable, continuing without tracking")
+    logger.warning("MLflow unavailable, continuing without tracking")
     return False
-
-from app.constants import Status
 
 class ModelTrainingPipeline():
     def __init__(self, data, sample_dataset: bool=False, test_size: float=0.2 , random_number: int=42):
