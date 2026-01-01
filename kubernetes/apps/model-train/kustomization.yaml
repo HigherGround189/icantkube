@@ -5,6 +5,7 @@ resources:
 - deployment.yaml
 - namespace.yaml
 - service.yaml
+- mlflow-auth-credentials.sealed.yaml
 
 images:
 - name: icantkube/model-train
