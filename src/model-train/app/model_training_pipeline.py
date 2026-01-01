@@ -7,15 +7,23 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
 
 import mlflow
-try:
-    print("Connecting to MLflow...")
-    # mlflow.set_tracking_uri("https://mlflow.icantkube.help")
-    mlflow.set_tracking_uri("http://localhost:5200") # local testing
-    uri = mlflow.get_tracking_uri()
-    experiments = mlflow.search_experiments()
-    print(f"Connected to MLflow! Found {len(experiments)} experiments.")
-except Exception as e:
-    print(f"Failed to connect to MLflow: {e}")
+import os
+candidates = [
+    {"host": "https://mlflow.icantkube.help"},
+    {"host": "http://localhost:5200"} # local testing
+]
+os.environ["MLFLOW_HTTP_REQUEST_TIMEOUT"] = "5"
+for i, uri in enumerate(candidates):
+    try:
+        mlflow.set_tracking_uri(uri["host"])
+        experiments = mlflow.search_experiments()
+        if experiments:
+            print(f"Connected to MLflow! Found {len(experiments)} experiments.")
+            break
+    except Exception as e:
+        print(f"Failed to connect to MLflow: {uri["host"]}: {e}")
+        if i < len(candidates) - 1:
+            print("Trying next MLFlow candidate...")
 
 from constants import Status
 

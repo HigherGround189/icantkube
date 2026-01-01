@@ -4,6 +4,7 @@ import pandas as pd
 import redis
 import json
 from typing import Optional
+import uuid
 
 from tasks import start_model_training
 
@@ -33,7 +34,7 @@ for i, cfg in enumerate(candidates):
         if i < len(candidates) - 1:
             print("Trying next redis candidate...")
 
-jobCounter = 1
+# jobCounter = 1
 # stateTracker = {}
 
 @app.get("/health")
@@ -68,28 +69,27 @@ def job_initiation():
             trackingId: int
         }
     """
-    global jobCounter
-
     print("Reading uploaded file...")
     file = request.files.get('filename', None)
     if file in [None, '']:
         return jsonify({'error':'File not provided'}), 400
     
-    trackingId = f'job:{jobCounter}'
-    jobCounter += 1
+    trackingId = f'job:{uuid.uuid4()}'
     newIdInstance = {'status':Status.PENDING.value, 'progress':0, 'result':'', 'error':''}
     r.hset(trackingId, mapping=newIdInstance)
 
     data = file.read()
     if not data:
+        print("Retrieving Content...", flush=True)
         r.hset(trackingId, 'status', Status.FAILED.value)
         r.hset(trackingId, 'error', 'File is empty')
         return jsonify({'trackingId':trackingId})
     
     try:
         df = pd.read_csv(BytesIO(data))
-        start_model_training.delay(df)
-        print(f"Registered trackingId: {trackingId}")
+        task = start_model_training.delay(df)
+        print(f"Task: {task}", flush=True)
+        print(f"Registered trackingId: {trackingId}", flush=True)
 
     except Exception as e:
         r.hset(trackingId, 'status', Status.FAILED.value)
