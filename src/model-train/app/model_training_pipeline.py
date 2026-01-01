@@ -7,6 +7,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
 
 from contextlib import nullcontext
+import json
 import os
 import mlflow
 
@@ -25,11 +26,7 @@ class ModelTrainingPipeline():
     def __init__(self, update, data, sample_dataset: bool=False, test_size: float=0.2 , random_number: int=42):
         self.data = True if data else False
         self.sample_dataset = sample_dataset
-
-        self.status = Status.PENDING.value
-        self.progress = 0
-        self.result = ''
-        self.error = ''
+        self.update = update
 
         self.random_number = random_number
         self.test_size = test_size
@@ -48,19 +45,23 @@ class ModelTrainingPipeline():
 
     def model_train_sample(self) -> None:
         try:
-            self.status = Status.RUNNING.value
+            self.update(status=Status.RUNNING.value, progress=0)
 
             iris = datasets.load_iris()
             X = iris.data
             y = iris.target 
 
+            self.update(progress=10)
+
             X_train, X_test, y_train, y_test = self.data_preparation(X, y)
+            self.update(progress=30)
 
             self.pipeline = Pipeline([
                 ('scaler', StandardScaler()),
                 ('pca', PCA(n_components=2)),
                 ('classifier', LogisticRegression())
             ])
+            self.update(progress=50)
 
             run_context = nullcontext()
 
@@ -70,9 +71,13 @@ class ModelTrainingPipeline():
             
             with run_context:
                 self.pipeline.fit(X_train, y_train)
+                self.update(progress=70)
+
                 y_pred = self.pipeline.predict(X_test)
+                self.update(progress=80)
 
                 acc = self.metrics(y_pred, y_test)
+                self.update(progress=90)
 
                 if self.mlflow_enabled:
                     mlflow.log_metric("accuracy", acc)
@@ -82,13 +87,15 @@ class ModelTrainingPipeline():
                         registered_model_name="IrisPipelineModel"
                     )
 
-                self.result = {"accuracy": acc}
-                self.status = Status.COMPLETED.value
-                self.progress = 100
+                self.update(status=Status.COMPLETED.value, 
+                            progress=100, 
+                            result=json.dumps({"accuracy": acc})
+                            )
 
         except Exception as e:
-            self.status = Status.FAILED.value
-            self.error = f"An error occurred: {e}"
+            self.update(status=Status.FAILED.value, 
+                        error=f"An error occurred: {e}"
+                        )
     
     def model_train():
         pass
@@ -106,6 +113,3 @@ class ModelTrainingPipeline():
 if __name__ == "__main__":
     pipeline = ModelTrainingPipeline(data=None, sample_dataset=True)
     pipeline.run()
-    print("Status", pipeline.status)
-    print("Result", pipeline.result)
-    print("Error", pipeline.error)

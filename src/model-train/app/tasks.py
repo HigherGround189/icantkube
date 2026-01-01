@@ -17,8 +17,8 @@ port = r1.connection_pool.connection_kwargs['port']
 
 app = Celery('tasks', broker=f'redis://{host}:{port}/1')
 
-@app.task()
-def start_model_training(data, trackingId):
+@app.task(bind=True)
+def start_model_training(self, data, trackingId):
     def state_update(**kwargs):
         r.hset(trackingId, mapping=kwargs)
 
