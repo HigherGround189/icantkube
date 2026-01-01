@@ -22,7 +22,7 @@ spec:
           - secretRef:
               name: mlflow-auth-credentials-external-secret
         - name: model-train-celery-worker
-          image: icantkube/model-train-celery:v0.1
+          image: icantkube/celery-app:v0.1
           envFrom:
             - secretRef:
                 name: mlflow-auth-credentials-external-secret
