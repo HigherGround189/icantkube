@@ -8,4 +8,4 @@ resources:
 
 images:
 - name: icantkube/model-train
-  newTag: v0.14
+  newTag: v0.15
