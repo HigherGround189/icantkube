@@ -16,7 +16,7 @@ model-train:
 celery-app:
   autoUpdate: true
   autoBuild: true
-  currentTag: "v0.1"
+  currentTag: "v0.2"
 
 sample-echo-microservice:
   autoUpdate: false
