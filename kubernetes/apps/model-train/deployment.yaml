@@ -21,7 +21,7 @@ spec:
           envFrom:
           - secretRef:
               name: mlflow-auth-credentials-external-secret
-        - name: model-train-celery-worker
+        - name: celery-app
           image: icantkube/celery-app:v0.1
           envFrom:
             - secretRef:
