@@ -19,5 +19,10 @@ spec:
           ports:
             - containerPort: 80
           envFrom:
+          - secretRef:
+              name: mlflow-auth-credentials-external-secret
+        - name: model-train-celery-worker
+          image: icantkube/model-train-celery:v0.1
+          envFrom:
             - secretRef:
                 name: mlflow-auth-credentials-external-secret
