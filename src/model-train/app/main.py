@@ -83,16 +83,17 @@ def job_initiation():
     newIdInstance = {'status':Status.PENDING.value, 'progress':0, 'result':'', 'error':''}
     r.hset(trackingId, mapping=newIdInstance)
 
+    logger.info("Retrieving Content...")
     data = file.read()
     if not data:
-        logger.info("Retrieving Content...")
         r.hset(trackingId, 'status', Status.FAILED.value)
         r.hset(trackingId, 'error', 'File is empty')
         return jsonify({'trackingId':trackingId})
     
     try:
         df = pd.read_csv(BytesIO(data))
-        task = start_model_training.delay(df)
+        df_json = df.to_json(orient='records')
+        task = start_model_training.delay(df_json)
         logger.info(f"Task: {task}")
         logger.info(f"Registered trackingId: {trackingId}")
 

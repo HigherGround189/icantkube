@@ -10,6 +10,8 @@ from contextlib import nullcontext
 import os
 import mlflow
 
+import pandas as pd
+
 from app.constants import Status
 
 from app.logging import logging_setup
@@ -17,8 +19,8 @@ logging_setup()
 import logging
 logger = logging.getLogger(__name__)
 
-os.environ['MLFLOW_TRACKING_USERNAME'] = os.environ.get("username")
-os.environ['MLFLOW_TRACKING_PASSWORD'] = os.environ.get("password")
+os.environ['MLFLOW_TRACKING_USERNAME'] = os.environ.get("username", '')
+os.environ['MLFLOW_TRACKING_PASSWORD'] = os.environ.get("password", '')
 
 def connect_mlflow():
     candidates = [
