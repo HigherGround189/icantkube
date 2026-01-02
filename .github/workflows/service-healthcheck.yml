@@ -66,12 +66,12 @@ jobs:
             -p 18080:80 \
             test-${{ matrix.service }}
 
-      - name: Health check (silent)
+      - name: Health check
         id: healthcheck
         shell: bash
         run: |
           set +e
-          curl -s --fail --max-time 15 http://localhost:18080/health
+          curl --fail --max-time 15 http://localhost:18080/health
           STATUS=$?
           set -e
 
