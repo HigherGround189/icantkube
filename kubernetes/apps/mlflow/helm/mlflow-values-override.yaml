@@ -36,4 +36,5 @@ ingress:
     cloudflare-tunnel-ingress-controller.strrl.dev/proxy-ssl-verify: "on"
 
 image:
+  repository: "ghcr.io/mlflow/mlflow"
   tag: "3.8.1"
