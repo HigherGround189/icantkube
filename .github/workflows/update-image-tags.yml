@@ -1,6 +1,9 @@
 name: Update Images
 
 on:
+  push:
+    paths:
+      - "imageConfig.yaml"
   workflow_dispatch:
   workflow_run:
     workflows: ["Build & Push Images to Dockerhub"]
