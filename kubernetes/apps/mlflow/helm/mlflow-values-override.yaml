@@ -37,4 +37,4 @@ ingress:
 
 image:
   repository: "ghcr.io/mlflow/mlflow"
-  tag: "3.8.1"
+  tag: "v3.8.1"
