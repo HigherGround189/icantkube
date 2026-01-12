@@ -56,9 +56,11 @@ def job_initiation():
         }
     """
     logger.info("Reading uploaded file...")
-    file = request.files.get('filename', None)
-    if file in [None, '']:
-        return jsonify({'error':'File not provided'}), 400
+    # file = request.files.get('filename', None)
+    # if file in [None, '']:
+    #     return jsonify({'error':'File not provided'}), 400
+
+    raw_bytes = request.get_data()
     
     return_id = uuid.uuid4()
     trackingId = f'job:{return_id}'
@@ -66,14 +68,14 @@ def job_initiation():
     r.hset(trackingId, mapping=newIdInstance)
 
     logger.info("Retrieving Content...")
-    data = file.read()
-    if not data:
-        r.hset(trackingId, 'status', Status.FAILED.value)
-        r.hset(trackingId, 'error', 'File is empty')
-        return jsonify({'trackingId':return_id})
+    # data = file.read()
+    # if not data:
+    #     r.hset(trackingId, 'status', Status.FAILED.value)
+    #     r.hset(trackingId, 'error', 'File is empty')
+    #     return jsonify({'trackingId':return_id})
     
     try:
-        df = pd.read_csv(BytesIO(data))
+        df = pd.read_csv(BytesIO(raw_bytes))
         df_json = df.to_json(orient='records')
         task = start_model_training.delay(df_json, trackingId)
         logger.info(f"Task: {task}")
