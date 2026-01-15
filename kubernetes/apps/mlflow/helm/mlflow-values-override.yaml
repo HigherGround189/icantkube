@@ -6,7 +6,7 @@ auth:
   # Mlflow user facing authentication
   enabled: true
   existingAdminSecret:
-    name: mlflow-auth-credentials-exter nal-secret
+    name: mlflow-auth-credentials-external-secret
     usernameKey: username
     passwordKey: password
 
