@@ -60,7 +60,7 @@ def job_initiation():
     # if file in [None, '']:
     #     return jsonify({'error':'File not provided'}), 400
 
-    raw_bytes = request.get_data()
+    raw_bytes = request.get_data(parse_form_data=False)
     
     return_id = uuid.uuid4()
     trackingId = f'job:{return_id}'

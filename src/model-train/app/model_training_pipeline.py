@@ -20,10 +20,10 @@ logging_setup()
 import logging
 logger = logging.getLogger(__name__)
 
-from app.connections import connect_mlflow
+# from app.connections import connect_mlflow
 
 class ModelTrainingPipeline():
-    def __init__(self, update, data, sample_dataset: bool=False, test_size: float=0.2 , random_number: int=42):
+    def __init__(self, update, data, mlflow_conn, sample_dataset: bool=False, test_size: float=0.2 , random_number: int=42):
         self.data = True if data else False
         self.sample_dataset = sample_dataset
         self.update = update
@@ -33,7 +33,7 @@ class ModelTrainingPipeline():
 
         self.pipeline = None
 
-        self.mlflow_enabled = connect_mlflow()
+        self.mlflow_enabled = mlflow_conn
 
     
     def data_preparation(self, X, y):
