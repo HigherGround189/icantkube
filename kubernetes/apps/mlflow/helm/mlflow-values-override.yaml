@@ -29,10 +29,10 @@ backendStore:
     port: 5432
     database: "mlflow"
 
-    existingDatabaseSecret:
-      name: mlflow-postgresql-credentials-external-secret
-      usernameKey: username
-      passwordKey: password
+  existingDatabaseSecret:
+    name: mlflow-postgresql-credentials-external-secret
+    usernameKey: username
+    passwordKey: password
 
 # Ingress Configuration
 ingress:
