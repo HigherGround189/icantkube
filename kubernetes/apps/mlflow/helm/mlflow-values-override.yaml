@@ -6,7 +6,7 @@ auth:
   # Mlflow user facing authentication
   enabled: true
   existingAdminSecret:
-    name: mlflow-auth-credentials-external-secret
+    name: mlflow-auth-credentials-exter nal-secret
     usernameKey: username
     passwordKey: password
 
@@ -19,6 +19,19 @@ auth:
 
     existingSecret:
       name: mlflow-postgresql-credentials-external-secret
+      usernameKey: username
+      passwordKey: password
+
+backendStore:
+  postgres:
+    enabled: true
+    host: "mlflow-mlflow-postgresql.mlflow.svc.cluster.local"
+    port: 5432
+    database: "mlflow"
+
+    existingDatabaseSecret:
+      name: mlflow-postgresql-credentials-external-secret
+      usernameKey: username
       passwordKey: password
 
 # Ingress Configuration
@@ -35,6 +48,6 @@ ingress:
     cloudflare-tunnel-ingress-controller.strrl.dev/backend-protocol: "http"
     cloudflare-tunnel-ingress-controller.strrl.dev/proxy-ssl-verify: "on"
 
-image:
-  repository: "openeuler/mlflow"
-  tag: "3.4.0-oe2403sp2"
+# image:
+#   repository: "openeuler/mlflow"
+#   tag: "3.4.0-oe2403sp2"
