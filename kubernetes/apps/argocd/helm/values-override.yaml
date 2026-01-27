@@ -29,3 +29,24 @@ server:
         env:
           - name: EXTENSION_URL
             value: https://github.com/argoproj-labs/rollout-extension/releases/download/v0.3.7/extension.tar
+
+  extraEnv:
+    - name: TZ
+      value: Asia/Singapore
+
+  
+repoServer:
+  extraEnv:
+    - name: TZ
+      value: Asia/Singapore
+
+applicationController:
+  extraEnv:
+    - name: TZ
+      value: Asia/Singapore
+
+notifications:
+  controller:
+    extraEnv:
+      - name: TZ
+        value: Asia/Singapore
