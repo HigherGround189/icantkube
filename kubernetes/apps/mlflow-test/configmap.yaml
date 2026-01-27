@@ -5,9 +5,9 @@ metadata:
   labels:
     app: mlflow-test
 data:
-  PGHOST: mlflow-test-mlflow-test-postgresql.mlflow-test.svc.cluster.local
+  PGHOST: mlflow-test-mlflow-test-postgresql
   PGPORT: "5432"
-  PGDATABASE: mlflow
+  PGDATABASE: mlflow-test
   MLFLOW_CONFIGURE_LOGGING: "true"
   MLFLOW_LOGGING_LEVEL: "INFO"
   MLFLOW_DISABLE_TELEMETRY: "true"
