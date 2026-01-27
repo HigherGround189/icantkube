@@ -5,7 +5,7 @@ metadata:
   labels:
     app: mlflow-test
 data:
-  PGHOST: mlflow-mlflow-postgresql.mlflow.svc.cluster.local
+  PGHOST: mlflow-test-mlflow-postgresql.mlflow.svc.cluster.local
   PGPORT: "5432"
   PGDATABASE: mlflow
   MLFLOW_CONFIGURE_LOGGING: "true"
