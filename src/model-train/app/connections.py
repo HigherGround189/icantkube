@@ -7,9 +7,15 @@ logging_setup()
 import logging
 logger = logging.getLogger(__name__)
 
+from app.config import load_apps
+
+APPS = load_apps()
+
 def connect_redis(db=0):
+    redis_con = APPS["redis-connection"]
+
     candidates = [
-        {"host": "redis-master.redis.svc.cluster.local", "port":6379},
+        {"host": redis_con["url"], "port":redis_con["port"]},
         {"host": "localhost", "port":6370} # local testing
     ]
     for i, cfg in enumerate(candidates):
@@ -37,8 +43,10 @@ def connect_mlflow():
     os.environ['MLFLOW_TRACKING_USERNAME'] = os.environ.get("username", '')
     os.environ['MLFLOW_TRACKING_PASSWORD'] = os.environ.get("password", '')
 
+    mlflow_con = APPS["mlflow-connection"]
+
     candidates = [
-        {"host": "https://mlflow.icantkube.help"},
+        {"host": mlflow_con["url"]},
         {"host": "http://localhost:5200"} # local testing
     ]
     for i, uri in enumerate(candidates):

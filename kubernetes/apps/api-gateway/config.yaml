@@ -10,3 +10,10 @@ data:
         url: http://sample-echo-microservice.sample-echo-microservice.svc.cluster.local
       model-train:
         url: http://model-train.model-train.svc.cluster.local
+  apps.yaml: |
+    apps:
+      mlflow-connection: 
+        url: https://mlflow.icantkube.help
+      redis-connection:
+        url: redis-master.redis.svc.cluster.local
+        port: 6379
