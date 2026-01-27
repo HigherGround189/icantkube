@@ -7,7 +7,7 @@ spec:
     canary:                        # Changed from rollingUpdate or recreate
       steps:
       - setWeight: 20
-      - pause: 20
+      - pause: {duration: 20s}
   selector:
     matchLabels:
       app: busybox
