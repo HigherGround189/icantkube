@@ -10,7 +10,7 @@ spec:
   workloadRef:                                 # Reference an existing Deployment using workloadRef field
     apiVersion: apps/v1
     kind: Deployment
-    name: busybox
+    name: busybox-debug
     scaleDown: onsuccess
   strategy:
     canary:
