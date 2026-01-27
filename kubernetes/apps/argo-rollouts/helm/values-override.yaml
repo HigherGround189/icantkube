@@ -1,4 +1,5 @@
 namespaceOverride: argo-rollouts
+keepCRDS: false
 
 dashboard:
     enabled: true
