@@ -22,6 +22,6 @@ kubeseal --format yaml < mlflow-auth-credential-unsealed-secret.yaml > mlflow-au
 kubeseal --format yaml < mlflow-postgresql-credentials-unsealed-secret.yaml > mlflow-postgresql-credentials.sealed.yaml
 
 # Initalise ArgoCD-bootstrap
-cd /kubernetes/argocd-boostrap/
+cd kubernetes/argocd-boostrap/
 kubectl apply -f track-create-apps-and-data-sources.yaml
 
