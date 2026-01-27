@@ -19,9 +19,7 @@ spec:
       annotations:
         checksum/config: fa1c8709aa0de912cb487d40452142672963e8c2ed567ee6831d471c5724b065
       labels:
-        app: mlflow
-        app.kubernetes.io/name: mlflow
-        app.kubernetes.io/instance: mlflow-test
+        app: mlflow-test
     spec:
       serviceAccountName: mlflow-test
       securityContext:

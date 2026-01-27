@@ -12,6 +12,4 @@ spec:
       protocol: TCP
       name: http
   selector:
-    app: mlflow
-    app.kubernetes.io/name: mlflow
-    app.kubernetes.io/instance: mlflow-test
+    app: mlflow-test
