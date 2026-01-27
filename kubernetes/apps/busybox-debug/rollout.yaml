@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1               # Create a rollout resource
+kind: Rollout
+metadata:
+  name: busybox-debug-rollout
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: busybox
+  workloadRef:                                 # Reference an existing Deployment using workloadRef field
+    apiVersion: apps/v1
+    kind: Deployment
+    name: busybox
+    scaleDown: onsuccess
+  strategy:
+    canary:
+      steps:
+        - setWeight: 20
+        - pause: {duration: 10s}
+

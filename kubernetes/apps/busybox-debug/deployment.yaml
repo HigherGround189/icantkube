@@ -1,17 +1,12 @@
 apiVersion: argoproj.io/v1alpha1
-kind: Rollout
+kind: Deployment
 metadata:
   name: busybox-debug
 spec:
-  strategy:
-    canary:                        # Changed from rollingUpdate or recreate
-      steps:
-      - setWeight: 20
-      - pause: {duration: 20s}
   selector:
     matchLabels:
       app: busybox
-  replicas: 5
+  replicas: 0
   template:
     metadata:
       labels:
@@ -19,5 +14,5 @@ spec:
     spec:
       containers:
       - name: busybox
-        image: busybox:1.36.1
+        image: busybox
         command: ["/bin/sh", "-ec", "sleep infinity"] # Sleep forever to container alive for exec
