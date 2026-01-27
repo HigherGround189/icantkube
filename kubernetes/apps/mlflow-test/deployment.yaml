@@ -45,22 +45,22 @@ spec:
             - name: DB_USERNAME
               valueFrom:
                 secretKeyRef:
-                  name: mlflow-postgresql-credentials-external-secret
+                  name: mlflow-test-postgresql-credentials-external-secret
                   key: username
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: mlflow-postgresql-credentials-external-secret
+                  name: mlflow-test-postgresql-credentials-external-secret
                   key: password
             - name: ADMIN_USERNAME
               valueFrom:
                 secretKeyRef:
-                  name: mlflow-auth-credentials-external-secret
+                  name: mlflow-test-auth-credentials-external-secret
                   key: username
             - name: ADMIN_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: mlflow-auth-credentials-external-secret
+                  name: mlflow-test-auth-credentials-external-secret
                   key: password
           volumeMounts:
             - name: auth-ini-template-file
@@ -121,12 +121,12 @@ spec:
             - name: PGPASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: mlflow-postgresql-credentials-external-secret
+                  name: mlflow-test-postgresql-credentials-external-secret
                   key: password
             - name: PGUSER
               valueFrom:
                 secretKeyRef:
-                  name: mlflow-postgresql-credentials-external-secret
+                  name: mlflow-test-postgresql-credentials-external-secret
                   key: username
             - name: MLFLOW_SERVER_DISABLE_SECURITY_MIDDLEWARE
               value: "true"
