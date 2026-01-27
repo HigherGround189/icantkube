@@ -1,12 +1,17 @@
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
 metadata:
   name: busybox-debug
 spec:
+  strategy:
+    canary:                        # Changed from rollingUpdate or recreate
+      steps:
+      - setWeight: 20
+      - pause: 20
   selector:
     matchLabels:
       app: busybox
-  replicas: 1
+  replicas: 5
   template:
     metadata:
       labels:
