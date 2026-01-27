@@ -23,7 +23,7 @@ spec:
 
     - repoURL: https://github.com/HigherGround189/icantkube.git
       targetRevision: main
-      path: kubernetes/apps/argocd/
+      path: kubernetes/apps/argo-rollouts/
 
   destination:
     server: https://kubernetes.default.svc
