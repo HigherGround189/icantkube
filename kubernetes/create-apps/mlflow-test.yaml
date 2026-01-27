@@ -6,10 +6,25 @@ metadata:
 spec:
   project: default
 
-  source:
-    repoURL: https://github.com/HigherGround189/icantkube.git
-    targetRevision: main
-    path: kubernetes/apps/mlflow-test
+  sources:
+    - repoURL: https://github.com/HigherGround189/icantkube.git
+      targetRevision: main
+      path: kubernetes/apps/mlflow-test
+
+    - repoURL: https://charts.bitnami.com/bitnami
+      chart: postgresql 
+      targetRevision: "18.2.0"
+      helm:
+        valueFiles:
+          - $values/kubernetes/apps/mlflow/helm/mlflow-postgresql-values-override.yaml
+
+    - repoURL: https://github.com/HigherGround189/icantkube.git
+      targetRevision: main
+      ref: values
+
+    - repoURL: https://github.com/HigherGround189/icantkube.git
+      targetRevision: main
+      path: kubernetes/apps/mlflow-test
 
   destination:
     server: https://kubernetes.default.svc
