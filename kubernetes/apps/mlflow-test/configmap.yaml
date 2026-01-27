@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mlflow-test-env-configmap
+  labels:
+    app: mlflow-test
+data:
+  PGHOST: mlflow-mlflow-postgresql.mlflow.svc.cluster.local
+  PGPORT: "5432"
+  PGDATABASE: mlflow
+  MLFLOW_CONFIGURE_LOGGING: "true"
+  MLFLOW_LOGGING_LEVEL: "INFO"
+  MLFLOW_DISABLE_TELEMETRY: "true"
+  DO_NOT_TRACK: "true"

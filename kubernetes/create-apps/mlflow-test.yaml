@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: mlflow-test
+  namespace: mlflow-test
+spec:
+  project: default
+
+  source:
+    repoURL: https://github.com/HigherGround189/icantkube.git
+    targetRevision: main
+    path: kubernetes/apps/mlflow-test
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: mlflow-test
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
