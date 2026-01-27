@@ -8,7 +8,7 @@ data:
   auth_template.ini: |
     [mlflow]
     default_permission = READ
-    database_uri = postgresql://$(POSTGRES_USERNAME_PLACEHOLDER):$(POSTGRES_PASSWORD_PLACEHOLDER)@mlflow-mlflow-postgresql.mlflow.svc.cluster.local:5432/mlflow
+    database_uri = postgresql://$(POSTGRES_USERNAME_PLACEHOLDER):$(POSTGRES_PASSWORD_PLACEHOLDER)@mlflow-test-mlflow-test-postgresql.mlflow-test.svc.cluster.local:5432/mlflow
     admin_username = $(ADMIN_USERNAME_PLACEHOLDER)
     admin_password = $(ADMIN_PASSWORD_PLACEHOLDER)
     authorization_function = mlflow.server.auth:authenticate_request_basic_auth
