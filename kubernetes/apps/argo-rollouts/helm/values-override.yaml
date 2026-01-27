@@ -4,5 +4,6 @@ dashboard:
     enabled: true
     ingress: 
         enabled: true
-        hosts: rollouts.icantkube.help
+        hosts: 
+            - rollouts.icantkube.help
         ingressClassName: cloudflare-tunnel
