@@ -1,35 +1,35 @@
-# apiVersion: argoproj.io/v1alpha1
-# kind: Application
-# metadata:
-#   name: argo-rollouts
-#   namespace: argocd
-# spec:
-#   project: default
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: argo-rollouts
+  namespace: argocd
+spec:
+  project: default
 
-#   sources:
-#     # Argocd Helm chart source
-#     # https://artifacthub.io/packages/helm/argo/argo-rollouts
-#     - repoURL: https://argoproj.github.io/argo-helm
-#       chart: argo-rollouts
-#       targetRevision: "2.40.5"
-#       helm:
-#         valueFiles:
-#           - $values/kubernetes/apps/argo-rollouts/helm/values-override.yaml
+  sources:
+    # Argocd Helm chart source
+    # https://artifacthub.io/packages/helm/argo/argo-rollouts
+    - repoURL: https://argoproj.github.io/argo-helm
+      chart: argo-rollouts
+      targetRevision: "2.40.5"
+      helm:
+        valueFiles:
+          - $values/kubernetes/apps/argo-rollouts/helm/values-override.yaml
 
-#     # icantkube repo containing values-override.yaml
-#     - repoURL: https://github.com/HigherGround189/icantkube.git
-#       targetRevision: main
-#       ref: values
+    # icantkube repo containing values-override.yaml
+    - repoURL: https://github.com/HigherGround189/icantkube.git
+      targetRevision: main
+      ref: values
 
-#     - repoURL: https://github.com/HigherGround189/icantkube.git
-#       targetRevision: main
-#       path: kubernetes/apps/argo-rollouts/
+    - repoURL: https://github.com/HigherGround189/icantkube.git
+      targetRevision: main
+      path: kubernetes/apps/argo-rollouts/
 
-#   destination:
-#     server: https://kubernetes.default.svc
-#     namespace: argo-rollouts
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argo-rollouts
 
-#   syncPolicy:
-#     automated:
-#       prune: true
-#       selfHeal: true
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
