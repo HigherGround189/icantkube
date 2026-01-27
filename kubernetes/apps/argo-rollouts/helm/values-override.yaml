@@ -1,12 +1,2 @@
 namespaceOverride: argo-rollouts
 keepCRDS: false
-
-dashboard:
-    enabled: true
-    image:
-        tag: v1.8.1
-    ingress: 
-        enabled: true
-        hosts: 
-            - rollouts.icantkube.help
-        ingressClassName: cloudflare-tunnel
