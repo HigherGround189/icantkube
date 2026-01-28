@@ -3,8 +3,8 @@ grafana:
   enabled: true
   admin:
     existingSecret: grafana-auth-credentials-external-secret
-    existingSecretUserKey: username
-    existingSecretPasswordKey: password
+    userKey: username
+    passwordKey: password
   ingress:
     ingressClassName: "cloudflare-tunnel"
     enabled: true
