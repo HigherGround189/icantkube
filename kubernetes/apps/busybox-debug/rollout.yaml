@@ -3,7 +3,7 @@ kind: Rollout
 metadata:
   name: busybox-debug-rollout
 spec:
-  replicas: 50
+  replicas: 5
   selector:
     matchLabels:
       app: busybox
