@@ -63,9 +63,9 @@ kubeEtcd:
     scheme: https
     insecureSkipVerify: false
     serverName: localhost
-    caFile: /var/run/secrets/kubernetes.io/serviceaccount/ca.ca
-    certFile: /etc/prometheus/secrets/etcd-secrets/etcd-client.crt
-    keyFile: /etc/prometheus/secrets/etcd-secrets/etcd-client-key.key
+    caFile: /etc/prometheus/secrets/etcd-secrets/ca.crt
+    certFile: /etc/prometheus/secrets/etcd-secrets/server.crt
+    keyFile: /etc/prometheus/secrets/etcd-secrets/server.key
 
 alertmanager:
   enabled: false
