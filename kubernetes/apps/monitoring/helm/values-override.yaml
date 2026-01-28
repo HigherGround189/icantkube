@@ -10,6 +10,16 @@ grafana:
     enabled: true
     hosts: ["grafana.icantkube.help"]
     path: /
+  
+  persistence:
+    enabled: true
+    type: sts
+    storageClassName: "openebs-hostpath"
+    accessModes:
+      - ReadWriteOnce
+    size: 2Gi
+    finalizers:
+      - kubernetes.io/pvc-protection
 
 prometheus:
   namespace: monitoring
@@ -22,6 +32,14 @@ prometheus:
 
   prometheusSpec:
     retention: 7d
+    volumeClaimTemplate:
+       spec:
+         storageClassName: openebs-hostpath
+         accessModes: ["ReadWriteOnce"]
+         resources:
+           requests:
+             storage: 30Gi
+         selector: {}
 
 alertmanager:
   enabled: false
