@@ -37,6 +37,9 @@ prometheus:
 
   prometheusSpec:
     retention: 7d
+
+    secrets:
+    - etcd-secrets
     
     storageSpec:
       volumeClaimTemplate:
@@ -47,6 +50,20 @@ prometheus:
             requests:
               storage: 30Gi
           selector: {}
+
+kubeEtcd:
+  enabled: true
+  port: 2381
+  targetPort: 2381
+  service:
+    selector:
+      k8s-app: kube-controller-manager
+
+  serviceMonitor:
+    serverName: "localhost"
+    caFile: "/etc/prometheus/secrets/etcd-secrets/etcd-ca.crt"
+    certFile: "/etc/prometheus/secrets/etcd-secrets/etcd-client.crt"
+    keyFile: "/etc/prometheus/secrets/etcd-secrets/etcd-client-key.key"
 
 alertmanager:
   enabled: false
