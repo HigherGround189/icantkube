@@ -62,7 +62,7 @@ kubeEtcd:
   serviceMonitor:
     scheme: https
     insecureSkipVerify: false
-    serverName: 0.0.0.0
+    serverName: 98.94.203.156
     caFile: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
     certFile: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
     keyFile: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
