@@ -57,9 +57,12 @@ kubeEtcd:
   targetPort: 2381
   scheme: https
   insecureSkipVerify: true
+  endpoints:
+  - 98.94.203.156
+
   service:
     selector:
-      k8s-app: kube-controller-manager
+      component: etcd
 
   serviceMonitor:
     serverName: "localhost"
