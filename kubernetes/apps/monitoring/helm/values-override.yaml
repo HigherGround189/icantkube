@@ -56,7 +56,7 @@ kubeEtcd:
   port: 2381
   targetPort: 2381
   scheme: https
-  insecureSkipVerify: false
+  insecureSkipVerify: true
   service:
     selector:
       k8s-app: kube-controller-manager
