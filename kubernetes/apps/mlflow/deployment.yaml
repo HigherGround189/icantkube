@@ -1,27 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: mlflow-test
+  name: mlflow
   labels:
-    app: mlflow-test
+    app: mlflow
 spec:
   replicas: 1
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxUnavailable: 0
-      maxSurge: 100%
   selector:
     matchLabels:
-      app: mlflow-test
+      app: mlflow
   template:
     metadata:
       annotations:
-        checksum/config: fa1c8709aa0de912cb487d40452142672963e8c2ed567ee6831d471c5724b065
+        checksum/config: 6ebe9b69c4b282e9b85c8f61ad679abd0587c07259bf3bee4b9181cd21b02be0
       labels:
-        app: mlflow-test
+        app: mlflow
     spec:
-      serviceAccountName: mlflow-test
+      serviceAccountName: mlflow
       securityContext:
         fsGroup: 1001
         fsGroupChangePolicy: OnRootMismatch
@@ -43,22 +38,22 @@ spec:
             - name: DB_USERNAME
               valueFrom:
                 secretKeyRef:
-                  name: mlflow-test-postgresql-credentials-external-secret
+                  name: mlflow-postgresql-credentials-external-secret
                   key: username
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: mlflow-test-postgresql-credentials-external-secret
+                  name: mlflow-postgresql-credentials-external-secret
                   key: password
             - name: ADMIN_USERNAME
               valueFrom:
                 secretKeyRef:
-                  name: mlflow-test-auth-credentials-external-secret
+                  name: mlflow-auth-credentials-external-secret
                   key: username
             - name: ADMIN_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: mlflow-test-auth-credentials-external-secret
+                  name: mlflow-auth-credentials-external-secret
                   key: password
           volumeMounts:
             - name: auth-ini-template-file
@@ -119,20 +114,20 @@ spec:
             - name: PGPASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: mlflow-test-postgresql-credentials-external-secret
+                  name: mlflow-postgresql-credentials-external-secret
                   key: password
             - name: PGUSER
               valueFrom:
                 secretKeyRef:
-                  name: mlflow-test-postgresql-credentials-external-secret
+                  name: mlflow-postgresql-credentials-external-secret
                   key: username
             - name: MLFLOW_SERVER_DISABLE_SECURITY_MIDDLEWARE
               value: "true"
           envFrom:
             - configMapRef:
-                name: mlflow-test-env-configmap
+                name: mlflow-env-configmap
             - secretRef:
-                name: mlflow-test-flask-server-secret-key
+                name: mlflow-flask-server-secret-key
           volumeMounts:
             - name: ini-file
               mountPath: /etc/mlflow/auth/basic_auth.ini
@@ -143,4 +138,4 @@ spec:
           emptyDir: {}
         - name: auth-ini-template-file
           configMap:
-            name: mlflow-test-auth-ini-template
+            name: mlflow-auth-ini-template

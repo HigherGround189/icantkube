@@ -1,22 +1,22 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: mlflow-test
+  name: mlflow
   labels:
-    app: mlflow-test
+    app: mlflow
   annotations:
     cloudflare-tunnel-ingress-controller.strrl.dev/backend-protocol: http
     cloudflare-tunnel-ingress-controller.strrl.dev/proxy-ssl-verify: "on"
 spec:
   ingressClassName: cloudflare-tunnel
   rules:
-    - host: "mlflow-test.icantkube.help"
+    - host: "mlflow.icantkube.help"
       http:
         paths:
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: mlflow-test
+                name: mlflow
                 port:
                   number: 80

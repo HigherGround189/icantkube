@@ -1,9 +1,0 @@
-namespaceOverride: mlflow-test
-nameOverride: mlflow-test-postgresql
-
-auth:
-  database: mlflow-test
-
-  username: mlflow-test
-  existingSecret: mlflow-test-postgresql-credentials-external-secret
-  secretKeys.userPasswordKey: password

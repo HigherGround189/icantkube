@@ -1,0 +1,53 @@
+extraEnvVars:
+  MLFLOW_SERVER_DISABLE_SECURITY_MIDDLEWARE: "true"
+
+
+auth:
+  # Mlflow user facing authentication
+  enabled: true
+  existingAdminSecret:
+    name: mlflow-auth-credentials-external-secret
+    usernameKey: username
+    passwordKey: password
+
+  # Postgesql information
+  postgres:
+    enabled: true
+    host: "mlflow-mlflow-postgresql.mlflow.svc.cluster.local"
+    port: 5432
+    database: "mlflow"
+
+    existingSecret:
+      name: mlflow-postgresql-credentials-external-secret
+      usernameKey: username
+      passwordKey: password
+
+backendStore:
+  postgres:
+    enabled: true
+    host: "mlflow-mlflow-postgresql.mlflow.svc.cluster.local"
+    port: 5432
+    database: "mlflow"
+
+  existingDatabaseSecret:
+    name: mlflow-postgresql-credentials-external-secret
+    usernameKey: username
+    passwordKey: password
+
+# Ingress Configuration
+ingress:
+  enabled: true
+  className: cloudflare-tunnel
+  hosts:
+    - host: "mlflow.icantkube.help"
+      paths:
+        - path: /
+          pathType: Prefix
+  
+  annotations:
+    cloudflare-tunnel-ingress-controller.strrl.dev/backend-protocol: "http"
+    cloudflare-tunnel-ingress-controller.strrl.dev/proxy-ssl-verify: "on"
+
+# image:
+#   repository: "openeuler/mlflow"
+#   tag: "3.4.0-oe2403sp2"

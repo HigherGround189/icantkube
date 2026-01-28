@@ -1,9 +1,9 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: mlflow-test
+  name: mlflow
   labels:
-    app: mlflow-test
+    app: mlflow
 spec:
   type: ClusterIP
   ports:
@@ -12,4 +12,4 @@ spec:
       protocol: TCP
       name: http
   selector:
-    app: mlflow-test
+    app: mlflow

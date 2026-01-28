@@ -1,0 +1,9 @@
+namespaceOverride: mlflow
+nameOverride: mlflow-postgresql
+
+auth:
+  database: mlflow
+
+  username: mlflow
+  existingSecret: mlflow-postgresql-credentials-external-secret
+  secretKeys.userPasswordKey: password

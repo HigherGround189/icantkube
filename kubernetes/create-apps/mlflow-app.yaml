@@ -17,24 +17,15 @@ spec:
           - $values/kubernetes/apps/mlflow/helm/mlflow-postgresql-values-override.yaml
           #Eg: - $values/kubernetes/apps/sealed-secrets/values-override.yaml
 
-    # Mlflow Helm chart source
-    # https://artifacthub.io/packages/helm/community-charts/mlflow
-    - repoURL: https://community-charts.github.io/helm-charts
-      chart: mlflow 
-      targetRevision: "1.8.1"
-      helm:
-        valueFiles:
-          - $values/kubernetes/apps/mlflow/helm/mlflow-values-override.yaml
+    - repoURL: https://github.com/HigherGround189/icantkube.git
+      targetRevision: main
+      path: kubernetes/apps/mlflow
 
     # Git Repo containing values.yaml
     - repoURL: https://github.com/HigherGround189/icantkube.git
       targetRevision: main
       ref: values
 
-    - repoURL: https://github.com/HigherGround189/icantkube.git
-      targetRevision: main
-      path: kubernetes/apps/mlflow/
-      
   destination:
     server: https://kubernetes.default.svc
     namespace: mlflow
