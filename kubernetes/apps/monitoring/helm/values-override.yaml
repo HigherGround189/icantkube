@@ -1,6 +1,10 @@
 grafana:
   namespace: monitoring
   enabled: true
+  admin:
+    existingSecret: grafana-auth-credentials-external-secret
+    existingSecretUserKey: username
+    existingSecretPasswordKey: password
   ingress:
     ingressClassName: "cloudflare-tunnel"
     enabled: true
