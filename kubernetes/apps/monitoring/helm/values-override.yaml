@@ -1,0 +1,23 @@
+grafana:
+  namespace: monitoring
+  enabled: true
+  ingress:
+    ingressClassName: "cloudflare-tunnel"
+    enabled: true
+    hosts: ["grafana.icantkube.help"]
+    path: /
+
+prometheus:
+  namespace: monitoring
+  enabled: true
+  ingress:
+    ingressClassName: "cloudflare-tunnel"
+    enabled: true
+    hosts: ["prometheus.icantkube.help"]
+    path: /
+
+  prometheusSpec:
+    retention: 7d
+
+alertmanager:
+  enabled: false
