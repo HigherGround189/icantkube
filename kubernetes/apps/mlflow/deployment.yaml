@@ -88,22 +88,6 @@ spec:
             - name: mlflow
               containerPort: 5000
               protocol: TCP
-          livenessProbe:
-            httpGet:
-              path: /health
-              port: mlflow
-            failureThreshold: 5
-            initialDelaySeconds: 10
-            periodSeconds: 30
-            timeoutSeconds: 3
-          readinessProbe:
-            httpGet:
-              path: /health
-              port: mlflow
-            failureThreshold: 5
-            initialDelaySeconds: 10
-            periodSeconds: 30
-            timeoutSeconds: 3
           resources:
             {}
           env:
