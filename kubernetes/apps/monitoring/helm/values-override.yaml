@@ -1,16 +1,20 @@
 grafana:
   namespace: monitoring
   enabled: true
+
   admin:
     existingSecret: grafana-auth-credentials-external-secret
     userKey: username
     passwordKey: password
+
   ingress:
     ingressClassName: "cloudflare-tunnel"
     enabled: true
     hosts: ["grafana.icantkube.help"]
     path: /
-  
+
+  defaultDashboardsTimezone: "Asia/Singapore"
+
   persistence:
     enabled: true
     type: sts
@@ -24,6 +28,7 @@ grafana:
 prometheus:
   namespace: monitoring
   enabled: true
+
   ingress:
     ingressClassName: "cloudflare-tunnel"
     enabled: true
@@ -32,6 +37,7 @@ prometheus:
 
   prometheusSpec:
     retention: 7d
+    
     storageSpec:
       volumeClaimTemplate:
         spec:
