@@ -32,14 +32,15 @@ prometheus:
 
   prometheusSpec:
     retention: 7d
-    volumeClaimTemplate:
-       spec:
-         storageClassName: openebs-hostpath
-         accessModes: ["ReadWriteOnce"]
-         resources:
-           requests:
-             storage: 30Gi
-         selector: {}
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: openebs-hostpath
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 30Gi
+          selector: {}
 
 alertmanager:
   enabled: false
