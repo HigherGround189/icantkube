@@ -1,0 +1,17 @@
+[project]
+name = "aiad"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.128.0",
+    "gunicorn>=24.1.1",
+    "redis>=7.1.0",
+    "requests>=2.32.5",
+    "uvicorn>=0.40.0",
+    "websockets>=16.0",
+]
+
+[tool.uv.sources]
+kafka-python-ng = { git = "https://github.com/kafka-python-ng/kafka-python-ng" }
