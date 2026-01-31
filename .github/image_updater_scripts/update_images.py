@@ -7,7 +7,7 @@ yaml = YAML()
 yaml.preserve_quotes = True
 
 # Read imageConfig file
-with open("imageConfig.yaml", "r") as f:
+with open("../../imageConfig.yaml", "r") as f:
     imageConfig = yaml.load(f)
 print(f"ImageConfig: {imageConfig}")
 
