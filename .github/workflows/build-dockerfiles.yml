@@ -34,7 +34,7 @@ jobs:
         run: echo "DIRS=${{ steps.detect.outputs.changed }}" >> "$GITHUB_ENV"
 
       - name: Copy script to root
-        run: cp .github/image_updater_scripts/find_docerfiles.py .
+        run: cp .github/image_updater_scripts/find_dockerfiles.py .
 
       - name: Create Matrix
         id: find-dockerfiles
