@@ -4,7 +4,7 @@ import yaml #type:ignore
 from pathlib import Path
 
 # Read imageConfig.yaml
-with open("imageConfig.yaml", "r") as file:
+with open("../../imageConfig.yaml", "r") as file:
     imageConfig = yaml.safe_load(file)
 
 # Get list of changed directories
