@@ -25,4 +25,4 @@ sample-echo-microservice:
 machines:
   autoUpdate: true
   autoBuild: true
-  currentTag: "v0.1"
+  currentTag: "v0.2"
