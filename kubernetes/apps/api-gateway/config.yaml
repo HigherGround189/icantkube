@@ -10,6 +10,8 @@ data:
         url: http://sample-echo-microservice.sample-echo-microservice.svc.cluster.local
       model-train:
         url: http://model-train.model-train.svc.cluster.local
+      machines:
+        url: http://machines.machines.svc.cluster.local
   apps.yaml: |
     apps:
       mlflow-connection: 
