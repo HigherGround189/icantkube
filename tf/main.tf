@@ -92,3 +92,19 @@ resource "aws_eip_association" "talos" {
   instance_id   = aws_instance.talos.id
   allocation_id = aws_eip.talos.id
 }
+
+resource "aws_ebs_volume" "talos_data" {
+  availability_zone = var.az
+  size              = 80
+  type              = "gp3"
+
+  tags = {
+    Name = "talos-data"
+  }
+}
+
+resource "aws_volume_attachment" "talos_data" {
+  device_name = "/dev/xvdf"
+  volume_id   = aws_ebs_volume.talos_data.id
+  instance_id = aws_instance.talos.id
+}
