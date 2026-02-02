@@ -5,8 +5,11 @@ resources:
 - deployment.yaml
 - ingress.yaml
 - namespace.yaml
+- role.yaml
+- rolebinding.yaml
 - rollout.yaml
 - service.yaml
+- serviceaccount.yaml
 
 images:
 - name: icantkube/inference-gateway
