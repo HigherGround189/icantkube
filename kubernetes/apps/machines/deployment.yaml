@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: machines
+  namespace: machines
+spec:
+  replicas: 0
+  selector:
+    matchLabels:
+      app: machines
+  template:
+    metadata:
+      labels:
+        app: machines
+    spec:
+      containers:
+        - name: machines
+          image: icantkube/machines:v0.1
+          ports:
+            - containerPort: 80

@@ -24,10 +24,16 @@ jobs:
       - name: Install uv
         uses: astral-sh/setup-uv@v7
 
+      - name: Copy script to root
+        run: cp .github/image_updater_scripts/update_images.py .
+
       - name: Update kustomization.yaml & ImageConfig.yaml
         id: images-to-update
         run: |
-          uv run --with pyyaml --directory .github/image_updater_scripts/ update_images.py
+          uv run --with ruamel.yaml update_images.py
+
+      - name: Remove script from root
+        run: rm update_images.py
       
       - name: Commit & push changes
         uses: actions-js/push@master

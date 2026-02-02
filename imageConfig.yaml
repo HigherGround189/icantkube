@@ -21,3 +21,8 @@ celery-app:
 sample-echo-microservice:
   autoUpdate: false
   autoBuild: false
+
+machines:
+  autoUpdate: true
+  autoBuild: true
+  currentTag: "v0.2"

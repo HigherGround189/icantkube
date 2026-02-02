@@ -33,10 +33,13 @@ jobs:
       - name: Declare directory changes as environmental variable
         run: echo "DIRS=${{ steps.detect.outputs.changed }}" >> "$GITHUB_ENV"
 
+      - name: Copy script to root
+        run: cp .github/image_updater_scripts/find_dockerfiles.py .
+
       - name: Create Matrix
         id: find-dockerfiles
         run: |
-          uv run --with pyyaml --directory .github/image_updater_scripts/ find_dockerfiles.py
+          uv run --with pyyaml find_dockerfiles.py
 
   build:
     needs: list-changed-directories
