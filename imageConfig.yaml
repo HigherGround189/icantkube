@@ -1,7 +1,7 @@
 api-gateway:
   autoUpdate: true
   autoBuild: true
-  currentTag: "v0.3"
+  currentTag: "v0.4"
 
 frontend:
   autoUpdate: false
@@ -30,4 +30,4 @@ machines:
 inference-gateway:
   autoUpdate: true
   autoBuild: true
-  currentTag: "v0.0"
+  currentTag: "v0.1"

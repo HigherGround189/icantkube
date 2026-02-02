@@ -10,4 +10,4 @@ resources:
 
 images:
 - name: icantkube/inference-gateway
-  newTag: v0.0
+  newTag: v0.1
