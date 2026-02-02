@@ -1,8 +1,21 @@
 import kr8s.asyncio
 from fastapi import FastAPI
+from pydantic import BaseModel
 
 app = FastAPI(title="Inference Gateway", redirect_slashes=False)
 
+class Server(BaseModel):
+    mlflow_name: str
+
+
+@app.post("/inference/create-server")
+async def create_server(server: Server):
+    print(server.mlflow_name)
+
+@app.get("/inference/active-inference-servers")
+async def get_inference_servers():
+    async for deploy in kr8s.asyncio.get("deployments"):
+        print(deploy)
 
 @app.get("/inference/health")
 def health() -> dict[str, str]:
