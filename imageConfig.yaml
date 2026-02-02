@@ -26,3 +26,8 @@ machines:
   autoUpdate: true
   autoBuild: true
   currentTag: "v0.2"
+
+inference-gateway:
+  autoUpdate: true
+  autoBuild: true
+  currentTag: "v0.0"
