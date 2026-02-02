@@ -1,0 +1,11 @@
+machine:
+    kubelet:
+        extraMounts:
+              #Default Hostpath directory
+            - destination: /var/lib/local-storage
+              type: bind
+              source: /var/lib/local-storage
+              options:
+                - rbind
+                - rshared
+                - rw
