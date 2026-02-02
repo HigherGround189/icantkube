@@ -1,6 +1,9 @@
-def main():
-    print("Hello from inference-gateway!")
+import kr8s.asyncio
+from fastapi import FastAPI
 
+app = FastAPI()
 
-if __name__ == "__main__":
-    main()
+@app.get("/health")
+def health() -> dict[str, str]:
+    """Health check endpoint."""
+    return {"message": "health ok"}
