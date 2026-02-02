@@ -13,6 +13,7 @@ spec:
       labels:
         app: inference-gateway
     spec:
+      serviceAccountName: inference-gateway-serviceaccount
       containers:
         - name: inference-gateway
           image: icantkube/inference-gateway
