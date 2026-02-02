@@ -4,10 +4,9 @@ set -euo pipefail
 # --- prerequisites ---
 command -v terraform >/dev/null
 command -v talosctl >/dev/null
-command -v jq >/dev/null
 
-# --- paths ---
-TF_DIR="tf"
+# # --- paths ---
+TF_DIR="terraform"
 PATCH_DIR="patches"
 GEN_DIR="generated"
 SECRETS_FILE="${GEN_DIR}/secrets.yaml"
@@ -25,29 +24,29 @@ if [[ -z "${IP}" ]]; then
   exit 1
 fi
 
-# --- talos client config ---
-talosctl config endpoints "${IP}"
-talosctl config node "${IP}"
-
-# --- generate secrets if missing ---
+# --- generate secrets ---
 mkdir -p "${GEN_DIR}"
-if [[ ! -f "${SECRETS_FILE}" ]]; then
-  talosctl gen secrets > "${SECRETS_FILE}"
-fi
+talosctl gen secrets --output-file "${SECRETS_FILE}" --force
 
 # --- generate talos config ---
 talosctl gen config \
   --force \
-  icantkube-cluster "${IP}" \
+  icantkube-cluster "https://${IP}" \
   --with-secrets "${SECRETS_FILE}" \
   --config-patch @"${PATCH_DIR}/allow-controlplane-workloads.yaml" \
   --config-patch @"${PATCH_DIR}/dhcp.yaml" \
-  --config-patch @"${PATCH_DIR}/kublet-cert-rotation.yaml" \
+  --config-patch @"${PATCH_DIR}/kubelet-cert-rotation.yaml" \
   --config-patch @"${PATCH_DIR}/predictable-interface-names.yaml" \
   --config-patch @"${PATCH_DIR}/extra-mounts.yaml" \
   --config-patch @"${PATCH_DIR}/add-disk.yaml" \
   --config-patch @"${PATCH_DIR}/bind-addresses.yaml" \
   --output "${GEN_DIR}"
+
+cp "${GEN_DIR}/talosconfig" ~/.talos/config
+
+# --- talos client config ---
+talosctl config endpoints "${IP}"
+talosctl config node "${IP}"
 
 # --- apply config ---
 talosctl apply-config \
@@ -55,15 +54,14 @@ talosctl apply-config \
   -n "${IP}" \
   --insecure
 
-# --- bootstrap (idempotent) ---
-if ! talosctl health -n "${IP}" >/dev/null 2>&1; then
-  talosctl bootstrap -n "${IP}"
-fi
-
+until talosctl bootstrap -n "$IP"; do
+  echo "Waiting for Talos bootstrap to become available..."
+  sleep 15
+done
 # --- wait for kube-apiserver ---
 talosctl health \
   -n "${IP}" \
-  --wait-timeout 10m
+  --wait-timeout 10m || true
 
 # --- fetch kubeconfig ---
 talosctl kubeconfig \
