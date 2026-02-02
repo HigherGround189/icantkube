@@ -1,27 +1,73 @@
-## Frontend contract for model training + inference
+# React + TypeScript + Vite
 
-The UI manages machines, uploads CSVs in 1 MB multipart chunks, starts model training, polls status, and runs inference. All requests are relative to the frontend origin.
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-### Machines (`/api/models`)
-- `GET /api/models` → `{ machines: [{ id, name, imageUrl?, latestModelId?, latestModelStatus? }] }`
-- `POST /api/models` with JSON `{ name, imageUrl? }` → `{ machine: { id, name, imageUrl } }`
-- `DELETE /api/models/:id` → 204 on success
+Currently, two official plugins are available:
 
-### Training upload & start (`/api/model-train`)
-- `POST /api/model-train/chunk` (multipart/form-data)
-  - Fields: `machineId` (string), `filename` (string), `chunkIndex` (int, 0-based), `isLast` ("true"/"false"), `chunk` (file slice, <= 1 MB), `uploadId` (string, optional after first response).
-  - Behavior: accepts sequential chunks; responds `{ uploadId, status }` while receiving. On final chunk (`isLast=true`), backend should start training and respond `{ uploadId, trackingId, modelId? }`.
-  - The frontend caps file size at 25 MB and sends chunks in order.
-- `GET /api/model-train/status/:trackingId` → `{ status: pending|running|completed|failed, progress?: number, result?: any, error?: string, modelId?: string }`
-  - When `status=completed`, include `modelId` (or `trainedModelId`) so inference can run.
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
-### Inference (`/api/model-inference`)
-- `POST /api/model-inference` with JSON `{ modelId, machineId, payload }` → arbitrary JSON inference result (rendered as-is).
+## React Compiler
 
-### UI expectations
-- On page load, `GET /api/models` populates machine cards. Latest model info (if provided) will show the inference box immediately.
-- Upload flow: select CSV → UI sends 1 MB chunks with `isLast` flag; final response returns `trackingId` to poll status.
-- Polling: every ~2s until `completed` or `failed`. Progress uses `progress` if provided.
-- Inference box appears after training completes (when `modelId` is known). Payload is free-form text; adjust backend parsing as needed.
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
-If the backend adds extra fields, the UI will ignore unknown fields but displays `result`, `error`, `progress`, `modelId`, and `status` when present.
+## Expanding the ESLint configuration
+
+If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+
+```js
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
+
+      // Remove tseslint.configs.recommended and replace with this
+      tseslint.configs.recommendedTypeChecked,
+      // Alternatively, use this for stricter rules
+      tseslint.configs.strictTypeChecked,
+      // Optionally, add this for stylistic rules
+      tseslint.configs.stylisticTypeChecked,
+
+      // Other configs...
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
+```
+
+You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+
+```js
+// eslint.config.js
+import reactX from 'eslint-plugin-react-x'
+import reactDom from 'eslint-plugin-react-dom'
+
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
+      // Enable lint rules for React
+      reactX.configs['recommended-typescript'],
+      // Enable lint rules for React DOM
+      reactDom.configs.recommended,
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
+```

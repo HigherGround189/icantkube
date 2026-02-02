@@ -4,7 +4,7 @@ api-gateway:
   currentTag: "v0.4"
 
 frontend:
-  autoUpdate: false
+  autoUpdate: true
   autoBuild: true
   currentTag: "v0.5"
 
