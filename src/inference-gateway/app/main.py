@@ -1,13 +1,9 @@
 import kr8s.asyncio
 from fastapi import FastAPI
-from pydantic import BaseModel
+from server import Server
 
 app = FastAPI(title="Inference Gateway", redirect_slashes=False)
 NAMESPACE = "inference-gateway"
-
-class Server(BaseModel):
-    mlflow_name: str
-
 
 @app.post("/inference/create-server")
 async def create_server(server: Server):
