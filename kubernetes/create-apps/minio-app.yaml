@@ -1,0 +1,32 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: minio
+  namespace: argocd
+spec:
+  project: default
+
+  sources:
+    - repoURL: https://helm.min.io/
+      chart: minio
+      targetRevision: "8.0.10"
+      helm:
+        valueFiles:
+          - $values/kubernetes/apps/minio/helm/values.yaml
+        
+    - repoURL: https://github.com/HigherGround189/icantkube.git
+      targetRevision: main
+      ref: values
+
+    - repoURL: https://github.com/HigherGround189/icantkube.git
+      targetRevision: main
+      path: kubernetes/apps/minio/
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: minio
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
