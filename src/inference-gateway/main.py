@@ -3,6 +3,7 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 
 app = FastAPI(title="Inference Gateway", redirect_slashes=False)
+NAMESPACE = "inference-gateway"
 
 class Server(BaseModel):
     mlflow_name: str
@@ -14,7 +15,7 @@ async def create_server(server: Server):
 
 @app.get("/inference/active-inference-servers")
 async def get_inference_servers():
-    async for deploy in kr8s.asyncio.get("deployments"):
+    async for deploy in kr8s.asyncio.get("deployments", namespace=NAMESPACE):
         print(deploy)
 
 @app.get("/inference/health")
