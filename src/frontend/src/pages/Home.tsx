@@ -3,7 +3,7 @@ import MachinesLoading from "../components/MachinesLoading"
 
 export default function Home() {
     async function fetchMachines() {
-        const res = await fetch("/api/machines/")
+        const res = await fetch("/api/sample-echo-microservice/1")
         if (!res.ok) throw new Error('Failed to fetch')
         return res.json()
     }
