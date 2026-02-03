@@ -11,6 +11,8 @@ resources:
 - service.yaml
 - serviceaccount.yaml
 - reference-deployment.yaml
+- config.yaml
+- mlflow-auth-credentials.sealed.yaml
 
 images:
 - name: icantkube/inference-gateway
