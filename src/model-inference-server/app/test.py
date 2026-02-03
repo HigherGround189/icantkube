@@ -16,7 +16,6 @@ registered_models = client.search_registered_models()
 print(registered_models)
 
 
-
 # client = MlflowClient()
 # model_name = "IrisPipelineModel"
 # print("Client initialised")
