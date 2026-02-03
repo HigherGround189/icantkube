@@ -30,4 +30,4 @@ machines:
 inference-gateway:
   autoUpdate: true
   autoBuild: true
-  currentTag: "v0.4"
+  currentTag: "v0.5"
