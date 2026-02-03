@@ -101,6 +101,8 @@ export const fetchMachines = async (mode: ApiMode): Promise<Machine[]> => {
         .filter((machine): machine is Machine => Boolean(machine));
 };
 
+export const getDemoMachines = (): Machine[] => demoMachines;
+
 export const trainMachine = async (name: string, csvFile: File, mode: ApiMode) => {
     if (mode === "demo") {
         return { ok: true };

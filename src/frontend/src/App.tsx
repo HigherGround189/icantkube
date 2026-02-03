@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { fetchMachines, type ApiMode } from "./api";
+import { fetchMachines, getDemoMachines, type ApiMode } from "./api";
 import AddMachineModal from "./components/AddMachineModal";
 import MachineDetails from "./components/MachineDetails";
 import MachineGrid from "./components/MachineGrid";
@@ -12,18 +12,31 @@ export default function App() {
     const [selectedMachine, setSelectedMachine] = useState<Machine | null>(null);
     const [isAddOpen, setIsAddOpen] = useState(false);
     const [mode, setMode] = useState<ApiMode>("live");
+    const [apiStatus, setApiStatus] = useState<"live" | "offline">("offline");
 
-    const { data, isLoading, isError, error, isFetching } = useQuery({
-        queryKey: ["machines", mode],
-        queryFn: () => fetchMachines(mode),
-        refetchInterval: pollIntervalMs,
+    const queryFn = useCallback(async () => {
+        try {
+            const result = await fetchMachines("live");
+            setApiStatus("live");
+            return result;
+        } catch (fetchError) {
+            setApiStatus("offline");
+            throw fetchError;
+        }
+    }, []);
+
+    const { data, isLoading, error } = useQuery<Machine[], Error>({
+        queryKey: ["machines", "live"],
+        queryFn,
+        enabled: mode === "live",
+        refetchInterval: mode === "live" ? pollIntervalMs : false,
         refetchIntervalInBackground: true,
         refetchOnWindowFocus: false,
         placeholderData: (previousData) => previousData ?? [],
         retry: false,
     });
 
-    const machines = data ?? [];
+    const machines = mode === "demo" ? getDemoMachines() : data ?? [];
 
     return (
         <div className="min-h-screen bg-[radial-gradient(ellipse_at_top,_#ffffff_0%,_#f2f3f7_55%,_#e5e7eb_100%)] text-slate-900">
@@ -37,7 +50,7 @@ export default function App() {
                     </div>
                     <div className="flex flex-wrap items-center gap-3 text-sm font-semibold text-slate-500">
                         <span className="text-xs sm:text-sm">
-                            {isFetching ? "Refreshing data…" : isError ? "API offline" : "Live updates on"}
+                            {mode === "demo" ? "Demo mode" : apiStatus === "offline" ? "API offline" : "Live updates on"}
                         </span>
                         <div className="flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-2 py-1">
                             <button
@@ -66,7 +79,7 @@ export default function App() {
                     </div>
                 </header>
 
-                {isError && (
+                {mode === "live" && apiStatus === "offline" && (
                     <div className="grid gap-2 rounded-2xl border border-rose-200 bg-rose-50 px-5 py-4 text-rose-700">
                         <strong className="text-sm">We could not load machine data.</strong>
                         <span className="text-sm">
