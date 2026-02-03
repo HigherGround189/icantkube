@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: inference-gateway
+  name: inference
   namespace: argocd
 spec:
   project: default
