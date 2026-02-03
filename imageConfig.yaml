@@ -31,3 +31,8 @@ inference-gateway:
   autoUpdate: true
   autoBuild: true
   currentTag: "v0.7"
+
+model-inference-server:
+  autoUpdate: true
+  autoBuild: true
+  currentTag: "v0.0"
