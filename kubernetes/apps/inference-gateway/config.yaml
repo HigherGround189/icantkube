@@ -4,4 +4,4 @@ metadata:
   name: mlflow-server-link-config
   namespace: inference
 data:
-  mlflow_server_link: "https://mlflow.icantkube.help/"
+  MLFLOW_TRACKING_URI: "https://mlflow.icantkube.help/"
