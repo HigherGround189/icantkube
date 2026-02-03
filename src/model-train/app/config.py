@@ -2,7 +2,7 @@ import os
 import yaml
 from pathlib import Path
 
-CONFIG_PATH = Path("/config/services.yaml")
+CONFIG_PATH = Path("/config/apps.yaml")
 
 def load_apps() -> dict:
     if os.getenv("MODE") == "ci":
