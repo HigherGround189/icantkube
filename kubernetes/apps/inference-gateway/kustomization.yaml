@@ -10,7 +10,10 @@ resources:
 - rollout.yaml
 - service.yaml
 - serviceaccount.yaml
+- reference-deployment.yaml
 
 images:
 - name: icantkube/inference-gateway
   newTag: v0.7
+- name: icantkube/model-inference-server
+  newTag: v0.0
