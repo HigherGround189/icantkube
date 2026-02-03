@@ -13,7 +13,7 @@ spec:
 
   destination:
     server: https://kubernetes.default.svc
-    namespace: inference-gateway
+    namespace: inference
 
   syncPolicy:
     automated:
