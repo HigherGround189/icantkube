@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: <NAME>
+  namespace: inference
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: <NAME>-inference-server
+  template:
+    metadata:
+      labels:
+        app: <NAME>-inference-server
+    spec:
+      containers:
+        - name: <NAME>-inference-server
+          image: icantkube/model-inference-server
+          ports:
+            - containerPort: 80
