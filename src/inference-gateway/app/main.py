@@ -1,6 +1,6 @@
 import kr8s.asyncio
 from fastapi import FastAPI
-from server import Server
+from app.server import Server
 
 app = FastAPI(title="Inference Gateway", redirect_slashes=False)
 NAMESPACE = "inference-gateway"
