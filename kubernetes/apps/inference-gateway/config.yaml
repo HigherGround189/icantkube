@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mlflow-server-link-config
+  namespace: inference
+data:
+  mlflow_server_link: "https://mlflow.icantkube.help/"

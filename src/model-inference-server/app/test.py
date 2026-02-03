@@ -2,13 +2,6 @@ import mlflow
 import os
 from mlflow.tracking import MlflowClient
 
-mlflow.set_tracking_uri("https://mlflow.icantkube.help")
-print("Tracking URI set")
-
-os.environ['MLFLOW_TRACKING_USERNAME'] = "admin"
-os.environ['MLFLOW_TRACKING_PASSWORD'] = "egt307icantkube"
-
-
 client = MlflowClient()
 print("Client initialised")
 

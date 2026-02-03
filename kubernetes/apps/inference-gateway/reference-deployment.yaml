@@ -18,3 +18,8 @@ spec:
           image: icantkube/model-inference-server
           ports:
             - containerPort: 80
+          envFrom:
+          - secretRef:
+              name: mlflow-auth-credentials-external-secret
+          - configMapRep:
+              name: mlflow-server-link-config
