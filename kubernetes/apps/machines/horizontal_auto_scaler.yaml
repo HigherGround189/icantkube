@@ -9,7 +9,7 @@ spec:
     kind: Deployment
     name: machines-deployment
 
-  minReplicas: 1
+  minReplicas: 2
   maxReplicas: 4
 
   metrics:
