@@ -10,7 +10,7 @@ spec:
   workloadRef: 
     apiVersion: apps/v1
     kind: Deployment
-    name: machines
+    name: machines-deployment
     scaleDown: onsuccess
   strategy:
     canary:

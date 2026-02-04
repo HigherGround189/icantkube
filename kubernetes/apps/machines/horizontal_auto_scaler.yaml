@@ -1,15 +1,15 @@
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: machines
+  name: machines-hpa
 
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: machines
+    name: machines-deployment
 
-  minReplicas: 1
+  minReplicas: 2
   maxReplicas: 4
 
   metrics:
@@ -26,14 +26,14 @@ spec:
       policies:
       - type: Percent
         value: 100
-        periodSeconds: 5
+        periodSeconds: 15
       selectPolicy: Max
     scaleUp:
       stabilizationWindowSeconds: 0
       policies:
       - type: Percent
         value: 100
-        periodSeconds: 5
+        periodSeconds: 15
       - type: Pods
         value: 1
         periodSeconds: 15
