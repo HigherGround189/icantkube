@@ -17,8 +17,11 @@ spec:
         runAsUser: 0
       containers:
       - name: kubectl
-        image: bitnami/kubectl:latest
+        image: lachlanevenson/k8s-kubectl:latest
+        env:
+        - name: TERM
+          value: xterm-256color
         command:
-          - sh
-          - -c
+          - bash
+          - -lc
           - sleep infinity
