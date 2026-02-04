@@ -3,6 +3,10 @@ kind: Ingress
 metadata:
   name: minio
   namespace: minio
+  annotations:
+    cloudflare.com/protocol: http
+    cloudflare-tunnel-ingress-controller.strrl.dev/backend-protocol: "http"
+    cloudflare-tunnel-ingress-controller.strrl.dev/proxy-ssl-verify: "on"
 spec:
   ingressClassName: cloudflare-tunnel
   rules:
