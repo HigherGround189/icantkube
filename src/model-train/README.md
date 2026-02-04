@@ -3,17 +3,27 @@
 Retrieve uploaded CSV from frontend to initate model training pipeline. Asynchronously return polls statuses and tracking of multiple training jobs. Each successful job stores model artifacts and metrics to MLFlow.
 
 ### Training upload & start (`/api/model-train`)
-- `POST /api/model-train/chunk` (multipart/form-data)
-  - Fields: `machineId` (string), `filename` (string), `chunkIndex` (int, 0-based), `isLast` ("true"/"false"), `chunk` (file slice, <= 1 MB), `uploadId` (string, optional after first response).
-  - Behavior: accepts sequential chunks; responds `{ uploadId, status }` while receiving. On final chunk (`isLast=true`), backend should start training and respond `{ uploadId, trackingId, modelId? }`.
+- `POST /api/model-train/start`
+  - Fields: `filename` (string).
+  - Behavior: Accepts sequential chunks; 
+  - Backed responds `{ trackingId }` while initiating and running model training pipeline.
   - The frontend caps file size at 25 MB and sends chunks in order.
-- `GET /api/model-train/status/:trackingId` → `{ status: pending|running|completed|failed, progress?: number, result?: any, error?: string, modelId?: string }`
+- `GET /api/model-train/status/:trackingId` → `{ status: pending|running|completed|failed, progress: number, result: any, error: string, modelId: string }`
   - When `status=completed`, include `modelId` (or `trainedModelId`) so inference can run.
+- `GET /api/model-train/status` → `{ trackingId: string, status: pending|running|completed|failed }`
+  - Allow checking of all available jobs tracking id with statuses.
 
-### UI expectations
-- On page load, `GET /api/models` populates machine cards. Latest model info (if provided) will show the inference box immediately.
-- Upload flow: select CSV → UI sends 1 MB chunks with `isLast` flag; final response returns `trackingId` to poll status.
-- Polling: every ~2s until `completed` or `failed`. Progress uses `progress` if provided.
-- Inference box appears after training completes (when `modelId` is known). Payload is free-form text; adjust backend parsing as needed.
+### Model Pipeline Initiation
+When a model training job is initiated, the service generate `trackingId` and creates an intial job status: `{ status: pending|running|completed|failed, progress: number, result: any, error: string }`. This job status is stored in Redis and used to queue the job for exection.
 
-If the backend adds extra fields, the UI will ignore unknown fields but displays `result`, `error`, `progress`, `modelId`, and `status` when present.
+A celery worker `celery-app` will take on the queued job, runs the model training pipeline and continuously update the job status in Redis, where clients can poll the real-time status and progress. 
+
+All trained artifacts (e.g. models, parameters, and evaluation metrics) are logged to MLflow. When training finishes successfully, the job status is updated to completed. If an error occurs, the status is set to failed and the error message is recorded.
+
+### Model Inference Request
+For inference, clients can retrieve a previously trained model from MLflow using the model registry reference (e.g. model name + version), then use it to generate predictions
+
+Steps:
+1. Select a model to serve (`models:/<model_name>/<version>`).
+2. Load the model from MLflow into the inference service (`mlflow.pyfunc.load_model(<models:/...>)`).
+3. Run predictions on input features and return the result to the client (`.predict(<input data>)`).
