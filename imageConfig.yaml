@@ -30,7 +30,7 @@ machines:
 inference-gateway:
   autoUpdate: true
   autoBuild: true
-  currentTag: "v0.7"
+  currentTag: "v0.8"
 
 model-inference-server:
   autoUpdate: true
