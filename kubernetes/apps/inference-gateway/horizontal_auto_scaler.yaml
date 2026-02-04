@@ -1,13 +1,14 @@
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: machines-hpa
+  name: inference-gateway
+  namespace: inference-gateway
 
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: machines-deployment
+    name: inference-gateway
 
   minReplicas: 1
   maxReplicas: 4

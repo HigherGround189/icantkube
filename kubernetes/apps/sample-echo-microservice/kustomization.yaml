@@ -6,6 +6,7 @@ resources:
   - deployment.yaml
   - namespace.yaml
   - service.yaml
+  - horizontal_auto_scaler
 
 images:
   - name: mysticshirou/icantkube

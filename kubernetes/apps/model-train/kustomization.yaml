@@ -8,6 +8,7 @@ resources:
 - namespace.yaml
 - service.yaml
 - mlflow-auth-credentials.sealed.yaml
+- horizontal_auto_scaler
 
 images:
 - name: icantkube/model-train
