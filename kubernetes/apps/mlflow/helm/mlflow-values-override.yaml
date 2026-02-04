@@ -47,7 +47,3 @@ ingress:
   annotations:
     cloudflare-tunnel-ingress-controller.strrl.dev/backend-protocol: "http"
     cloudflare-tunnel-ingress-controller.strrl.dev/proxy-ssl-verify: "on"
-
-# image:
-#   repository: "openeuler/mlflow"
-#   tag: "3.4.0-oe2403sp2"
