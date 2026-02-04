@@ -24,7 +24,6 @@ logger = logging.getLogger(__name__)
 class ModelTrainingPipeline():
     def __init__(self, 
                  update, 
-                 data, 
                  mlflow_conn, 
                  trackingId, 
                  cfg: PipelineConfig,
@@ -34,7 +33,6 @@ class ModelTrainingPipeline():
                  random_number: int=42,
                  ):
         
-        self.data = True if data else False
         self.sample_dataset = sample_dataset
         self.update = update
         self.trackingId = trackingId
