@@ -24,7 +24,7 @@ spec:
       targetRevision: "1.8.1"
       helm:
         valueFiles:
-          - $values/kubernetes/apps/mlflow/helm/mlflow-values-override.yaml
+          - $values/kubernetes/apps/mlflow-backup/helm/mlflow-values-override.yaml
 
     # Git Repo containing values.yaml
     - repoURL: https://github.com/HigherGround189/icantkube.git
@@ -33,7 +33,7 @@ spec:
 
     - repoURL: https://github.com/HigherGround189/icantkube.git
       targetRevision: main
-      path: kubernetes/apps/mlflow/
+      path: kubernetes/apps/mlflow-backup/
       
   destination:
     server: https://kubernetes.default.svc
