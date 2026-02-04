@@ -20,9 +20,6 @@ r = connect_redis(db=0)
 
 app = Flask(__name__)
 
-# jobCounter = 1
-# stateTracker = {}
-
 @app.get("/health")
 def health():
     return jsonify({"status": "running"})
@@ -56,9 +53,6 @@ def job_initiation():
         }
     """
     logger.info("Reading uploaded file...")
-    # file = request.files.get('filename', None)
-    # if file in [None, '']:
-    #     return jsonify({'error':'File not provided'}), 400
 
     raw_bytes = request.get_data(parse_form_data=False)
     
@@ -68,11 +62,6 @@ def job_initiation():
     r.hset(trackingId, mapping=newIdInstance)
 
     logger.info("Retrieving Content...")
-    # data = file.read()
-    # if not data:
-    #     r.hset(trackingId, 'status', Status.FAILED.value)
-    #     r.hset(trackingId, 'error', 'File is empty')
-    #     return jsonify({'trackingId':return_id})
     
     try:
         df = pd.read_csv(BytesIO(raw_bytes))

@@ -20,8 +20,6 @@ logging_setup()
 import logging
 logger = logging.getLogger(__name__)
 
-# from app.connections import connect_mlflow
-
 class ModelTrainingPipeline():
     def __init__(self, update, data, mlflow_conn, sample_dataset: bool=False, test_size: float=0.2 , random_number: int=42):
         self.data = True if data else False
@@ -37,6 +35,14 @@ class ModelTrainingPipeline():
 
     
     def data_preparation(self, X, y):
+        """
+        Split dataset into train and test dataset
+        
+        X: pd.Dataframe
+            Training features
+        y: pd.Series
+            Training labels
+        """
         X_train, X_test, y_train, y_test = train_test_split(X, 
                                                             y,
                                                             test_size=self.test_size, 
@@ -44,6 +50,12 @@ class ModelTrainingPipeline():
         return X_train, X_test, y_train, y_test
 
     def model_train_sample(self) -> None:
+        """
+        Sample of model training pipeline for initial testing
+        using Iris dataset.
+
+        Auto update the status and progress at each stage.
+        """
         try:
             self.update(status=Status.RUNNING.value, progress=0)
 
@@ -98,18 +110,39 @@ class ModelTrainingPipeline():
                         )
     
     def model_train():
+        """
+        Actual model training pipeline to create model.
+
+        Auto update the status and progress at each stage.
+        """
         pass
     
     def metrics(self, y_pred, y_test) -> float:
+        """
+        Return model performance metrics
+        
+        Params:
+            y_pred: pd.Series
+                Model predicted label
+            y_test: pd.Series
+                Actual label
+
+        Return:
+            acc: float
+                Measured accuracy result
+        """
         acc = accuracy_score(y_pred, y_test)
         return acc
     
     def run(self) -> None:
+        """
+        Choice to run sample pipeline or actual training pipeline
+        """
         if self.sample_dataset:
             self.model_train_sample()
         else:
             self.model_train()
         
-if __name__ == "__main__":
-    pipeline = ModelTrainingPipeline(data=None, sample_dataset=True)
-    pipeline.run()
+# if __name__ == "__main__":
+#     pipeline = ModelTrainingPipeline(data=None, sample_dataset=True)
+#     pipeline.run()
