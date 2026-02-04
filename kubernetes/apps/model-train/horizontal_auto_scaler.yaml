@@ -1,14 +1,14 @@
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: sample-echo-microservice
-  namespace: sample-echo-microservice
+  name: model-train
+  namespace: model-train
 
 spec:
   scaleTargetRef:
-    apiVersion: argoproj.io/v1alpha1    
+    apiVersion: argoproj.io/v1alpha1  
     kind: Rollout
-    name: sample-echo-microservice-rollout
+    name: model-train-rollout
 
   minReplicas: 1
   maxReplicas: 4
