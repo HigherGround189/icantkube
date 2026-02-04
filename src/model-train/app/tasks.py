@@ -1,6 +1,7 @@
 from celery import Celery
 from app.model_training_pipeline import ModelTrainingPipeline
 from app.connections import connect_redis, connect_mlflow
+from constants import PipelineConfig
 from app.logging import logging_setup
 logging_setup()
 import logging
@@ -19,7 +20,7 @@ app = Celery('tasks', broker=f'redis://{host}:{port}/1')
 mlfow = connect_mlflow()
 
 @app.task(bind=True)
-def start_model_training(self, data, trackingId):
+def start_model_training(self, machine_name, trackingId):
     """
     Initiate model training pipeline
     
@@ -41,7 +42,19 @@ def start_model_training(self, data, trackingId):
                 Retrieve real time update for specified key
         """
         r.hset(trackingId, mapping=kwargs)
+    
+    CFG = PipelineConfig(
+        experiment_name=machine_name,
+        pipeline_name=machine_name,
+        model_name=machine_name,
+        registered_model_name=machine_name,
+    )
 
     logger.info("Initiating Model Training...")
-    pipeline = ModelTrainingPipeline(data=data, sample_dataset=True, update=state_update, mlflow_conn=mlfow)
+    pipeline = ModelTrainingPipeline(update=state_update, 
+                                     mlflow_conn=mlfow, 
+                                     trackingId=trackingId, 
+                                     cfg=CFG,
+                                     sample_dataset=True, 
+                                     )
     pipeline.run()
