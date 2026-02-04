@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kubectl-shell
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kubectl-shell
+  template:
+    metadata:
+      labels:
+        app: kubectl-shell
+    spec:
+      serviceAccountName: cluster-readonly
+      containers:
+      - name: kubectl
+        image: bitnami/kubectl:latest
+        command:
+          - sh
+          - -c
+          - sleep infinity

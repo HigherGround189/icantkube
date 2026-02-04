@@ -1,0 +1,19 @@
+apiVersion: argoproj.io/v1alpha1               
+kind: Rollout
+metadata:
+  name: kubectl-shell-rollout
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kubectl-shell
+  workloadRef: 
+    apiVersion: apps/v1
+    kind: Deployment
+    name: kubectl-shell
+    scaleDown: onsuccess
+  strategy:
+    canary:
+      steps:
+        - setWeight: 80
+        - pause: {duration: 10s}
