@@ -17,6 +17,13 @@ spec:
           - $values/kubernetes/apps/mlflow/helm/mlflow-postgresql-values-override.yaml
           #Eg: - $values/kubernetes/apps/sealed-secrets/values-override.yaml
 
+    - repoURL: oci://registry-1.docker.io/cloudpirates
+      chart: minio
+      targetRevision: "0.8.2"
+      helm:
+        valueFiles:
+          - $values/kubernetes/apps/mlflow/mlflow-minio-values-override.yaml
+
     - repoURL: https://github.com/HigherGround189/icantkube.git
       targetRevision: main
       path: kubernetes/apps/mlflow
