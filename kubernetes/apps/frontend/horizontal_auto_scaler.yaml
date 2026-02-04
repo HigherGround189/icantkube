@@ -19,7 +19,7 @@ spec:
         name: cpu
         target:
           type: Utilization
-          averageUtilization: 1
+          averageUtilization: 70
 
   behavior:
     scaleDown:
