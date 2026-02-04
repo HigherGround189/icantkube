@@ -94,8 +94,10 @@ class ModelTrainingPipeline():
             # Start mlflow and set experiment
             run_context = nullcontext()
             if self.mlflow_enabled:
-                mlflow.set_experiment(self.cfg.experiment_name)
-                run_context = mlflow.start_run(f"{self.cfg.pipeline_name}-{self.trackingId}")
+                # mlflow.set_experiment(self.cfg.experiment_name)
+                # run_context = mlflow.start_run(f"{self.cfg.pipeline_name}-{self.trackingId}")
+                mlflow.set_experiment("sample_training_pipeline")
+                run_context = mlflow.start_run(f"iris-pipeline-{self.trackingId}")
             
             with run_context:
                 self.pipeline.fit(X_train, y_train) # Train model
