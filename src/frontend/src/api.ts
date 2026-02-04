@@ -109,7 +109,7 @@ export const trainMachine = async (name: string, csvFile: File, mode: ApiMode) =
     }
 
     const csvBody = await csvFile.text();
-    const response = await fetch(`/model-train?name=${encodeURIComponent(name.trim())}`, {
+    const response = await fetch(`/model-train/start?name=${encodeURIComponent(name.trim())}`, {
         method: "POST",
         headers: {
             "Content-Type": "text/csv",
