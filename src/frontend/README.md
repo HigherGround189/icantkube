@@ -1,6 +1,6 @@
 # Frontend API Contract
 
-## GET `/machines-data/all`
+## GET `/api/machines-data/all`
 Response:
 ```json
 [
@@ -13,7 +13,7 @@ Response:
 ]
 ```
 
-## POST `/model-train?name={machineName}`
+## POST `/api/model-train?name={machineName}`
 Request:
 ```
 Content-Type: text/csv
@@ -21,8 +21,8 @@ Body: <csv bytes>
 ```
 Response: `200 OK`
 
-## POST `/model-inference/start?name={machineName}`
+## POST `/api/model-inference/start?name={machineName}`
 Response: `200 OK`
 
-## POST `/model-inference/stop?name={machineName}`
+## POST `/api/model-inference/stop?name={machineName}`
 Response: `200 OK`
