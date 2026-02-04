@@ -25,7 +25,7 @@ class ModelTrainingPipeline():
     def __init__(self, 
                  update, 
                  mlflow_conn, 
-                 trackingId, 
+                 trackingId: str, 
                  cfg: PipelineConfig,
                  *,
                  sample_dataset: bool=False, 
@@ -35,7 +35,7 @@ class ModelTrainingPipeline():
         
         self.sample_dataset = sample_dataset
         self.update = update
-        self.trackingId = trackingId
+        self.trackingId = trackingId.split(":")[-1]
 
         self.random_number = random_number
         self.test_size = test_size
@@ -97,7 +97,7 @@ class ModelTrainingPipeline():
                 # mlflow.set_experiment(self.cfg.experiment_name)
                 # run_context = mlflow.start_run(f"{self.cfg.pipeline_name}-{self.trackingId}")
                 mlflow.set_experiment("sample_training_pipeline")
-                run_context = mlflow.start_run(f"iris-pipeline-{self.trackingId}")
+                run_context = mlflow.start_run(run_name=f"iris-pipeline-{self.trackingId}")
             
             with run_context:
                 self.pipeline.fit(X_train, y_train) # Train model
