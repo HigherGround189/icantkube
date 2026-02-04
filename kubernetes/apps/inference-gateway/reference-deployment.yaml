@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: reference
+  namespace: inference
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: reference-inference-server
+  template:
+    metadata:
+      labels:
+        app: reference-inference-server
+    spec:
+      containers:
+        - name: reference-inference-server
+          image: icantkube/model-inference-server
+          ports:
+            - containerPort: 80
+          envFrom:
+          - secretRef:
+              name: mlflow-auth-credentials-external-secret
+          - configMapRef:
+              name: mlflow-server-link-config

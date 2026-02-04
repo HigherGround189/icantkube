@@ -7,7 +7,8 @@ resources:
 - ingress.yaml
 - namespace.yaml
 - service.yaml
+- horizontal_auto_scaler.yaml
 
 images:
 - name: icantkube/frontend
-  newTag: v0.5
+  newTag: v0.14

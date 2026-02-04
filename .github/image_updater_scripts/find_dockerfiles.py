@@ -37,40 +37,41 @@ print(f"Cleaned Paths: {cleaned_paths}")
 # Loop through Paths to calculate matrix
 matrix = {"include": []}
 for path in cleaned_paths:
-    try:
-        # Remove every directory that is not a direct child of src/
-        print(f"\nPath: {path}")
+    if path != None:
+        try:
+            # Remove every directory that is not a direct child of src/
+            print(f"\nPath: {path}")
 
-        # Get all dockerfiles in a directory
-        dockerfiles = list(path.rglob("*.Dockerfile"))
-        print(f"Dockerfiles in directory: {dockerfiles}")
+            # Get all dockerfiles in a directory
+            dockerfiles = list(path.rglob("*.Dockerfile"))
+            print(f"Dockerfiles in directory: {dockerfiles}")
 
-        # Loop through dockerfiles to get dockerfile info
-        for dockerfile_path in dockerfiles:
-            dockerfile_name = dockerfile_path.name.removesuffix(".Dockerfile")
-            dockerfile_autobuild = imageConfig[dockerfile_name]["autoBuild"]
-            dockerfile_current_tag = imageConfig[dockerfile_name]["currentTag"]
-            temp_tag = dockerfile_current_tag.lstrip("v").split(".")
-            temp_tag[-1] = str(int(temp_tag[-1]) + 1)
-            dockerfile_updated_tag = "v" + ".".join(temp_tag)
+            # Loop through dockerfiles to get dockerfile info
+            for dockerfile_path in dockerfiles:
+                dockerfile_name = dockerfile_path.name.removesuffix(".Dockerfile")
+                dockerfile_autobuild = imageConfig[dockerfile_name]["autoBuild"]
+                dockerfile_current_tag = imageConfig[dockerfile_name]["currentTag"]
+                temp_tag = dockerfile_current_tag.lstrip("v").split(".")
+                temp_tag[-1] = str(int(temp_tag[-1]) + 1)
+                dockerfile_updated_tag = "v" + ".".join(temp_tag)
 
-            print(f"Dockerfile Path: {dockerfile_path}")
-            print(f"Dockerfile Name: {dockerfile_name}")
-            print(f"Dockerfile Autobuild: {dockerfile_autobuild}")
-            print(f"Dockerfile Tag: {dockerfile_updated_tag}")
+                print(f"Dockerfile Path: {dockerfile_path}")
+                print(f"Dockerfile Name: {dockerfile_name}")
+                print(f"Dockerfile Autobuild: {dockerfile_autobuild}")
+                print(f"Dockerfile Tag: {dockerfile_updated_tag}")
 
-            # If Image is has autobuild enabled, add them to matrix
-            if dockerfile_autobuild:
-                matrix["include"].append({
-                    "buildContext": str(path),
-                    "dockerfile": str(dockerfile_path),
-                    "tag": f"icantkube/{dockerfile_name}:{str(dockerfile_updated_tag)}"
-                })
-            else:
-                print(f"Skipping {dockerfile_name}")
+                # If Image is has autobuild enabled, add them to matrix
+                if dockerfile_autobuild:
+                    matrix["include"].append({
+                        "buildContext": str(path),
+                        "dockerfile": str(dockerfile_path),
+                        "tag": f"icantkube/{dockerfile_name}:{str(dockerfile_updated_tag)}"
+                    })
+                else:
+                    print(f"Skipping {dockerfile_name}")
 
-    except StopIteration:
-        continue
+        except StopIteration:
+            continue
 
 # Convert to JSON
 print(f"\nMatrix: {json.dumps(matrix)}", flush=True)

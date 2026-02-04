@@ -21,8 +21,20 @@ spec:
           envFrom:
           - secretRef:
               name: mlflow-auth-credentials-external-secret
+          volumeMounts:
+            - name: model-train-config
+              mountPath: /config
+              readOnly: true
         - name: celery-app
           image: icantkube/celery-app:v0.1
           envFrom:
             - secretRef:
                 name: mlflow-auth-credentials-external-secret
+          volumeMounts:
+            - name: model-train-config
+              mountPath: /config
+              readOnly: true
+      volumes:
+        - name: model-train-config
+          configMap:
+            name: model-train-config
