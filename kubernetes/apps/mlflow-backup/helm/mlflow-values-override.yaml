@@ -34,6 +34,16 @@ backendStore:
     usernameKey: username
     passwordKey: password
 
+artifactRoot:
+  s3:
+    enabled: true
+    path: s3://minio
+    bucket: mlflow
+    existingSecret:
+      name: mlflow-minio-credentials-external-secret
+      keyOfAccessKeyId: access_key_id
+      keyOfSecretAccessKey: secret_access_key
+
 # Ingress Configuration
 ingress:
   enabled: true
