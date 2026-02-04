@@ -11,4 +11,4 @@ resources:
 
 images:
 - name: icantkube/frontend
-  newTag: v0.14
+  newTag: v0.15

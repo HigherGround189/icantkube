@@ -17,3 +17,27 @@ spec:
       steps:
         - setWeight: 80
         - pause: {duration: 10s}
+
+---
+
+apiVersion: argoproj.io/v1alpha1               
+kind: Rollout
+metadata:
+  name: celery-app-rollout
+  name
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: celery-app
+  workloadRef: 
+    apiVersion: apps/v1
+    kind: Deployment
+    name: celery-app
+    scaleDown: onsuccess
+  strategy:
+    canary:
+      steps:
+        - setWeight: 80
+        - pause: {duration: 10s}
+

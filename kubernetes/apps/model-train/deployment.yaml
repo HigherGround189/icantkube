@@ -25,6 +25,29 @@ spec:
             - name: model-train-config
               mountPath: /config
               readOnly: true
+      volumes:
+        - name: model-train-config
+          configMap:
+            name: model-train-config
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: celery-app
+  namespace: model-train
+spec:
+  replicas: 0
+  selector:
+    matchLabels:
+      app: celery-app
+  template:
+    metadata:
+      labels:
+        app: celery-app
+    spec:
+      containers:
         - name: celery-app
           image: icantkube/celery-app:v0.1
           envFrom:
