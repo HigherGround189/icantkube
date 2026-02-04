@@ -27,6 +27,8 @@ spec:
             value: "minioadmin"
           - name: MINIO_ROOT_PASSWORD
             value: "minioadmin"
+          - name: MINIO_SERVER_URL
+            value: "https://minio.icantkube.help"
         ports:
           - containerPort: 9000
         volumeMounts:
