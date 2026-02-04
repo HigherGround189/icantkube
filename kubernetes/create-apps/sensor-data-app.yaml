@@ -14,7 +14,7 @@ spec:
 
   destination:
     server: https://kubernetes.default.svc
-    namespace: msensor-data
+    namespace: sensor-data
 
   syncPolicy:
     automated:
