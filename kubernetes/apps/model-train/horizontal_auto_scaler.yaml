@@ -1,13 +1,14 @@
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: machines-hpa
+  name: model-train
+  namespace: model-train
 
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: machines-deployment
+    name: model-train
 
   minReplicas: 1
   maxReplicas: 4
