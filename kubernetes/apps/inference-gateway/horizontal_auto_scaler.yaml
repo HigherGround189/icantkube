@@ -6,9 +6,9 @@ metadata:
 
 spec:
   scaleTargetRef:
-    apiVersion: apps/v1
-    kind: Deployment
-    name: inference-gateway
+    apiVersion: argoproj.io/v1alpha1
+    kind: Rollout
+    name: inference-gateway-rollout
 
   minReplicas: 1
   maxReplicas: 4
