@@ -51,7 +51,6 @@ def start_model_training(self, machine_name, trackingId):
     )
 
     logger.info("Initiating Model Training...")
-    logger.info(f"Task: {trackingId.split(":")[-1]}")
     pipeline = ModelTrainingPipeline(sample_dataset=True, 
                                      update=state_update, 
                                      mlflow_conn=mlfow, 
