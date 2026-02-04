@@ -1,7 +1,7 @@
 from celery import Celery
 from app.model_training_pipeline import ModelTrainingPipeline
 from app.connections import connect_redis, connect_mlflow
-from constants import PipelineConfig
+from app.constants import PipelineConfig
 from app.logging import logging_setup
 logging_setup()
 import logging
