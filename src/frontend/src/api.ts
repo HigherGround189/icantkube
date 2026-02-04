@@ -79,7 +79,7 @@ export const fetchMachines = async (mode: ApiMode): Promise<Machine[]> => {
         return demoMachines;
     }
 
-    const response = await fetch("/machines-data/all");
+    const response = await fetch("/api/machines-data/all");
 
     if (!response.ok) {
         throw new Error(`Failed to load machines (${response.status})`);
@@ -109,7 +109,7 @@ export const trainMachine = async (name: string, csvFile: File, mode: ApiMode) =
     }
 
     const csvBody = await csvFile.text();
-    const response = await fetch(`/model-train/start?name=${encodeURIComponent(name.trim())}`, {
+    const response = await fetch(`/api/model-train/start?name=${encodeURIComponent(name.trim())}`, {
         method: "POST",
         headers: {
             "Content-Type": "text/csv",
@@ -131,7 +131,7 @@ export const toggleInference = async (name: string, mode: ApiMode, shouldStart: 
 
     const action = shouldStart ? "start" : "stop";
     const response = await fetch(
-        `/model-inference/${action}?name=${encodeURIComponent(name.trim())}`,
+        `/api/model-inference/${action}?name=${encodeURIComponent(name.trim())}`,
         { method: "POST" }
     );
 
