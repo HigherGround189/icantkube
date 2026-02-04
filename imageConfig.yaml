@@ -25,7 +25,7 @@ sample-echo-microservice:
 sensor-data:
   autoUpdate: true
   autoBuild: true
-  currentTag: "v0.2"
+  currentTag: "v0.1"
 
 inference-gateway:
   autoUpdate: true
