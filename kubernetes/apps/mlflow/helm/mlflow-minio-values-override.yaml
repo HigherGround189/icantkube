@@ -1,0 +1,5 @@
+ingress:
+    enabled: true
+    className: cloudflare-tunnel
+    hosts:
+    - "minio.icantkube.help"

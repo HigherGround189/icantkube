@@ -9,5 +9,5 @@ resources:
 - horizontal_auto_scaler.yaml
 
 images:
-- name: icantkube/machines
-  newTag: v0.2
+- name: icantkube/sensor-data
+  newTag: v0.1
