@@ -13,6 +13,8 @@ spec:
         app: kubectl-shell
     spec:
       serviceAccountName: cluster-readonly
+      securityContext:
+        runAsUser: 0
       containers:
       - name: kubectl
         image: bitnami/kubectl:latest
