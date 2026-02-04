@@ -35,7 +35,7 @@ class ModelTrainingPipeline():
         
         self.sample_dataset = sample_dataset
         self.update = update
-        self.trackingId = trackingId.split(":")[-1]
+        self.trackingId = trackingId.removeprefix("job:")
 
         self.random_number = random_number
         self.test_size = test_size
