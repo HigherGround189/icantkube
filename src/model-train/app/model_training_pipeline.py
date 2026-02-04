@@ -10,10 +10,11 @@ from contextlib import nullcontext
 import json
 import os
 import mlflow
+from mlflow.models import infer_signature
 
 import pandas as pd
 
-from app.constants import Status
+from app.constants import Status, PipelineConfig, SAMPLE_CFG
 
 from app.logging import logging_setup
 logging_setup()
@@ -21,10 +22,20 @@ import logging
 logger = logging.getLogger(__name__)
 
 class ModelTrainingPipeline():
-    def __init__(self, update, data, mlflow_conn, sample_dataset: bool=False, test_size: float=0.2 , random_number: int=42):
-        self.data = True if data else False
+    def __init__(self, 
+                 update, 
+                 mlflow_conn, 
+                 trackingId, 
+                 cfg: PipelineConfig,
+                 *,
+                 sample_dataset: bool=False, 
+                 test_size: float=0.2 , 
+                 random_number: int=42,
+                 ):
+        
         self.sample_dataset = sample_dataset
         self.update = update
+        self.trackingId = trackingId
 
         self.random_number = random_number
         self.test_size = test_size
@@ -32,6 +43,8 @@ class ModelTrainingPipeline():
         self.pipeline = None
 
         self.mlflow_enabled = mlflow_conn
+
+        self.cfg = SAMPLE_CFG if sample_dataset else cfg
 
     
     def data_preparation(self, X, y):
@@ -56,47 +69,53 @@ class ModelTrainingPipeline():
 
         Auto update the status and progress at each stage.
         """
+
         try:
             self.update(status=Status.RUNNING.value, progress=0)
 
-            iris = datasets.load_iris()
+            iris = datasets.load_iris() # Load iris dataset
             X = iris.data
             y = iris.target 
 
             self.update(progress=10)
 
+            # Split into train and test dataset
             X_train, X_test, y_train, y_test = self.data_preparation(X, y)
             self.update(progress=30)
 
+            # Create pipeline
             self.pipeline = Pipeline([
                 ('scaler', StandardScaler()),
                 ('pca', PCA(n_components=2)),
                 ('classifier', LogisticRegression())
             ])
             self.update(progress=50)
-
+            
+            # Start mlflow and set experiment
             run_context = nullcontext()
-
             if self.mlflow_enabled:
-                mlflow.set_experiment("sample_training_pipeline")
-                run_context = mlflow.start_run()
+                mlflow.set_experiment(self.cfg.experiment_name)
+                run_context = mlflow.start_run(f"{self.cfg.pipeline_name}-{self.trackingId}")
             
             with run_context:
-                self.pipeline.fit(X_train, y_train)
+                self.pipeline.fit(X_train, y_train) # Train model
                 self.update(progress=70)
 
-                y_pred = self.pipeline.predict(X_test)
+                y_pred = self.pipeline.predict(X_test) # Predict output
                 self.update(progress=80)
 
-                acc = self.metrics(y_pred, y_test)
+                acc = self.metrics(y_pred, y_test) # Calculate metrics
                 self.update(progress=90)
 
+                # Log into mlflow
+                signature = infer_signature(X_test, y_pred)
                 if self.mlflow_enabled:
                     mlflow.log_metric("accuracy", acc)
                     mlflow.sklearn.log_model(
                         sk_model=self.pipeline,
-                        name="iris_pipeline_model",
-                        registered_model_name="IrisPipelineModel"
+                        name=self.cfg.model_name,
+                        registered_model_name=self.cfg.registered_model_name,
+                        signature=signature
                     )
 
                 self.update(status=Status.COMPLETED.value, 

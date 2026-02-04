@@ -1,16 +1,16 @@
 apiVersion: argoproj.io/v1alpha1               
 kind: Rollout
 metadata:
-  name: machines-rollout
+  name: sensor-data-rollout
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: machines
+      app: sensor-data
   workloadRef: 
     apiVersion: apps/v1
     kind: Deployment
-    name: machines-deployment
+    name: sensor-data-deployment
     scaleDown: onsuccess
   strategy:
     canary:

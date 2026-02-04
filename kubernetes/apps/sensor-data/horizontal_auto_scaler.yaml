@@ -1,13 +1,13 @@
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: machines-hpa
+  name: sensor-data-hpa
 
 spec:
   scaleTargetRef:
     apiVersion: argoproj.io/v1alpha1
     kind: Rollout
-    name: machines-rollout
+    name: sensor-data-rollout
 
   minReplicas: 1
   maxReplicas: 4
@@ -18,7 +18,7 @@ spec:
         name: cpu
         target:
           type: Utilization
-          averageUtilization: 70
+          averageUtilization: 99
 
   behavior:
     scaleDown:

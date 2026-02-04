@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from app.server import Server
 
 app = FastAPI(title="Inference Gateway", redirect_slashes=False)
-NAMESPACE = "inference-gateway"
+NAMESPACE = "inference"
 
 @app.post("/inference/create-server")
 async def create_server(server: Server):

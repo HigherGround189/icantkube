@@ -79,7 +79,6 @@ def next_line():
     set_last_index(next_index)
     return line
 
-
 @app.get("/health")
 def health():
     """Show Redis stored index and total CSV lines."""

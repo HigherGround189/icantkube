@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: machines-deployment
-  namespace: machines
+  name: sensor-data-deployment
+  namespace: sensor-data
 spec:
   replicas: 0
   selector:
     matchLabels:
-      app: machines
+      app: sensor-data
   template:
     metadata:
       labels:
-        app: machines
+        app: sensor-data
     spec:
       containers:
-        - name: machines
-          image: icantkube/machines:v0.1
+        - name: sensor-data
+          image: icantkube/sensor-data:v0.1
           ports:
             - containerPort: 80

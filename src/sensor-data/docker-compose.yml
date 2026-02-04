@@ -1,7 +1,7 @@
 services:
   app:
-    image: icantkube/machines:v0.1
-    container_name: machines
+    image: icantkube/sensor-data:v0.1
+    container_name: sensor-data
     ports:
       - "8000:80"
     depends_on:
