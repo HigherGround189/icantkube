@@ -13,7 +13,7 @@ resources:
 - reference-deployment.yaml
 - config.yaml
 - mlflow-auth-credentials.sealed.yaml
-- horizontal_auto_scaler
+- horizontal_auto_scaler.yaml
 
 images:
 - name: icantkube/inference-gateway
