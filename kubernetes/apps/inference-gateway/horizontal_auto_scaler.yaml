@@ -2,7 +2,7 @@ apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: inference-gateway
-  namespace: inference-gateway
+  namespace: inference
 
 spec:
   scaleTargetRef:
