@@ -1,45 +1,45 @@
-# apiVersion: argoproj.io/v1alpha1
-# kind: Application
-# metadata:
-#   name: mlflow
-#   namespace: argocd
-# spec:
-#   project: default
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: mlflow
+  namespace: argocd
+spec:
+  project: default
 
-#   sources:
-#     # Postgresql Helm chart source
-#     # https://artifacthub.io/packages/helm/bitnami/postgresql
-#     - repoURL: https://charts.bitnami.com/bitnami
-#       chart: postgresql 
-#       targetRevision: "18.2.0"
-#       helm:
-#         valueFiles:
-#           - $values/kubernetes/apps/mlflow/helm/mlflow-postgresql-values-override.yaml
-#           #Eg: - $values/kubernetes/apps/sealed-secrets/values-override.yaml
+  sources:
+    # Postgresql Helm chart source
+    # https://artifacthub.io/packages/helm/bitnami/postgresql
+    - repoURL: https://charts.bitnami.com/bitnami
+      chart: postgresql 
+      targetRevision: "18.2.0"
+      helm:
+        valueFiles:
+          - $values/kubernetes/apps/mlflow/helm/mlflow-postgresql-values-override.yaml
+          #Eg: - $values/kubernetes/apps/sealed-secrets/values-override.yaml
 
-#     # Mlflow Helm chart source
-#     # https://artifacthub.io/packages/helm/community-charts/mlflow
-#     - repoURL: https://community-charts.github.io/helm-charts
-#       chart: mlflow 
-#       targetRevision: "1.8.1"
-#       helm:
-#         valueFiles:
-#           - $values/kubernetes/apps/mlflow/helm/mlflow-values-override.yaml
+    # Mlflow Helm chart source
+    # https://artifacthub.io/packages/helm/community-charts/mlflow
+    - repoURL: https://community-charts.github.io/helm-charts
+      chart: mlflow 
+      targetRevision: "1.8.1"
+      helm:
+        valueFiles:
+          - $values/kubernetes/apps/mlflow/helm/mlflow-values-override.yaml
 
-#     # Git Repo containing values.yaml
-#     - repoURL: https://github.com/HigherGround189/icantkube.git
-#       targetRevision: main
-#       ref: values
+    # Git Repo containing values.yaml
+    - repoURL: https://github.com/HigherGround189/icantkube.git
+      targetRevision: main
+      ref: values
 
-#     - repoURL: https://github.com/HigherGround189/icantkube.git
-#       targetRevision: main
-#       path: kubernetes/apps/mlflow/
+    - repoURL: https://github.com/HigherGround189/icantkube.git
+      targetRevision: main
+      path: kubernetes/apps/mlflow/
       
-#   destination:
-#     server: https://kubernetes.default.svc
-#     namespace: mlflow
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: mlflow
 
-#   syncPolicy:
-#     automated:
-#       prune: true
-#       selfHeal: true
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
