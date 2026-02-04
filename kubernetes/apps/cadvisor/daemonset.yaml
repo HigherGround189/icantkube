@@ -1,0 +1,75 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: cadvisor
+  namespace: cadvisor
+  labels:
+    app: cadvisor
+spec:
+  selector:
+    matchLabels:
+      app: cadvisor
+  template:
+    metadata:
+      labels:
+        app: cadvisor
+    spec:
+      serviceAccountName: cadvisor
+      automountServiceAccountToken: false
+      terminationGracePeriodSeconds: 30
+      tolerations:
+      - key: node-role.kubernetes.io/master
+        effect: NoSchedule
+      - key: node-role.kubernetes.io/control-plane
+        effect: NoSchedule
+      containers:
+      - name: cadvisor
+        image: gcr.io/cadvisor/cadvisor:v0.47.0
+        imagePullPolicy: IfNotPresent
+        args:
+        - --containerd=/run/containerd/containerd.sock
+        - --storage_duration=5m0s
+        - --housekeeping_interval=10s
+        - --disable_metrics=tcp,udp,percpu,sched
+        ports:
+        - name: http
+          containerPort: 8080
+          protocol: TCP
+        resources:
+          requests:
+            cpu: 150m
+            memory: 200Mi
+          limits:
+            cpu: 300m
+            memory: 2000Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          capabilities:
+            drop: ["ALL"]
+        volumeMounts:
+        - name: rootfs
+          mountPath: /rootfs
+          readOnly: true
+        - name: sys
+          mountPath: /sys
+          readOnly: true
+        - name: var-run
+          mountPath: /var/run
+          readOnly: true
+        - name: containers
+          mountPath: /var/lib/containers
+          readOnly: true
+      volumes:
+      - name: rootfs
+        hostPath:
+          path: /
+      - name: sys
+        hostPath:
+          path: /sys
+      - name: var-run
+        hostPath:
+          path: /var/run
+      - name: containers
+        hostPath:
+          path: /var/lib/containers
