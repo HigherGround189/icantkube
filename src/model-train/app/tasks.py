@@ -51,10 +51,10 @@ def start_model_training(self, machine_name, trackingId):
     )
 
     logger.info("Initiating Model Training...")
-    pipeline = ModelTrainingPipeline(update=state_update, 
+    pipeline = ModelTrainingPipeline(sample_dataset=True, 
+                                     update=state_update, 
                                      mlflow_conn=mlfow, 
                                      trackingId=trackingId, 
                                      cfg=CFG,
-                                     sample_dataset=True, 
                                      )
     pipeline.run()
