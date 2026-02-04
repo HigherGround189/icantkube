@@ -6,6 +6,7 @@ resources:
 - rollout.yaml
 - namespace.yaml
 - service.yaml
+- horizontal_auto_scaler.yaml
 
 images:
 - name: icantkube/machines
