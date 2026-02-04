@@ -6,8 +6,8 @@ metadata:
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
-    kind: Deployment
-    name: machines-deployment
+    kind: Rollout
+    name: machines-rollout
 
   minReplicas: 1
   maxReplicas: 4

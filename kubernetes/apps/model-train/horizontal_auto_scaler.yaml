@@ -7,8 +7,8 @@ metadata:
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
-    kind: Deployment
-    name: model-train
+    kind: Rollout
+    name: model-train-rollout
 
   minReplicas: 1
   maxReplicas: 4

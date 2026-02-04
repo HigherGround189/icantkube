@@ -7,8 +7,8 @@ metadata:
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
-    kind: Deployment
-    name: sample-echo-microservice
+    kind: Rollout
+    name: sample-echo-microservice-rollout
 
   minReplicas: 1
   maxReplicas: 4
