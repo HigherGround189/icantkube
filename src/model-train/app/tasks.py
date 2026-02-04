@@ -20,7 +20,26 @@ mlfow = connect_mlflow()
 
 @app.task(bind=True)
 def start_model_training(self, data, trackingId):
+    """
+    Initiate model training pipeline
+    
+    Params:
+        trackingId: str
+            Retrieved job tracking ID to monitor the status
+    """
     def state_update(**kwargs):
+        """
+        Update job status
+        
+        Params:
+            **kwargs: JSON: {
+                    'status': str       # pending | running | completed | failed
+                    'progress': int,    # 0-100
+                    'result': str,
+                    'error': str
+                    }
+                Retrieve real time update for specified key
+        """
         r.hset(trackingId, mapping=kwargs)
 
     logger.info("Initiating Model Training...")
