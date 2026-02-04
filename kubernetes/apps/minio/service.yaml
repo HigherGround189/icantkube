@@ -9,7 +9,9 @@ spec:
   selector:
     app: minio
   ports:
-    - port: 9000
+    - name: api
+      port: 9000
       targetPort: 80
-    - port: 9001
+    - name: webui
+      port: 9001
       targetPort: 9001
