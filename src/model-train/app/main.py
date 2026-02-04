@@ -55,6 +55,7 @@ def job_initiation():
     logger.info("Reading uploaded file...")
 
     raw_bytes = request.get_data(parse_form_data=False)
+    machine_name = request.args.get('name')
     
     return_id = uuid.uuid4()
     trackingId = f'job:{return_id}'
@@ -65,8 +66,8 @@ def job_initiation():
     
     try:
         df = pd.read_csv(BytesIO(raw_bytes))
-        df_json = df.to_json(orient='records')
-        task = start_model_training.delay(df_json, trackingId)
+        # df_json = df.to_json(orient='records')
+        task = start_model_training.delay(machine_name, trackingId)
         logger.info(f"Task: {task}")
         logger.info(f"Registered trackingId: {trackingId}")
 
