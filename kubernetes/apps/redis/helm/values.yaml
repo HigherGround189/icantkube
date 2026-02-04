@@ -5,7 +5,7 @@ auth:
 master:
   persistence:
     enabled: true
-    size: 8Gi
+    size: 1Gi
   resources:
     requests:
       cpu: 100m
