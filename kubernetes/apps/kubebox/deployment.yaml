@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kubebox
+  namespace: kubebox
+spec:
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      name: kubebox
+  template:
+    metadata:
+      labels:
+        name: kubebox
+    spec:
+      serviceAccountName: kubebox
+      containers:
+      - name: kubebox
+        image: astefanutti/kubebox:server
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+        env:
+        - name: KUBECONFIG
+          value: /kube/config
+        volumeMounts:
+        - name: kubeconfig
+          mountPath: /kube/config
+          subPath: kubeconfig
+          readOnly: true
+      volumes:
+      - name: kubeconfig
+        secret:
+          secretName: kubeconfig-external-secret
