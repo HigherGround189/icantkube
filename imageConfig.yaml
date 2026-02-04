@@ -6,7 +6,7 @@ api-gateway:
 frontend:
   autoUpdate: true
   autoBuild: true
-  currentTag: "v0.14"
+  currentTag: "v0.15"
 
 model-train:
   autoUpdate: true
