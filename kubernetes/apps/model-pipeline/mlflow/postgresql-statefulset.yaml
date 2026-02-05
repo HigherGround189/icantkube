@@ -18,6 +18,19 @@ spec:
     spec:
       securityContext:
         fsGroup: 999
+      initContainers:
+        - name: init-permissions
+          image: postgres:16.4
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/sh
+            - -c
+            - chown -R 999:999 /var/lib/postgresql/data
+          securityContext:
+            runAsUser: 0
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql/data
       containers:
         - name: postgresql
           image: postgres:16.4
@@ -28,6 +41,8 @@ spec:
             runAsNonRoot: true
             runAsUser: 999
           env:
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
             - name: POSTGRES_DB
               value: "mlflow"
             - name: POSTGRES_USER
