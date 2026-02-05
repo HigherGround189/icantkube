@@ -56,7 +56,7 @@ Assuming the kubeseal CLI is installed:
 
 ```bash
 # Assuming your YAML file is called repo-unsealed-secret.yaml
-kubeseal --format yaml < repo-unsealed-secret.yaml > repo.sealed.yaml
+kubeseal --format --controller-namespace sealed-secrets --controller-name sealed-secrets yaml < repo-unsealed-secret.yaml > repo.sealed.yaml
 ```
 
 Make sure to commit ```repo.sealed.yaml``` instead of ```repo-unsealed-secret.yaml```.
