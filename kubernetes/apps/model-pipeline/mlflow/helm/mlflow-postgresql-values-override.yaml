@@ -9,7 +9,7 @@ nameOverride: postgresql
 auth:
   database: mlflow
 
-  username: mlflow
+  username: admin
   existingSecret: mlflow-postgresql-credentials-secret
   secretKeys:
     userPasswordKey: password
