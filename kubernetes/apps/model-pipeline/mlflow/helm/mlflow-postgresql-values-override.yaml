@@ -1,5 +1,5 @@
 namespaceOverride: model-pipeline
-nameOverride: mlflow-postgresql
+nameOverride: postgresql
 
 auth:
   database: mlflow
