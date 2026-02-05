@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: model-train
+  namespace: model-pipeline
+spec:
+  selector:
+    app: model-train
+  ports:
+    - port: 80
+      targetPort: 80
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: celery-app
+  namespace: model-pipeline
+spec:
+  selector:
+    app: celery-app
+  ports:
+    - port: 80
+      targetPort: 80

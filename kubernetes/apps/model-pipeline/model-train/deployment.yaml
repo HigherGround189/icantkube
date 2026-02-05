@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: model-train
+  namespace: model-pipeline
+spec:
+  replicas: 0
+  selector:
+    matchLabels:
+      app: model-train
+  template:
+    metadata:
+      labels:
+        app: model-train
+    spec:
+      containers:
+        - name: model-train
+          image: icantkube/model-train:v0.5
+          ports:
+            - containerPort: 80
+          envFrom:
+          - secretRef:
+              name: mlflow-credentials-secret
+          volumeMounts:
+            - name: model-train-config
+              mountPath: /config
+              readOnly: true
+      volumes:
+        - name: model-train-config
+          configMap:
+            name: model-train-config
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: celery-app
+  namespace: model-pipeline
+spec:
+  replicas: 0
+  selector:
+    matchLabels:
+      app: celery-app
+  template:
+    metadata:
+      labels:
+        app: celery-app
+    spec:
+      containers:
+        - name: celery-app
+          image: icantkube/celery-app:v0.1
+          envFrom:
+            - secretRef:
+                name: mlflow-credentials-secret
+          volumeMounts:
+            - name: model-train-config
+              mountPath: /config
+              readOnly: true
+      volumes:
+        - name: model-train-config
+          configMap:
+            name: model-train-config

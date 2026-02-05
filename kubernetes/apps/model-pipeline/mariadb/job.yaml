@@ -1,0 +1,53 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: mariadb-init-machines
+  namespace: model-pipeline
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+spec:
+  backoffLimit: 1
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: mariadb-client
+          image: mariadb:10.11
+          env:
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: mariadb-config
+                  key: DB_HOST
+            - name: DB_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: mariadb-config
+                  key: DB_NAME
+            - name: DB_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: mariadb-config
+                  key: DB_USER
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mariadb-credentials-external-secret
+                  key: password
+          command:
+            - sh
+            - -c
+            - |
+              mysql \
+                -h "$DB_HOST" \
+                -u "$DB_USER" \
+                -p"$DB_PASSWORD" \
+                "$DB_NAME" <<'EOF'
+              DROP TABLE IF EXISTS machines;
+              CREATE TABLE IF NOT EXISTS machines (
+                name VARCHAR(255) PRIMARY KEY NOT NULL,
+                status VARCHAR(255),
+                training_progress VARCHAR(45),
+                last_inference_results VARCHAR(255)
+              );
+              EOF

@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: inference-gateway
+  namespace: model-pipeline
+spec:
+  replicas: 0
+  selector:
+    matchLabels:
+      app: inference-gateway
+  template:
+    metadata:
+      labels:
+        app: inference-gateway
+    spec:
+      serviceAccountName: inference-gateway-serviceaccount
+      containers:
+        - name: inference-gateway
+          image: icantkube/inference-gateway
+          ports:
+            - containerPort: 80
+            

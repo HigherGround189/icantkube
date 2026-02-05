@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: model-train-config
+  namespace: model-pipeline
+data:
+  apps.yaml: |
+    apps:
+      mlflow-connection: 
+        url: https://mlflow.icantkube.help
+      redis-connection:
+        url: redis-master
+        port: 6379
+      minio-connection:
+        url: minio

@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-gateway
+  namespace: model-pipeline
+spec:
+  replicas: 0
+  selector:
+    matchLabels:
+      app: api-gateway
+  template:
+    metadata:
+      labels:
+        app: api-gateway
+    spec:
+      containers:
+        - name: api-gateway
+          image: icantkube/api-gateway
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: api-gateway-config
+              mountPath: /config
+              readOnly: true
+      volumes:
+        - name: api-gateway-config
+          configMap:
+            name: api-gateway-config
