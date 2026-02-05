@@ -1,33 +1,33 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: sealed-secrets
+  name: argocd
   namespace: argocd
 spec:
   project: default
 
   sources:
-    # sealed-secrets Helm chart source
-    # https://artifacthub.io/packages/helm/bitnami-labs/sealed-secrets
-    - repoURL: https://bitnami-labs.github.io/sealed-secrets
-      chart: sealed-secrets
-      targetRevision: "2.18.0"
+    # Argocd Helm chart source
+    # https://artifacthub.io/packages/helm/argo/argo-cd
+    - repoURL: https://argoproj.github.io/argo-helm
+      chart: argo-cd
+      targetRevision: "9.2.0"
       helm:
         valueFiles:
-          - $values/kubernetes/apps/sealed-secrets/helm/values-override.yaml
+          - $values/kubernetes/apps/core/argocd/helm/values-override.yaml
 
-    # cantkube repo containing values-override.yaml
+    # icantkube repo containing values-override.yaml
     - repoURL: https://github.com/HigherGround189/icantkube.git
       targetRevision: main
       ref: values
 
     - repoURL: https://github.com/HigherGround189/icantkube.git
       targetRevision: main
-      path: kubernetes/apps/sealed-secrets/
+      path: kubernetes/apps/core/argocd/
 
   destination:
     server: https://kubernetes.default.svc
-    namespace: sealed-secrets
+    namespace: argocd
 
   syncPolicy:
     automated:

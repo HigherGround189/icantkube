@@ -9,7 +9,7 @@ spec:
   source:
     repoURL: https://github.com/HigherGround189/icantkube.git
     targetRevision: main
-    path: kubernetes/apps/cadvisor
+    path: kubernetes/apps/visibility/cadvisor
 
   destination:
     server: https://kubernetes.default.svc

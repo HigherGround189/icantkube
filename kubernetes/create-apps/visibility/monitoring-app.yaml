@@ -13,7 +13,7 @@ spec:
       targetRevision: "81.2.2"
       helm:
         valueFiles:
-          - $values/kubernetes/apps/monitoring/helm/values-override.yaml
+          - $values/kubernetes/apps/visibility/monitoring/helm/values-override.yaml
 
     # Git Repo containing values.yaml
     - repoURL: https://github.com/HigherGround189/icantkube.git
@@ -22,7 +22,7 @@ spec:
     
     - repoURL: https://github.com/HigherGround189/icantkube.git
       targetRevision: main
-      path: kubernetes/apps/monitoring/
+      path: kubernetes/apps/visibility/monitoring/
 
   destination:
     server: https://kubernetes.default.svc

@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: kubebox
+  name: kubectl-shell
   namespace: argocd
 spec:
   project: default
@@ -9,11 +9,11 @@ spec:
   source:
     repoURL: https://github.com/HigherGround189/icantkube.git
     targetRevision: main
-    path: kubernetes/apps/kubebox
+    path: kubernetes/apps/visibility/kubectl-shell
 
   destination:
     server: https://kubernetes.default.svc
-    namespace: kubebox
+    namespace: default
 
   syncPolicy:
     automated:

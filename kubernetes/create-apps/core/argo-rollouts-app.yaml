@@ -14,7 +14,7 @@ spec:
       targetRevision: "2.40.5"
       helm:
         valueFiles:
-          - $values/kubernetes/apps/argo-rollouts/helm/values-override.yaml
+          - $values/kubernetes/apps/core/argo-rollouts/helm/values-override.yaml
 
     # icantkube repo containing values-override.yaml
     - repoURL: https://github.com/HigherGround189/icantkube.git
@@ -23,7 +23,7 @@ spec:
 
     - repoURL: https://github.com/HigherGround189/icantkube.git
       targetRevision: main
-      path: kubernetes/apps/argo-rollouts/
+      path: kubernetes/apps/core/argo-rollouts/
 
   destination:
     server: https://kubernetes.default.svc

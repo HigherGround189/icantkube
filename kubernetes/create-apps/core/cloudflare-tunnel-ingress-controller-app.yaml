@@ -14,7 +14,7 @@ spec:
       targetRevision: "0.0.21"
       helm:
         valueFiles:
-          - $values/kubernetes/apps/cloudflare-tunnel-ingress-controller/helm/values.yaml
+          - $values/kubernetes/apps/core/cloudflare-tunnel-ingress-controller/helm/values.yaml
 
     # icantkube repo containing values-override.yaml
     - repoURL: https://github.com/HigherGround189/icantkube.git
@@ -23,7 +23,7 @@ spec:
 
     - repoURL: https://github.com/HigherGround189/icantkube.git
       targetRevision: main
-      path: kubernetes/apps/cloudflare-tunnel-ingress-controller/
+      path: kubernetes/apps/core/cloudflare-tunnel-ingress-controller/
 
   destination:
     server: https://kubernetes.default.svc
