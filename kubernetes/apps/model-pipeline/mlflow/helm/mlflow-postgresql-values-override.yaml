@@ -1,6 +1,8 @@
 namespaceOverride: model-pipeline
 nameOverride: postgresql
 
+primary.containerSecurityContext.runAsUser: 0
+
 auth:
   database: mlflow
 
