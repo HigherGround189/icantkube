@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: minio
+  name: api-gateway
   namespace: argocd
 spec:
   project: default
@@ -9,11 +9,11 @@ spec:
   source:
     repoURL: https://github.com/HigherGround189/icantkube.git
     targetRevision: main
-    path: kubernetes/apps/minio
+    path: kubernetes/apps/model-pipeline/api-gateway
 
   destination:
     server: https://kubernetes.default.svc
-    namespace: minio
+    namespace: model-pipeline
 
   syncPolicy:
     automated:

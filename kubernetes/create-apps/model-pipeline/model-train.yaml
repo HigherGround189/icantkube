@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: inference
+  name: model-train
   namespace: argocd
 spec:
   project: default
@@ -9,11 +9,11 @@ spec:
   source:
     repoURL: https://github.com/HigherGround189/icantkube.git
     targetRevision: main
-    path: kubernetes/apps/inference-gateway
+    path: kubernetes/apps/model-pipeline/model-train
 
   destination:
     server: https://kubernetes.default.svc
-    namespace: inference
+    namespace: model-pipeline
 
   syncPolicy:
     automated:

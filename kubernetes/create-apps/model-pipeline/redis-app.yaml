@@ -13,7 +13,7 @@ spec:
       targetRevision: "24.1.0"
       helm:
         valueFiles:
-          - $values/kubernetes/apps/redis/helm/values.yaml
+          - $values/kubernetes/apps/model-pipeline/redis/helm/values.yaml
 
     - repoURL: https://github.com/HigherGround189/icantkube.git
       targetRevision: main
@@ -21,11 +21,11 @@ spec:
 
     - repoURL: https://github.com/HigherGround189/icantkube.git
       targetRevision: main
-      path: kubernetes/apps/redis/
+      path: kubernetes/apps/model-pipeline/redis/
 
   destination:
     server: https://kubernetes.default.svc
-    namespace: redis
+    namespace: model-pipeline
 
   syncPolicy:
     automated:

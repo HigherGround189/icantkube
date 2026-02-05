@@ -1,7 +1,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: sensor-data
+  name: inference
   namespace: argocd
 spec:
   project: default
@@ -9,12 +9,11 @@ spec:
   source:
     repoURL: https://github.com/HigherGround189/icantkube.git
     targetRevision: main
-    path: kubernetes/apps/sensor-data
-    # Eg: kubernetes/apps/frontend-test
+    path: kubernetes/apps/model-pipeline/inference-gateway
 
   destination:
     server: https://kubernetes.default.svc
-    namespace: sensor-data
+    namespace: model-pipeline
 
   syncPolicy:
     automated:

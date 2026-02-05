@@ -4,6 +4,6 @@ nameOverride: postgresql
 auth:
   database: mlflow
 
-  username: mlflow
+  username: admin
   existingSecret: postgresql-credentials-secret
   secretKeys.userPasswordKey: password

@@ -13,24 +13,24 @@ auth:
   # Postgesql information
   postgres:
     enabled: true
-    host: "mlflow-postgresql"
+    host: "postgresql"
     port: 5432
     database: "mlflow"
 
     existingSecret:
-      name: mlflow-postgresql-credentials-external-secret
+      name: postgresql-credentials-secret
       usernameKey: username
       passwordKey: password
 
 backendStore:
   postgres:
     enabled: true
-    host: "mlflow-mlflow-postgresql.mlflow.svc.cluster.local"
+    host: "postgresql"
     port: 5432
     database: "mlflow"
 
   existingDatabaseSecret:
-    name: mlflow-postgresql-credentials-external-secret
+    name: postgresql-credentials-secret
     usernameKey: username
     passwordKey: password
 
@@ -40,7 +40,7 @@ artifactRoot:
     path: s3://minio
     bucket: mlflow
     existingSecret:
-      name: mlflow-minio-credentials-external-secret
+      name: minio-credentials-secret
       keyOfAccessKeyId: access_key_id
       keyOfSecretAccessKey: secret_access_key
 

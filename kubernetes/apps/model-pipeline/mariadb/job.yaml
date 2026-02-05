@@ -32,7 +32,7 @@ spec:
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: mariadb-credentials-external-secret
+                  name: mariadb-credentials-secret
                   key: password
           command:
             - sh
