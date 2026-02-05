@@ -36,6 +36,11 @@ spec:
           env:
             - name: MLFLOW_SERVER_DISABLE_SECURITY_MIDDLEWARE
               value: "true"
+            - name: MLFLOW_FLASK_SERVER_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: mlflow-credentials-secret
+                  key: password
             - name: MLFLOW_S3_ENDPOINT_URL
               value: http://minio
             - name: AWS_ACCESS_KEY_ID
