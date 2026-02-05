@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: mlflow
-          image: ghcr.io/mlflow/mlflow:v2.14.1
+          image: ghcr.io/mlflow/mlflow:v3.8.1
           imagePullPolicy: IfNotPresent
           command:
             - mlflow
