@@ -5,6 +5,9 @@ from mlflow.tracking import MlflowClient
 client = MlflowClient()
 print("Client initialised")
 
+artifact_uri = mlflow.get_artifact_uri()
+print(f"Artifact uri: {artifact_uri}")
+
 registered_models = client.search_registered_models()
 print(registered_models)
 
