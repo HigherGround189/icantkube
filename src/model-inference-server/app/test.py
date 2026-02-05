@@ -13,6 +13,9 @@ model_version_details = client.get_model_version(name=model_name, version="1")
 model_uri = model_version_details.source 
 print(f"Model URI for version 1: {model_uri}")
 
+artifact_uri = mlflow.get_artifact_uri()
+print(f"Artifact uri: {artifact_uri}")
+
 model = mlflow.pyfunc.load_model(model_uri)
 print("Model loaded")
 
