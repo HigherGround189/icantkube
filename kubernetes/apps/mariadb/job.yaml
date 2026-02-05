@@ -3,11 +3,13 @@ kind: Job
 metadata:
   name: mariadb-init-machines
   namespace: mariadb
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
 spec:
   backoffLimit: 1
   template:
     spec:
-      restartPolicy: Never
+      restartPolicy: OnFailure
       containers:
         - name: mariadb-client
           image: mariadb:10.11
