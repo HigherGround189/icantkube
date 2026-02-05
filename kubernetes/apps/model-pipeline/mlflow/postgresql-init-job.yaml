@@ -50,21 +50,33 @@ spec:
                 sleep 2
               done
 
-              psql -v ON_ERROR_STOP=1 \
-                -v db_user="$DB_USERNAME" \
-                -v db_password="$DB_PASSWORD" \
+              ROLE_EXISTS=$(psql -tAc "SELECT 1 FROM pg_roles WHERE rolname='${DB_USERNAME}'" \
                 --host="mlflow-postgresql" \
                 --username="$POSTGRES_ADMIN_USER" \
-                --dbname="postgres" <<'SQL'
-              DO $$
-              BEGIN
-                IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = :'db_user') THEN
-                  CREATE ROLE :"db_user" LOGIN PASSWORD :'db_password';
-                END IF;
-              END $$;
+                --dbname="postgres")
 
-              ALTER ROLE :"db_user" WITH LOGIN PASSWORD :'db_password';
+              if [ "$ROLE_EXISTS" != "1" ]; then
+                psql -v ON_ERROR_STOP=1 \
+                  --host="mlflow-postgresql" \
+                  --username="$POSTGRES_ADMIN_USER" \
+                  --dbname="postgres" \
+                  -c "CREATE ROLE \"${DB_USERNAME}\" LOGIN PASSWORD '${DB_PASSWORD}';"
+              fi
 
-              DROP DATABASE IF EXISTS mlflow;
-              CREATE DATABASE mlflow OWNER :"db_user";
-              SQL
+              psql -v ON_ERROR_STOP=1 \
+                --host="mlflow-postgresql" \
+                --username="$POSTGRES_ADMIN_USER" \
+                --dbname="postgres" \
+                -c "ALTER ROLE \"${DB_USERNAME}\" WITH LOGIN PASSWORD '${DB_PASSWORD}';"
+
+              psql -v ON_ERROR_STOP=1 \
+                --host="mlflow-postgresql" \
+                --username="$POSTGRES_ADMIN_USER" \
+                --dbname="postgres" \
+                -c "DROP DATABASE IF EXISTS mlflow;"
+
+              psql -v ON_ERROR_STOP=1 \
+                --host="mlflow-postgresql" \
+                --username="$POSTGRES_ADMIN_USER" \
+                --dbname="postgres" \
+                -c "CREATE DATABASE mlflow OWNER \"${DB_USERNAME}\";"
