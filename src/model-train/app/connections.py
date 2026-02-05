@@ -11,7 +11,13 @@ from app.config import load_apps
 
 APPS = load_apps()
 
-def connect_redis(db=0):
+def connect_redis(db: int=0):
+    """
+    Find connection to redis database
+    
+    db: int
+        Number (index) of the database to connect within redis.
+    """
     redis_con = APPS["redis-connection"]
 
     candidates = [
@@ -40,6 +46,9 @@ def connect_redis(db=0):
     return None
 
 def connect_mlflow():
+    """
+    Find connection to mlflow
+    """
     os.environ['MLFLOW_TRACKING_USERNAME'] = os.environ.get("username", '')
     os.environ['MLFLOW_TRACKING_PASSWORD'] = os.environ.get("password", '')
 
