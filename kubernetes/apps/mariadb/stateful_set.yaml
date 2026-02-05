@@ -82,8 +82,7 @@ spec:
       metadata:
         name: data
         labels:
-          app.kubernetes.io/instance: mariadb
-          app.kubernetes.io/name: mariadb
+          name: mariadb
       spec:
         accessModes:
           - "ReadWriteOnce"
