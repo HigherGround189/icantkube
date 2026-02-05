@@ -63,7 +63,7 @@ spec:
               mountPath: /auth
       containers:
         - name: mlflow
-          image: ubuntu/mlflow:2.1.1_1.0-22.04
+          image: imichael/mlflow
           imagePullPolicy: IfNotPresent
           command:
             - mlflow
