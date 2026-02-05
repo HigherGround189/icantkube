@@ -76,7 +76,7 @@ spec:
             - --backend-store-uri
             - $(MLFLOW_BACKEND_STORE_URI)
             - --default-artifact-root
-            - s3://rustfs/mlflow
+            - s3://mlflow
             - --app-name
             - basic-auth
           env:
