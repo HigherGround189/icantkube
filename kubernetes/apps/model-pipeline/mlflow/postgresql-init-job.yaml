@@ -1,0 +1,74 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: mlflow-postgresql-init
+  namespace: model-pipeline
+  labels:
+    app: mlflow-postgresql
+spec:
+  backoffLimit: 6
+  template:
+    metadata:
+      labels:
+        app: mlflow-postgresql
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: init-db
+          image: postgres:16.4
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: POSTGRES_ADMIN_USER
+              valueFrom:
+                secretKeyRef:
+                  name: mlflow-postgresql-credentials-secret
+                  key: username
+            - name: POSTGRES_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mlflow-postgresql-credentials-secret
+                  key: password
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: mlflow-postgresql-credentials-secret
+                  key: username
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mlflow-postgresql-credentials-secret
+                  key: password
+          command:
+            - /bin/sh
+            - -c
+            - |
+              set -e
+              export PGPASSWORD="$POSTGRES_ADMIN_PASSWORD"
+
+              until pg_isready -h mlflow-postgresql -U "$POSTGRES_ADMIN_USER"; do
+                echo "waiting for postgres..."
+                sleep 2
+              done
+
+              psql -v ON_ERROR_STOP=1 \
+                --host="mlflow-postgresql" \
+                --username="$POSTGRES_ADMIN_USER" \
+                --dbname="postgres" <<SQL
+              DO $$
+              BEGIN
+                IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = '$DB_USERNAME') THEN
+                  CREATE ROLE "$DB_USERNAME" LOGIN PASSWORD '$DB_PASSWORD';
+                END IF;
+              END $$;
+
+              ALTER ROLE "$DB_USERNAME" WITH LOGIN PASSWORD '$DB_PASSWORD';
+
+              DO $$
+              BEGIN
+                IF NOT EXISTS (SELECT FROM pg_database WHERE datname = 'mlflow') THEN
+                  CREATE DATABASE mlflow OWNER "$DB_USERNAME";
+                END IF;
+              END $$;
+
+              ALTER DATABASE mlflow OWNER TO "$DB_USERNAME";
+              SQL

@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: mlflow
-          image: buraknice/mlflow
+          image: burakince/mlflow
           imagePullPolicy: IfNotPresent
           command:
             - mlflow
