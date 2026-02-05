@@ -43,10 +43,11 @@ spec:
                 -u "$DB_USER" \
                 -p"$DB_PASSWORD" \
                 "$DB_NAME" <<'EOF'
+              DROP TABLE IF EXISTS machines;
               CREATE TABLE IF NOT EXISTS machines (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                name VARCHAR(255) NOT NULL,
-                ip_address VARCHAR(45),
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                name VARCHAR(255) PRIMARY KEY NOT NULL,
+                status VARCHAR(255),
+                training_progress VARCHAR(45),
+                last_inference_results VARCHAR(255)
               );
               EOF
