@@ -13,24 +13,24 @@ auth:
   # Postgesql information
   postgres:
     enabled: true
-    host: "postgresql"
+    host: "mlflow-postgresql"
     port: 5432
     database: "mlflow"
 
     existingSecret:
-      name: postgresql-credentials-secret
+      name: mlflow-postgresql-credentials-secret
       usernameKey: username
       passwordKey: password
 
 backendStore:
   postgres:
     enabled: true
-    host: "postgresql"
+    host: "mlflow-postgresql"
     port: 5432
     database: "mlflow"
 
   existingDatabaseSecret:
-    name: postgresql-credentials-secret
+    name: mlflow-postgresql-credentials-secret
     usernameKey: username
     passwordKey: password
 

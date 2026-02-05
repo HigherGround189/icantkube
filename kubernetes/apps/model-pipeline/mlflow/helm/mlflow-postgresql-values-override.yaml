@@ -1,9 +1,9 @@
 namespaceOverride: model-pipeline
-nameOverride: postgresql
+nameOverride: mlflow-postgresql
 
 auth:
   database: mlflow
 
-  username: admin
-  existingSecret: postgresql-credentials-secret
+  username: mlflow
+  existingSecret: mlflow-postgresql-credentials-secret
   secretKeys.userPasswordKey: password
