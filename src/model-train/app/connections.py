@@ -1,6 +1,7 @@
 import redis
 import os
 import mlflow
+import minio
 
 from app.logging import logging_setup
 logging_setup()
@@ -72,3 +73,32 @@ def connect_mlflow():
 
     logger.warning("MLflow unavailable, continuing without tracking")
     return False
+
+def connect_minio():
+    """
+    Find connection to MinIO database
+    """
+    minio_con = APPS["minio-connection"]
+
+    candidates = [
+        {"host": minio_con["url"]}
+    ]
+    for i, cfg in enumerate(candidates):
+        try:
+            m = minio.Minio(
+                **cfg,
+                socket_connect_timeout=5,
+                socket_timeout=5,
+                http=False,
+            )
+            response = m.ping()
+            if response:
+                logger.info(f"Connected to MinIO Successfully at {cfg["host"]}")
+                return m
+        except minio.ConnectionError as conerr:
+            logger.warning(f"Failed to connect to MinIO at {cfg["host"]}: {conerr}")
+            if i < len(candidates) - 1:
+                logger.info("Trying next MinIO candidate...")
+
+    logger.warning("MinIO unavailable, continuing without tracking")
+    return None
