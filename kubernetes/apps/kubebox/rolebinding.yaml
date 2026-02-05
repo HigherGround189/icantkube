@@ -1,0 +1,13 @@
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: kubebox
+  namespace: kubebox
+subjects:
+- kind: ServiceAccount
+  name: kubebox
+  namespace: kubebox
+roleRef:
+  kind: ClusterRole
+  name: kubebox
+  apiGroup: rbac.authorization.k8s.io

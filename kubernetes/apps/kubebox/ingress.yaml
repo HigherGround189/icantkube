@@ -1,22 +1,22 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: minio
-  namespace: minio
+  name: kubebox
   annotations:
     cloudflare.com/protocol: http
     cloudflare-tunnel-ingress-controller.strrl.dev/backend-protocol: "http"
     cloudflare-tunnel-ingress-controller.strrl.dev/proxy-ssl-verify: "on"
+  namespace: kubebox
 spec:
   ingressClassName: cloudflare-tunnel
   rules:
-    - host: minio.icantkube.help
+    - host: kubebox.icantkube.help
       http:
         paths:
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: minio
+                name: kubebox
                 port:
-                  number: 9001
+                  number: 8080

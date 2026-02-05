@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kubectl-shell
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: kubectl-shell
+  template:
+    metadata:
+      labels:
+        app: kubectl-shell
+    spec:
+      serviceAccountName: cluster-readonly
+      securityContext:
+        runAsUser: 0
+      containers:
+      - name: kubectl
+        image: lachlanevenson/k8s-kubectl:latest
+        env:
+        - name: TERM
+          value: xterm-256color
+        command:
+          - sh
+          - -lc
+          - sleep infinity

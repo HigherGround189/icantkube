@@ -5,13 +5,12 @@ metadata:
   labels:
     app: minio
 spec:
-  clusterIP: None
   selector:
     app: minio
   ports:
     - name: api
-      port: 9000
-      targetPort: 80
+      port: 80
+      targetPort: 9000
     - name: webui
       port: 9001
       targetPort: 9001
