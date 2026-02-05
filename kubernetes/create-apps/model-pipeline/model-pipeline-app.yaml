@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: model-pipeline
+  namespace: argocd
+spec:
+  project: default
+
+  source:
+    repoURL: https://github.com/HigherGround189/icantkube.git
+    targetRevision: main
+    path: kubernetes/apps/model-pipeline/model-pipeline
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: model-pipeline
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
