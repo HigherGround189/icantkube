@@ -9,6 +9,9 @@ on:
     workflows: ["Build & Push Images to Dockerhub"]
     types: [completed]
 
+concurrency: 
+  group: image-updater
+
 permissions:
   contents: write
   actions: read
