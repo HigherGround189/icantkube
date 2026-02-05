@@ -11,3 +11,5 @@ data:
       redis-connection:
         url: redis-master.redis.svc.cluster.local
         port: 6379
+      minio-connection:
+        url: minio.minio.svc.cluster.local
