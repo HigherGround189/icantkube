@@ -76,7 +76,7 @@ spec:
             - --backend-store-uri
             - $(MLFLOW_BACKEND_STORE_URI)
             - --default-artifact-root
-            - s3://minio/mlflow
+            - s3://rustfs/mlflow
             - --app-name
             - basic-auth
           env:
@@ -90,7 +90,7 @@ spec:
             - name: MLFLOW_AUTH_CONFIG_PATH
               value: /auth/basic_auth.ini
             - name: MLFLOW_S3_ENDPOINT_URL
-              value: http://minio
+              value: http://rustfs
             - name: AWS_ACCESS_KEY_ID
               valueFrom:
                 secretKeyRef:

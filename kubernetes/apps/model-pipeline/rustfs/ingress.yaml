@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: minio
+  name: rustfs
   namespace: model-pipeline
   annotations:
     cloudflare.com/protocol: http
@@ -10,13 +10,13 @@ metadata:
 spec:
   ingressClassName: cloudflare-tunnel
   rules:
-    - host: minio.icantkube.help
+    - host: rustfs.icantkube.help
       http:
         paths:
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: minio
+                name: rustfs
                 port:
                   number: 9001
