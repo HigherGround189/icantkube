@@ -27,3 +27,12 @@ Steps:
 1. Select a model to serve (`models:/<model_name>/<version>`).
 2. Load the model from MLflow into the inference service (`mlflow.pyfunc.load_model(<models:/...>)`).
 3. Run predictions on input features and return the result to the client (`.predict(<input data>)`).
+
+### Other (.py files)
+`connections.py`:
+
+`constants.py`:
+
+`logging.py`:
+
+`config.py`:
