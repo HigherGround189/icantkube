@@ -75,10 +75,11 @@ spec:
             - "5000"
             - --backend-store-uri
             - $(MLFLOW_BACKEND_STORE_URI)
-            - --default-artifact-root
+            - --artifacts-destination
             - s3://mlflow
             - --app-name
             - basic-auth
+            - --serve-artifacts
           env:
             - name: MLFLOW_SERVER_DISABLE_SECURITY_MIDDLEWARE
               value: "true"
