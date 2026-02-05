@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mlflow-postgresql
+  namespace: model-pipeline
+  labels:
+    app: mlflow-postgresql
+spec:
+  type: ClusterIP
+  ports:
+    - name: postgres
+      port: 5432
+      targetPort: postgres
+      protocol: TCP
+  selector:
+    app: mlflow-postgresql
