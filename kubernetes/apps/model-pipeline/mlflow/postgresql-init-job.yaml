@@ -45,7 +45,7 @@ spec:
               set -e
               export PGPASSWORD="$POSTGRES_ADMIN_PASSWORD"
 
-              until pg_isready -h mlflow-postgresql -U "$POSTGRES_ADMIN_USER"; do
+              until pg_isready -h mlflow-postgresql -U "$POSTGRES_ADMIN_USER" -d postgres; do
                 echo "waiting for postgres..."
                 sleep 2
               done
@@ -80,3 +80,15 @@ spec:
                 --username="$POSTGRES_ADMIN_USER" \
                 --dbname="postgres" \
                 -c "CREATE DATABASE mlflow OWNER \"${DB_USERNAME}\";"
+
+              psql -v ON_ERROR_STOP=1 \
+                --host="mlflow-postgresql" \
+                --username="$POSTGRES_ADMIN_USER" \
+                --dbname="postgres" \
+                -c "DROP DATABASE IF EXISTS mlflow_auth;"
+
+              psql -v ON_ERROR_STOP=1 \
+                --host="mlflow-postgresql" \
+                --username="$POSTGRES_ADMIN_USER" \
+                --dbname="postgres" \
+                -c "CREATE DATABASE mlflow_auth OWNER \"${DB_USERNAME}\";"
