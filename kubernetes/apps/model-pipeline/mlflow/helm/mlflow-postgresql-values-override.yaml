@@ -6,6 +6,7 @@ auth:
 
   username: mlflow
   existingSecret: mlflow-postgresql-credentials-secret
-  secretKeys.userPasswordKey: password
+  secretKeys:
+    userPasswordKey: password
+    adminPasswordKey: password
 
-primary.podSecurityContext.runAsUser: 0
