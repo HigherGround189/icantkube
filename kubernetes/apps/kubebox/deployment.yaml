@@ -9,11 +9,11 @@ spec:
     type: Recreate
   selector:
     matchLabels:
-      name: kubebox
+      app: kubebox
   template:
     metadata:
       labels:
-        name: kubebox
+        app: kubebox
     spec:
       serviceAccountName: kubebox
       containers:
