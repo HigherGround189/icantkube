@@ -33,7 +33,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: mariadb-credentials-secret
-                  key: password
+                  key: MARIADB_ROOT_PASSWORD
           command:
             - sh
             - -c
