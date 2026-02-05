@@ -78,6 +78,9 @@ def connect_minio():
     """
     Find connection to MinIO database
     """
+    access_key = os.environ.get("MINIO_ACCESS_KEY")
+    secret_key = os.environ.get("MINIO_SECRET_KEY")
+
     minio_con = APPS["minio-connection"]
 
     candidates = [
@@ -87,11 +90,11 @@ def connect_minio():
         try:
             m = minio.Minio(
                 **cfg,
-                socket_connect_timeout=5,
-                socket_timeout=5,
+                access_key=access_key,
+                secret_key=secret_key,
                 http=False,
             )
-            response = m.ping()
+            response = m.list_buckets()
             if response:
                 logger.info(f"Connected to MinIO Successfully at {cfg["host"]}")
                 return m
