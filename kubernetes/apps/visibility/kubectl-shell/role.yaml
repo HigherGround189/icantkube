@@ -16,6 +16,7 @@ rules:
     - persistentvolumeclaims
     - configmaps
     - events
+    - replicationcontrollers
   verbs: ["get", "list", "watch"]
 
 # Workloads
