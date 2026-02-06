@@ -17,11 +17,11 @@ logger = logging.getLogger(__name__)
 
 from app.connections import (
     connect_redis, 
-    connect_minio, 
+    connect_rustfs, 
     create_or_connect_bucket
     )
 r = connect_redis(db=0)
-m = connect_minio()
+rustfs = connect_rustfs()
 
 app = Flask(__name__)
 
@@ -49,7 +49,7 @@ def retrieve_id(trackingId: str) -> Optional[dict]:
 
 def save_dataset():
     try:
-        create_or_connect_bucket(m, bucket_name="datasets")
+        create_or_connect_bucket(rustfs, bucket_name="datasets")
         logger.info(f"Upload data to storage successfully")
     except Exception as e:
         logger.error(f"Error uploading data: {e}")

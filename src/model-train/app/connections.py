@@ -2,6 +2,8 @@ import redis
 import os
 import mlflow
 import minio
+import boto3
+from botocore.exceptions import ClientError
 
 from app.logging import logging_setup
 logging_setup()
@@ -74,51 +76,55 @@ def connect_mlflow():
     logger.error("MLflow cannot be found unavailable")
     raise RuntimeError("Cannot connect to MLflow")
 
-def connect_minio():
+def connect_rustfs():
     """
-    Find connection to MinIO database
+    Find connection to RustFS database
     """
-    access_key = os.environ.get("MINIO_ACCESS_KEY")
-    secret_key = os.environ.get("MINIO_SECRET_KEY")
+    access_key = os.environ.get("access_key_id")
+    secret_key = os.environ.get("secret_access_key")
 
-    minio_con = APPS["minio-connection"]
+    rustfs_con = APPS["rustfs-connection"]
 
     candidates = [
-        {"host": minio_con["url"]}
+        {"endpoint_url": rustfs_con["url"]}
     ]
     for i, cfg in enumerate(candidates):
         try:
-            m = minio.Minio(
+            s3 = boto3.client(
+                "s3",
                 **cfg,
                 access_key=access_key,
                 secret_key=secret_key,
-                http=False,
+                region_name=rustfs_con.get("region", "us-east-1"),
             )
-            response = m.list_buckets()
+            response = s3.list_buckets()
             if response:
-                logger.info(f"Connected to MinIO Successfully at {cfg["host"]}")
-                return m
-        except minio.ConnectionError as conerr:
-            logger.warning(f"Failed to connect to MinIO at {cfg["host"]}: {conerr}")
+                logger.info(f"Connected to RustFS Successfully at {cfg["host"]}")
+                return s3
+        except ClientError as conerr:
+            logger.warning(f"Failed to connect to RustFS at {cfg["host"]}: {conerr}")
             if i < len(candidates) - 1:
-                logger.info("Trying next MinIO candidate...")
+                logger.info("Trying next RustFS candidate...")
 
-    logger.error("MinIO cannot be found unavailable")
-    raise RuntimeError("Cannot connect to MinIO")
+    logger.error("RustFS cannot be found unavailable")
+    raise RuntimeError("Cannot connect to RustFS")
 
-def create_or_connect_bucket(m, bucket_name: str):
+def create_or_connect_bucket(client, bucket_name: str):
     """
-    To create or connect to existing bucket in MinIO
+    To create or connect to existing bucket in RustFS
     
-    m: 
-        MinIO connection
+    client: 
+        RustFS connection
     bucket_name: str
         Name of bucket to be created or connected
     """
-    bucket_exist = m.bucket_exists(bucket_name)
-    if not bucket_exist:
-        m.make_bucket(bucket_name)
-        logger.info(f"Bucket created: {bucket_name}")
-    else: 
+    try:
+        client.head_bucket(Bucket=bucket_name)
         logger.info(f"Bucket exists: {bucket_name}")
-    return None
+    except ClientError as e:
+        code = e.response["Error"]["Code"]
+        if code in ("404"):
+            logger.info(f"Bucket {bucket_name} not found. Creating...")
+            client.create_bucket(Bucket=bucket_name)
+            logger.info(f"Bucket created: {bucket_name}")
+            return

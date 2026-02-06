@@ -11,5 +11,7 @@ data:
       redis-connection:
         url: redis-master
         port: 6379
-      minio-connection:
-        url: minio
+      rustfs-connection:
+        url: http://rustfs
+        region: us-east-1
+        bucket: datasets
