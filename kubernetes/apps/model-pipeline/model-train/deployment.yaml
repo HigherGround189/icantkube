@@ -21,7 +21,7 @@ spec:
           envFrom:
           - secretRef:
               name: mlflow-credentials-secret
-          - secretref:
+          - secretRef:
               name: rustfs-credentials-secret
           volumeMounts:
             - name: model-train-config
