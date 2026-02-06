@@ -18,29 +18,29 @@ auth:
     database: "mlflow"
 
     existingSecret:
-      name: mlflow-postgresql-credentials-external-secret
+      name: mlflow-postgresql-credentials-secret
       usernameKey: username
       passwordKey: password
 
 backendStore:
   postgres:
     enabled: true
-    host: "mlflow-mlflow-postgresql.mlflow.svc.cluster.local"
+    host: "mlflow-postgresql"
     port: 5432
     database: "mlflow"
 
   existingDatabaseSecret:
-    name: mlflow-postgresql-credentials-external-secret
+    name: mlflow-postgresql-credentials-secret
     usernameKey: username
     passwordKey: password
 
 artifactRoot:
   s3:
     enabled: true
-    path: s3://minio
+    path: s3://rustfs
     bucket: mlflow
     existingSecret:
-      name: mlflow-minio-credentials-external-secret
+      name: rustfs-credentials-secret
       keyOfAccessKeyId: access_key_id
       keyOfSecretAccessKey: secret_access_key
 

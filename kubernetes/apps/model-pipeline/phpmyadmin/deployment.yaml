@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: phpmyadmin
+  namespace: model-pipeline
+  labels:
+    app: phpmyadmin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: phpmyadmin
+  template:
+    metadata:
+      labels:
+        app: phpmyadmin
+    spec:
+      containers:
+        - name: phpmyadmin
+          image: phpmyadmin/phpmyadmin:5.2.1
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: PMA_HOST
+              value: mariadb
+            - name: PMA_PORT
+              value: "3306"
+            - name: PMA_USER
+              valueFrom:
+                secretKeyRef:
+                  name: phpmyadmin-credentials-secret
+                  key: PMA_USER
+            - name: PMA_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: phpmyadmin-credentials-secret
+                  key: PMA_PASSWORD
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 6
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 20
+            timeoutSeconds: 3
+            failureThreshold: 6

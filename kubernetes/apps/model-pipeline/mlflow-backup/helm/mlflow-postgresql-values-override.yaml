@@ -1,9 +1,17 @@
 namespaceOverride: model-pipeline
 nameOverride: postgresql
 
+# primary:
+#   containerSecurityContext:
+#     runAsUser: 0
+#     runAsNonRoot: false
+
 auth:
   database: mlflow
 
-  username: mlflow
-  existingSecret: postgresql-credentials-secret
-  secretKeys.userPasswordKey: password
+  username: admin
+  existingSecret: mlflow-postgresql-credentials-secret
+  secretKeys:
+    userPasswordKey: password
+    adminPasswordKey: password
+

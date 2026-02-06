@@ -1,0 +1,136 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mlflow
+  namespace: model-pipeline
+  labels:
+    app: mlflow
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mlflow
+  template:
+    metadata:
+      labels:
+        app: mlflow
+    spec:
+      initContainers:
+        - name: auth-bootstrap
+          image: burakince/mlflow
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: mlflow-postgresql-credentials-secret
+                  key: username
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mlflow-postgresql-credentials-secret
+                  key: password
+            - name: MLFLOW_ADMIN_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: mlflow-credentials-secret
+                  key: username
+            - name: MLFLOW_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mlflow-credentials-secret
+                  key: password
+          command:
+            - /bin/sh
+            - -c
+            - |
+              set -e
+              cat <<EOF > /auth/basic_auth.ini
+              [mlflow]
+              default_permission = READ
+              database_uri = postgresql://$DB_USERNAME:$DB_PASSWORD@mlflow-postgresql:5432/mlflow_auth
+              admin_username = $MLFLOW_ADMIN_USERNAME
+              admin_password = $MLFLOW_ADMIN_PASSWORD
+
+              [auth]
+              authorization_function = mlflow.server.auth:authenticate_request_basic_auth
+              EOF
+
+              python -m mlflow.server.auth db upgrade \
+                --url "postgresql://$DB_USERNAME:$DB_PASSWORD@mlflow-postgresql:5432/mlflow_auth"
+          volumeMounts:
+            - name: auth-config
+              mountPath: /auth
+      containers:
+        - name: mlflow
+          image: burakince/mlflow
+          imagePullPolicy: IfNotPresent
+          command:
+            - mlflow
+          args:
+            - server
+            - --host
+            - 0.0.0.0
+            - --port
+            - "5000"
+            - --backend-store-uri
+            - $(MLFLOW_BACKEND_STORE_URI)
+            - --artifacts-destination
+            - s3://mlflow
+            - --app-name
+            - basic-auth
+            - --serve-artifacts
+          env:
+            - name: MLFLOW_SERVER_DISABLE_SECURITY_MIDDLEWARE
+              value: "true"
+            - name: MLFLOW_FLASK_SERVER_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: mlflow-credentials-secret
+                  key: password
+            - name: MLFLOW_AUTH_CONFIG_PATH
+              value: /auth/basic_auth.ini
+            - name: MLFLOW_S3_ENDPOINT_URL
+              value: http://rustfs
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: rustfs-credentials-secret
+                  key: access_key_id
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: rustfs-credentials-secret
+                  key: secret_access_key
+            - name: DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: mlflow-postgresql-credentials-secret
+                  key: username
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mlflow-postgresql-credentials-secret
+                  key: password
+            - name: MLFLOW_BACKEND_STORE_URI
+              value: postgresql://$(DB_USERNAME):$(DB_PASSWORD)@mlflow-postgresql:5432/mlflow
+            - name: MLFLOW_TRACKING_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: mlflow-credentials-secret
+                  key: MLFLOW_TRACKING_USERNAME
+            - name: MLFLOW_TRACKING_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mlflow-credentials-secret
+                  key: MLFLOW_TRACKING_PASSWORD
+          volumeMounts:
+            - name: auth-config
+              mountPath: /auth
+          ports:
+            - name: http
+              containerPort: 5000
+              protocol: TCP
+      volumes:
+        - name: auth-config
+          emptyDir: {}

@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cadvisor
+  namespace: argocd
+spec:
+  project: default
+
+  source:
+    repoURL: https://github.com/HigherGround189/icantkube.git
+    targetRevision: main
+    path: kubernetes/apps/visibility/cadvisor
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: cadvisor
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

@@ -1,0 +1,33 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: redis
+  namespace: argocd
+spec:
+  project: default
+
+  sources:
+    # Bitnami Redis Helm chart
+    - repoURL: https://charts.bitnami.com/bitnami
+      chart: redis
+      targetRevision: "24.1.0"
+      helm:
+        valueFiles:
+          - $values/kubernetes/apps/model-pipeline/redis/helm/values.yaml
+
+    - repoURL: https://github.com/HigherGround189/icantkube.git
+      targetRevision: main
+      ref: values
+
+    - repoURL: https://github.com/HigherGround189/icantkube.git
+      targetRevision: main
+      path: kubernetes/apps/model-pipeline/redis/
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: model-pipeline
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

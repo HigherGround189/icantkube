@@ -31,8 +31,8 @@ spec:
             - name: MARIADB_ROOT_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: mariadb-credentials-external-secret
-                  key: password
+                  name: mariadb-credentials-secret
+                  key: MARIADB_ROOT_PASSWORD
             - name: MARIADB_DATABASE
               value: "machines"
             - name: MARIADB_USER
@@ -40,8 +40,8 @@ spec:
             - name: MARIADB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: mariadb-credentials-external-secret
-                  key: password
+                  name: mariadb-credentials-secret
+                  key: MARIADB_ROOT_PASSWORD
           ports:
             - name: mysql
               containerPort: 3306

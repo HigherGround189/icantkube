@@ -11,11 +11,10 @@ resources:
 - serviceaccount.yaml
 - reference-deployment.yaml
 - config.yaml
-- mlflow-auth-credentials.sealed.yaml
 - horizontal_auto_scaler.yaml
 
 images:
 - name: icantkube/inference-gateway
   newTag: v0.8
 - name: icantkube/model-inference-server
-  newTag: v0.3
+  newTag: v0.4

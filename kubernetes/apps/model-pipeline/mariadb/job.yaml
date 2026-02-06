@@ -32,8 +32,8 @@ spec:
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: mariadb-credentials-external-secret
-                  key: password
+                  name: mariadb-credentials-secret
+                  key: MARIADB_ROOT_PASSWORD
           command:
             - sh
             - -c

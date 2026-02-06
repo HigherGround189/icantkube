@@ -78,8 +78,8 @@ def connect_minio():
     """
     Find connection to MinIO database
     """
-    access_key = os.environ.get("MINIO_ACCESS_KEY")
-    secret_key = os.environ.get("MINIO_SECRET_KEY")
+    access_key = os.environ.get("access_key_id")
+    secret_key = os.environ.get("secret_access_key")
 
     minio_con = APPS["minio-connection"]
 

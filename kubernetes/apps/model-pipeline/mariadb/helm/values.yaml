@@ -2,7 +2,7 @@ auth:
   enabled: true
   database: machines
   username: admin
-  existingSecret: mariadb-credentials-external-secret
+  existingSecret: mariadb-credentials-secret
   secretKeys:
     rootPasswordKey: password
     userPasswordKey: password

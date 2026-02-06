@@ -1,0 +1,72 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: rustfs
+  namespace: model-pipeline
+spec:
+  selector:
+    matchLabels:
+      app: rustfs
+  serviceName: "rustfs"
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: rustfs
+    spec:
+      securityContext:
+        fsGroup: 10001
+      initContainers:
+      - name: init-permissions
+        image: rustfs/rustfs:latest
+        imagePullPolicy: IfNotPresent
+        command:
+          - /bin/sh
+          - -c
+          - chown -R 10001:10001 /data
+        securityContext:
+          runAsUser: 0
+        volumeMounts:
+          - name: data
+            mountPath: /data
+      containers:
+      - name: rustfs
+        image: rustfs/rustfs:latest
+        args:
+          - /data
+        env:
+          - name: RUSTFS_ADDRESS
+            value: ":9000"
+          - name: RUSTFS_CONSOLE_ADDRESS
+            value: ":9001"
+          - name: RUSTFS_CONSOLE_ENABLE
+            value: "true"
+          - name: RUSTFS_VOLUMES
+            value: /data
+          - name: RUSTFS_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                name: rustfs-credentials-secret
+                key: access_key_id
+          - name: RUSTFS_SECRET_KEY
+            valueFrom:
+              secretKeyRef:
+                name: rustfs-credentials-secret
+                key: secret_access_key
+        ports:
+          - containerPort: 9000
+          - containerPort: 9001
+        volumeMounts:
+          - name: data
+            mountPath: /data
+        securityContext:
+          runAsUser: 10001
+          runAsGroup: 10001
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 4Gi
