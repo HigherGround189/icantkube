@@ -96,15 +96,15 @@ def connect_rustfs():
                 **cfg,
                 aws_access_key_id=access_key,
                 aws_secret_access_key=secret_key,
-                config=Config(signature_version='s3v4'),
+                # config=Config(signature_version='s3v4'),
                 region_name=rustfs_con.get("region", "us-east-1"),
             )
             response = s3.list_buckets()
             if response:
-                logger.info(f"Connected to RustFS Successfully at {cfg["host"]}")
+                logger.info(f"Connected to RustFS Successfully at {cfg["endpoint_url"]}")
                 return s3
         except ClientError as conerr:
-            logger.warning(f"Failed to connect to RustFS at {cfg["host"]}: {conerr}")
+            logger.warning(f"Failed to connect to RustFS at {cfg["endpoint_url"]}: {conerr}")
             if i < len(candidates) - 1:
                 logger.info("Trying next RustFS candidate...")
 
