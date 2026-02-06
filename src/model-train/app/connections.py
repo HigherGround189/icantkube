@@ -93,8 +93,8 @@ def connect_rustfs():
             s3 = boto3.client(
                 "s3",
                 **cfg,
-                access_key=access_key,
-                secret_key=secret_key,
+                aws_access_key_id=access_key,
+                aws_secret_access_key=secret_key,
                 region_name=rustfs_con.get("region", "us-east-1"),
             )
             response = s3.list_buckets()
