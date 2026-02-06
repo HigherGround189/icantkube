@@ -54,26 +54,31 @@ def retrieve_id(trackingId: str) -> Optional[dict]:
         return None
     return job
 
-def save_dataset(raw_bytes, filename: str, jobId: str, ):
+def save_dataset(raw_bytes, contentType, filename: str, jobId: str, ):
     try:
         id = jobId.removeprefix("job:")
         key = f"datasets/{id}/{filename}"
+        size = str(len(raw_bytes))
+        if size == 0:
+            return jsonify({"error": "Uploaded data has 0 bytes"}), 400
 
         create_or_connect_bucket(rustfs, bucket_name=bucket_name)
 
-        metadata = {"Metadata":{
+        metadata = {
+            "Metadata":{
             "jobId":jobId,
             "filename": filename,
-            "size": str(len(raw_bytes)),
+            "size": size,
             "uploadedAt": datetime.now(timezone.utc),
-        }
+            },
         }
 
         rustfs.put_object(
             Bucket=bucket_name,
             Key=key,
             Body=raw_bytes,
-            ExtraArgs=metadata
+            ContentType=contentType,
+            ExtraArgs=metadata,
         )
 
         logger.info(f"Upload data to storage successfully")
@@ -96,7 +101,14 @@ def job_initiation():
     logger.info("Reading uploaded file...")
 
     raw_bytes = request.get_data(parse_form_data=False)
+    content_type = request.content_type
     machine_name = request.args.get('name')
+
+    if not raw_bytes:
+        return jsonify({"error": "Missing data body"}), 400
+    
+    if not machine_name:
+        return jsonify({"error": "Missing `name` parameter"}), 400
     
     return_id = uuid.uuid4()
     trackingId = f'job:{return_id}'
@@ -104,18 +116,10 @@ def job_initiation():
     r.hset(trackingId, mapping=newIdInstance)
 
     logger.info("Retrieving Content...")
-
-    # file = request.files.get('filename', None)
-    # if file in [None, '']:
-    #     return jsonify({'error':'File not provided'}), 400
-    # if not data:
-    #     r.hset(trackingId, 'status', Status.FAILED.value)
-    #     r.hset(trackingId, 'error', 'File is empty')
-    #     return jsonify({'trackingId':return_id})
     
     try:
         # df = pd.read_csv(BytesIO(raw_bytes))
-        object_key = save_dataset(raw_bytes, filename=machine_name, jobId=trackingId)
+        object_key = save_dataset(raw_bytes, contentType=content_type, filename=machine_name, jobId=trackingId)
         task = start_model_training.delay(object_key, machine_name, trackingId)
         logger.info(f"Task: {task}")
         logger.info(f"Registered trackingId: {trackingId}")
