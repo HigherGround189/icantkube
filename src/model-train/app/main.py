@@ -54,7 +54,7 @@ def retrieve_id(trackingId: str) -> Optional[dict]:
         return None
     return job
 
-def save_dataset(raw_bytes, contentType, filename: str, jobId: str, ):
+def save_dataset(raw_bytes, contentType, filename: str, jobId: str, ) -> str:
     try:
         id = jobId.removeprefix("job:")
         key = f"datasets/{id}/{filename}"
