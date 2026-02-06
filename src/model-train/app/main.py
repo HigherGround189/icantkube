@@ -74,7 +74,7 @@ def save_dataset(raw_bytes, contentType, filename: str, jobId: str, ) -> str:
     """
     try:
         id = jobId.removeprefix("job:")
-        key = f"datasets/{id}/{filename}"
+        key = f"{id}/{filename}"
         size = str(len(raw_bytes))
         if size == 0:
             return jsonify({"error": "Uploaded data has 0 bytes"}), 400
@@ -98,11 +98,11 @@ def save_dataset(raw_bytes, contentType, filename: str, jobId: str, ) -> str:
             ExtraArgs=metadata,
         )
 
-        logger.info(f"Upload data to storage successfully")
+        logger.info(f"Upload {key} to storage successfully")
         return key
     except ClientError as e:
-        logger.error(f"Error uploading data: {e}")
-        return jsonify({'error':'Failed to upload data'}), 500
+        logger.error(f"Error uploading {key}: {e}")
+        return jsonify({'error':f'Failed to upload {key}'}), 500
         
 
 @app.route('/start', methods=["POST"])

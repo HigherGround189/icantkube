@@ -14,4 +14,5 @@ data:
       rustfs-connection:
         url: http://rustfs
         region: us-east-1
+        signature_version: s3v4
         bucket: datasets
