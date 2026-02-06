@@ -11,12 +11,12 @@ frontend:
 model-train:
   autoUpdate: true
   autoBuild: true
-  currentTag: "v0.55"
+  currentTag: "v0.56"
 
 celery-app:
   autoUpdate: true
   autoBuild: true
-  currentTag: "v0.34"
+  currentTag: "v0.35"
 
 sample-echo-microservice:
   autoUpdate: false
