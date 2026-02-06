@@ -21,6 +21,8 @@ spec:
           envFrom:
           - secretRef:
               name: mlflow-credentials-secret
+          - secretref:
+              name: rustfs-credentials-secret
           volumeMounts:
             - name: model-train-config
               mountPath: /config
@@ -58,6 +60,8 @@ spec:
           envFrom:
             - secretRef:
                 name: mlflow-credentials-secret
+            - secretref:
+                name: rustfs-credentials-secret
           volumeMounts:
             - name: model-train-config
               mountPath: /config
