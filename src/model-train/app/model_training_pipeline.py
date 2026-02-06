@@ -25,6 +25,7 @@ class ModelTrainingPipeline():
     def __init__(self, 
                  update, 
                  mlflow_conn, 
+                 object_key: str,
                  trackingId: str, 
                  cfg: PipelineConfig,
                  *,
@@ -35,6 +36,7 @@ class ModelTrainingPipeline():
         
         self.sample_dataset = sample_dataset
         self.update = update
+        self.object_key = object_key
         self.trackingId = trackingId.removeprefix("job:")
 
         self.random_number = random_number

@@ -20,7 +20,7 @@ app = Celery('tasks', broker=f'redis://{host}:{port}/1')
 mlfow = connect_mlflow()
 
 @app.task(bind=True)
-def start_model_training(self, machine_name, trackingId):
+def start_model_training(self, object_key: str, machine_name: str, trackingId: str):
     """
     Initiate model training pipeline
     
@@ -54,6 +54,7 @@ def start_model_training(self, machine_name, trackingId):
     pipeline = ModelTrainingPipeline(sample_dataset=True, 
                                      update=state_update, 
                                      mlflow_conn=mlfow, 
+                                     object_key=object_key,
                                      trackingId=trackingId, 
                                      cfg=CFG,
                                      )

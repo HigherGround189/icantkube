@@ -1,10 +1,12 @@
 from flask import Flask, jsonify, request, render_template
 from io import BytesIO
+from datetime import datetime, timezone
 import pandas as pd
 import redis
 import json
 from typing import Optional
 import uuid
+from botocore.exceptions import ClientError
 
 from app.tasks import start_model_training
 
@@ -15,6 +17,10 @@ logging_setup()
 import logging
 logger = logging.getLogger(__name__)
 
+from app.config import load_apps
+
+APPS = load_apps()
+
 from app.connections import (
     connect_redis, 
     connect_rustfs, 
@@ -22,6 +28,7 @@ from app.connections import (
     )
 r = connect_redis(db=0)
 rustfs = connect_rustfs()
+bucket_name = APPS["rustfs-connection"]["bucket"]
 
 app = Flask(__name__)
 
@@ -47,11 +54,31 @@ def retrieve_id(trackingId: str) -> Optional[dict]:
         return None
     return job
 
-def save_dataset():
+def save_dataset(raw_bytes, filename: str, jobId: str, ):
     try:
-        create_or_connect_bucket(rustfs, bucket_name="datasets")
+        id = jobId.removeprefix("job:")
+        key = f"datasets/{id}/{filename}"
+
+        create_or_connect_bucket(rustfs, bucket_name=bucket_name)
+
+        metadata = {"Metadata":{
+            "jobId":jobId,
+            "filename": filename,
+            "size": str(len(raw_bytes)),
+            "uploadedAt": datetime.now(timezone.utc),
+        }
+        }
+
+        rustfs.put_object(
+            Bucket=bucket_name,
+            Key=key,
+            Body=raw_bytes,
+            ExtraArgs=metadata
+        )
+
         logger.info(f"Upload data to storage successfully")
-    except Exception as e:
+        return key
+    except ClientError as e:
         logger.error(f"Error uploading data: {e}")
         return jsonify({'error':'Failed to upload data'}), 500
         
@@ -87,9 +114,9 @@ def job_initiation():
     #     return jsonify({'trackingId':return_id})
     
     try:
-        df = pd.read_csv(BytesIO(raw_bytes))
-        # df_json = df.to_json(orient='records')
-        task = start_model_training.delay(machine_name, trackingId)
+        # df = pd.read_csv(BytesIO(raw_bytes))
+        object_key = save_dataset(raw_bytes, filename=machine_name, jobId=trackingId)
+        task = start_model_training.delay(object_key, machine_name, trackingId)
         logger.info(f"Task: {task}")
         logger.info(f"Registered trackingId: {trackingId}")
 
