@@ -55,6 +55,23 @@ def retrieve_id(trackingId: str) -> Optional[dict]:
     return job
 
 def save_dataset(raw_bytes, contentType, filename: str, jobId: str, ) -> str:
+    """
+    Docstring for save_dataset
+    
+    Params:
+        raw_bytes:
+            File uploaded
+        contentType: str
+            Content type of file
+        filename: str
+            Machine name to be name on file
+        jobId: str
+            trackingId to be assigned to object key
+    
+    Returns:
+        key: str
+            object key to use to retrieve uploaded data
+    """
     try:
         id = jobId.removeprefix("job:")
         key = f"datasets/{id}/{filename}"
