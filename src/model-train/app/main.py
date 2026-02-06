@@ -15,8 +15,13 @@ logging_setup()
 import logging
 logger = logging.getLogger(__name__)
 
-from app.connections import connect_redis
+from app.connections import (
+    connect_redis, 
+    connect_minio, 
+    create_or_connect_bucket
+    )
 r = connect_redis(db=0)
+m = connect_minio()
 
 app = Flask(__name__)
 
@@ -43,7 +48,13 @@ def retrieve_id(trackingId: str) -> Optional[dict]:
     return job
 
 def save_dataset():
-    pass
+    try:
+        create_or_connect_bucket(m, bucket_name="datasets")
+        logger.info(f"Upload data to storage successfully")
+    except Exception as e:
+        logger.error(f"Error uploading data: {e}")
+        return jsonify({'error':'Failed to upload data'}), 500
+        
 
 @app.route('/start', methods=["POST"])
 def job_initiation():
@@ -66,6 +77,14 @@ def job_initiation():
     r.hset(trackingId, mapping=newIdInstance)
 
     logger.info("Retrieving Content...")
+
+    # file = request.files.get('filename', None)
+    # if file in [None, '']:
+    #     return jsonify({'error':'File not provided'}), 400
+    # if not data:
+    #     r.hset(trackingId, 'status', Status.FAILED.value)
+    #     r.hset(trackingId, 'error', 'File is empty')
+    #     return jsonify({'trackingId':return_id})
     
     try:
         df = pd.read_csv(BytesIO(raw_bytes))
