@@ -41,10 +41,10 @@ def connect_redis(db: int=0):
         except redis.ConnectionError as conerr:
             logger.warning(f"Failed to connect to Redis at {cfg["host"]}:{cfg["port"]}: {conerr}")
             if i < len(candidates) - 1:
-                logger.info("Trying next redis candidate...")
+                logger.info("Trying next Redis candidate...")
 
-    logger.warning("Redis unavailable, continuing without tracking")
-    return None
+    logger.error("Redis cannot be found unavailable")
+    raise RuntimeError("Cannot connect to Redis")
 
 def connect_mlflow():
     """
@@ -71,8 +71,8 @@ def connect_mlflow():
             if i < len(candidates) - 1:
                 logger.info("Trying next MLFlow candidate...")
 
-    logger.warning("MLflow unavailable, continuing without tracking")
-    return False
+    logger.error("MLflow cannot be found unavailable")
+    raise RuntimeError("Cannot connect to MLflow")
 
 def connect_minio():
     """
@@ -103,5 +103,22 @@ def connect_minio():
             if i < len(candidates) - 1:
                 logger.info("Trying next MinIO candidate...")
 
-    logger.warning("MinIO unavailable, continuing without tracking")
+    logger.error("MinIO cannot be found unavailable")
+    raise RuntimeError("Cannot connect to MinIO")
+
+def create_or_connect_bucket(m, bucket_name: str):
+    """
+    To create or connect to existing bucket in MinIO
+    
+    m: 
+        MinIO connection
+    bucket_name: str
+        Name of bucket to be created or connected
+    """
+    bucket_exist = m.bucket_exists(bucket_name)
+    if not bucket_exist:
+        m.make_bucket(bucket_name)
+        logger.info(f"Bucket created: {bucket_name}")
+    else: 
+        logger.info(f"Bucket exists: {bucket_name}")
     return None
