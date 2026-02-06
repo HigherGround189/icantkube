@@ -37,10 +37,10 @@ backendStore:
 artifactRoot:
   s3:
     enabled: true
-    path: s3://minio
+    path: s3://rustfs
     bucket: mlflow
     existingSecret:
-      name: minio-credentials-secret
+      name: rustfs-credentials-secret
       keyOfAccessKeyId: access_key_id
       keyOfSecretAccessKey: secret_access_key
 
