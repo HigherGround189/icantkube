@@ -80,8 +80,8 @@ def connect_rustfs():
     """
     Find connection to RustFS database
     """
-    access_key = os.environ.get("access_key_id")
-    secret_key = os.environ.get("secret_access_key")
+    os.environ['AWS_ACCESS_KEY_ID'] = os.environ.get("access_key_id", "")
+    os.environ['AWS_SECRET_ACCESS_KEY'] = os.environ.get("secret_access_key", "")
 
     rustfs_con = APPS["rustfs-connection"]
 
@@ -93,8 +93,6 @@ def connect_rustfs():
             s3 = boto3.client(
                 "s3",
                 **cfg,
-                aws_access_key_id=access_key,
-                aws_secret_access_key=secret_key,
                 region_name=rustfs_con.get("region", "us-east-1"),
             )
             response = s3.list_buckets()
