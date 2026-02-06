@@ -50,6 +50,11 @@ spec:
       containers:
         - name: celery-app
           image: icantkube/celery-app:v0.1
+          resources:
+            requests:
+              cpu: "200m"
+            limits:
+              cpu: "1000m"
           envFrom:
             - secretRef:
                 name: mlflow-credentials-secret
