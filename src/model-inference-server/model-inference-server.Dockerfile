@@ -8,7 +8,7 @@ RUN uv sync
 
 COPY app ./app
 
-RUN apt update && apt install micro
+RUN apt-get update && apt-get install -y micro
 
 EXPOSE 80
 
