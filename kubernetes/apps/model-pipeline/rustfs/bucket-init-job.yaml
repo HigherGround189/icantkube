@@ -31,7 +31,7 @@ spec:
             - name: AWS_DEFAULT_REGION
               value: us-east-1
             - name: RUSTFS_ENDPOINT
-              value: http://rustfs:9000
+              value: http://rustfs
           command:
             - /bin/sh
             - -c

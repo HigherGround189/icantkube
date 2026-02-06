@@ -103,7 +103,6 @@ export default function App() {
                 <MachineDetails
                     machine={selectedMachine}
                     onDismiss={() => setSelectedMachine(null)}
-                    mode={mode}
                 />
             )}
 

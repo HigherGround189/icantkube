@@ -6,23 +6,17 @@ Response:
 [
   {
     "name": "string",
-    "status": "training | inference_on | inference_off",
+    "status": "training | inference",
     "lastInferenceResults": "number[] | null",
     "trainingProgress": "number | null"
   }
 ]
 ```
 
-## POST `/api/model-train?name={machineName}`
+## POST `/api/model-train/start?name={machineName}`
 Request:
 ```
 Content-Type: text/csv
 Body: <csv bytes>
 ```
-Response: `200 OK`
-
-## POST `/api/model-inference/start?name={machineName}`
-Response: `200 OK`
-
-## POST `/api/model-inference/stop?name={machineName}`
 Response: `200 OK`

@@ -7,12 +7,8 @@ const statusTone = (status: string) => {
         return "bg-orange-100 text-orange-800";
     }
 
-    if (normalized.includes("on")) {
+    if (normalized.includes("inference")) {
         return "bg-emerald-100 text-emerald-800";
-    }
-
-    if (normalized.includes("off")) {
-        return "bg-slate-200 text-slate-700";
     }
 
     return "bg-slate-200 text-slate-600";

@@ -62,13 +62,13 @@ const demoMachines: Machine[] = [
     },
     {
         name: "Helix-07",
-        status: "inference on",
+        status: "inference",
         lastInferenceResults: [120, 98, 102, 88, 76, 90],
         trainingProgress: null,
     },
     {
         name: "Kestrel-03",
-        status: "inference off",
+        status: "inference",
         lastInferenceResults: [36, 28, 22, 30, 18, 16],
         trainingProgress: null,
     },
@@ -119,24 +119,6 @@ export const trainMachine = async (name: string, csvFile: File, mode: ApiMode) =
 
     if (!response.ok) {
         throw new Error(`Model train request failed (${response.status})`);
-    }
-
-    return response;
-};
-
-export const toggleInference = async (name: string, mode: ApiMode, shouldStart: boolean) => {
-    if (mode === "demo") {
-        return { ok: true };
-    }
-
-    const action = shouldStart ? "start" : "stop";
-    const response = await fetch(
-        `/api/model-inference/${action}?name=${encodeURIComponent(name.trim())}`,
-        { method: "POST" }
-    );
-
-    if (!response.ok) {
-        throw new Error(`Inference ${action} failed (${response.status})`);
     }
 
     return response;

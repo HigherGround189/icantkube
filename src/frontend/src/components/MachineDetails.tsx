@@ -1,7 +1,6 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import type { Machine } from "../types";
 import Chart from "./Chart";
-import { toggleInference, type ApiMode } from "../api";
 
 const statusTone = (status: string) => {
     const normalized = status.toLowerCase();
@@ -10,12 +9,8 @@ const statusTone = (status: string) => {
         return "bg-orange-100 text-orange-800";
     }
 
-    if (normalized.includes("on")) {
+    if (normalized.includes("inference")) {
         return "bg-emerald-100 text-emerald-800";
-    }
-
-    if (normalized.includes("off")) {
-        return "bg-slate-200 text-slate-700";
     }
 
     return "bg-slate-200 text-slate-600";
@@ -24,21 +19,11 @@ const statusTone = (status: string) => {
 type MachineDetailsProps = {
     machine: Machine;
     onDismiss: () => void;
-    mode: ApiMode;
 };
 
-export default function MachineDetails({ machine, onDismiss, mode }: MachineDetailsProps) {
-    const [toggleState, setToggleState] = useState<{
-        status: "idle" | "loading" | "success" | "error";
-        message?: string;
-    }>({ status: "idle" });
-
+export default function MachineDetails({ machine, onDismiss }: MachineDetailsProps) {
     const isTraining = useMemo(
         () => machine.status.toLowerCase().includes("training"),
-        [machine.status]
-    );
-    const isInferenceOn = useMemo(
-        () => machine.status.toLowerCase().includes("inference on"),
         [machine.status]
     );
 
@@ -52,22 +37,6 @@ export default function MachineDetails({ machine, onDismiss, mode }: MachineDeta
         window.addEventListener("keydown", handleKeyDown);
         return () => window.removeEventListener("keydown", handleKeyDown);
     }, [onDismiss]);
-
-    const handleToggle = async () => {
-        try {
-            setToggleState({ status: "loading" });
-            await toggleInference(machine.name, mode, !isInferenceOn);
-            setToggleState({
-                status: "success",
-                message: isInferenceOn ? "Inference stopped." : "Inference started.",
-            });
-        } catch (error) {
-            setToggleState({
-                status: "error",
-                message: error instanceof Error ? error.message : "Failed to toggle inference.",
-            });
-        }
-    };
 
     return (
         <div
@@ -92,25 +61,13 @@ export default function MachineDetails({ machine, onDismiss, mode }: MachineDeta
                             {machine.status}
                         </span>
                     </div>
-                    <div className="flex items-center gap-3">
-                        {!isTraining && (
-                            <button
-                                className="rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-sky-300 hover:text-sky-600 disabled:cursor-not-allowed disabled:opacity-60"
-                                type="button"
-                                onClick={handleToggle}
-                                disabled={toggleState.status === "loading"}
-                            >
-                                {isInferenceOn ? "Stop inference" : "Start inference"}
-                            </button>
-                        )}
-                        <button
-                            className="text-sm font-semibold text-sky-600"
-                            type="button"
-                            onClick={onDismiss}
-                        >
-                            Close
-                        </button>
-                    </div>
+                    <button
+                        className="text-sm font-semibold text-sky-600"
+                        type="button"
+                        onClick={onDismiss}
+                    >
+                        Close
+                    </button>
                 </div>
 
                 {isTraining ? (
@@ -134,15 +91,6 @@ export default function MachineDetails({ machine, onDismiss, mode }: MachineDeta
                     <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-5 py-6 text-sm text-slate-500">
                         No breakdown forecasts yet for this machine.
                     </div>
-                )}
-                {toggleState.status !== "idle" && toggleState.message && (
-                    <p
-                        className={`text-sm ${
-                            toggleState.status === "error" ? "text-rose-600" : "text-emerald-600"
-                        }`}
-                    >
-                        {toggleState.message}
-                    </p>
                 )}
             </section>
         </div>
