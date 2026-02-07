@@ -93,7 +93,8 @@ def save_dataset(raw_bytes, contentType, filename: str, jobId: str, ) -> str:
         rustfs.put_object(
             Bucket=bucket_name,
             Key=key,
-            Body=BytesIO(raw_bytes),
+            # Body=BytesIO(raw_bytes),
+            Body=b"test",
             ContentType=contentType,
             ExtraArgs=metadata,
         )
@@ -117,7 +118,7 @@ def job_initiation():
     """
     logger.info("Reading uploaded file...")
 
-    raw_bytes = request.get_data(parse_form_data=False)
+    raw_bytes = request.get_data(parse_form_data=True)
     content_type = request.content_type
     machine_name = request.args.get('name')
 
