@@ -100,13 +100,13 @@ class ModelTrainingPipeline():
                         error=f"An error occurred: Failed to download object {self.bucket_name}/{self.object_key}\n{e}"
                         )
     
-    def training_template(func):
+    def training_template(self, func):
         """
         Training skeleton to replicate the procedure from loading data to model training and 
         evaluation to logging metrics and artifacts
         """
         @wraps(func)
-        def wrapper(self, *args, **kwargs):
+        def wrapper(*args, **kwargs):
             try:
                 self.update(status=Status.RUNNING.value, progress=0)
 
@@ -147,6 +147,10 @@ class ModelTrainingPipeline():
                             registered_model_name=self.cfg.registered_model_name,
                             signature=signature
                         )
+                        # mlflow.log_artifact()
+                    
+                    if self.object_key:
+                        pass
 
                     self.update(status=Status.COMPLETED.value, 
                                 progress=100, 
@@ -167,7 +171,6 @@ class ModelTrainingPipeline():
 
         Auto update the status and progress at each stage.
         """
-
         iris = datasets.load_iris() # Load iris dataset
         X = iris.data
         y = iris.target 
