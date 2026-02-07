@@ -7,6 +7,8 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
 
 from contextlib import nullcontext
+from functools import wraps
+from typing import Tuple
 import json
 import os
 import mlflow
@@ -50,8 +52,6 @@ class ModelTrainingPipeline():
 
         self.random_number = random_number
         self.test_size = test_size
-
-        self.pipeline = None
 
         self.rustfs_enabled = rustfs_conn
         self.mlflow_enabled = mlflow_conn
@@ -99,8 +99,68 @@ class ModelTrainingPipeline():
             self.update(status=Status.FAILED.value, 
                         error=f"An error occurred: Failed to download object {self.bucket_name}/{self.object_key}\n{e}"
                         )
+    
+    def training_template(func):
+        """
+        Training skeleton to replicate the procedure from loading data to model training and 
+        evaluation to logging metrics and artifacts
+        """
+        @wraps(func)
+        def wrapper(self, *args, **kwargs):
+            try:
+                self.update(status=Status.RUNNING.value, progress=0)
 
-    def model_train_sample(self) -> None:
+                X, y, _ = func(*args, **kwargs) # Retrieve Features and label
+                self.update(progress=10)
+
+                # Split into train and test dataset
+                X_train, X_test, y_train, y_test = self.data_preparation(X, y)
+                self.update(progress=30)
+
+                # Retrieve pipeline
+                _, _, pipeline = func(*args, **kwargs)
+                self.update(progress=50)
+                
+                # Start mlflow and set experiment
+                run_context = nullcontext()
+                if self.mlflow_enabled:
+                    mlflow.set_experiment(self.cfg.experiment_name)
+                    run_context = mlflow.start_run(f"{self.cfg.pipeline_name}-{self.trackingId}")
+                
+                with run_context:
+                    pipeline.fit(X_train, y_train) # Train model
+                    self.update(progress=70)
+
+                    y_pred = pipeline.predict(X_test) # Predict output
+                    self.update(progress=80)
+
+                    acc = self.metrics(y_pred, y_test) # Calculate metrics
+                    self.update(progress=90)
+
+                    # Log into mlflow
+                    signature = infer_signature(X_test, y_pred)
+                    if self.mlflow_enabled:
+                        mlflow.log_metric("accuracy", acc)
+                        mlflow.sklearn.log_model(
+                            sk_model=pipeline,
+                            name=self.cfg.model_name,
+                            registered_model_name=self.cfg.registered_model_name,
+                            signature=signature
+                        )
+
+                    self.update(status=Status.COMPLETED.value, 
+                                progress=100, 
+                                result=json.dumps({"accuracy": acc})
+                                )
+
+            except Exception as e:
+                self.update(status=Status.FAILED.value, 
+                            error=f"An error occurred: {e}"
+                            )
+        return wrapper
+
+    @training_template
+    def model_train_sample(self) -> Tuple[pd.DataFrame, pd.Series, Pipeline]:
         """
         Sample of model training pipeline for initial testing
         using Iris dataset.
@@ -108,125 +168,35 @@ class ModelTrainingPipeline():
         Auto update the status and progress at each stage.
         """
 
-        try:
-            self.update(status=Status.RUNNING.value, progress=0)
+        iris = datasets.load_iris() # Load iris dataset
+        X = iris.data
+        y = iris.target 
 
-            iris = datasets.load_iris() # Load iris dataset
-            X = iris.data
-            y = iris.target 
+        # Create pipeline
+        pipeline = Pipeline([
+            ('scaler', StandardScaler()),
+            ('pca', PCA(n_components=2)),
+            ('classifier', LogisticRegression())
+        ])
 
-            self.update(progress=10)
-
-            # Split into train and test dataset
-            X_train, X_test, y_train, y_test = self.data_preparation(X, y)
-            self.update(progress=30)
-
-            # Create pipeline
-            self.pipeline = Pipeline([
-                ('scaler', StandardScaler()),
-                ('pca', PCA(n_components=2)),
-                ('classifier', LogisticRegression())
-            ])
-            self.update(progress=50)
+        return X, y, pipeline
             
-            # Start mlflow and set experiment
-            run_context = nullcontext()
-            if self.mlflow_enabled:
-                mlflow.set_experiment(self.cfg.experiment_name)
-                run_context = mlflow.start_run(f"{self.cfg.pipeline_name}-{self.trackingId}")
-            
-            with run_context:
-                self.pipeline.fit(X_train, y_train) # Train model
-                self.update(progress=70)
-
-                y_pred = self.pipeline.predict(X_test) # Predict output
-                self.update(progress=80)
-
-                acc = self.metrics(y_pred, y_test) # Calculate metrics
-                self.update(progress=90)
-
-                # Log into mlflow
-                signature = infer_signature(X_test, y_pred)
-                if self.mlflow_enabled:
-                    mlflow.log_metric("accuracy", acc)
-                    mlflow.sklearn.log_model(
-                        sk_model=self.pipeline,
-                        name=self.cfg.model_name,
-                        registered_model_name=self.cfg.registered_model_name,
-                        signature=signature
-                    )
-
-                self.update(status=Status.COMPLETED.value, 
-                            progress=100, 
-                            result=json.dumps({"accuracy": acc})
-                            )
-
-        except Exception as e:
-            self.update(status=Status.FAILED.value, 
-                        error=f"An error occurred: {e}"
-                        )
-    
-    def model_train(self):
+    @training_template
+    def model_train(self) -> Tuple[pd.DataFrame, pd.Series, Pipeline]:
         """
         Actual model training pipeline to create model.
 
         Auto update the status and progress at each stage.
         """
-        try:
-            self.update(status=Status.RUNNING.value, progress=0)
-
-            df = self.retrieve_data() # Load uploaded dataset
-            X = df.iloc[:, :-1]
-            y = df.iloc[:, -1:]
-
-            self.update(progress=10)
-
-            # Split into train and test dataset
-            X_train, X_test, y_train, y_test = self.data_preparation(X, y)
-            self.update(progress=30)
-
-            # Create pipeline
-            self.pipeline = Pipeline([
-                ('classifier', LogisticRegression())
-            ])
-            self.update(progress=50)
-            
-            # Start mlflow and set experiment
-            run_context = nullcontext()
-            if self.mlflow_enabled:
-                mlflow.set_experiment(self.cfg.experiment_name)
-                run_context = mlflow.start_run(f"{self.cfg.pipeline_name}-{self.trackingId}")
-            
-            with run_context:
-                self.pipeline.fit(X_train, y_train) # Train model
-                self.update(progress=70)
-
-                y_pred = self.pipeline.predict(X_test) # Predict output
-                self.update(progress=80)
-
-                acc = self.metrics(y_pred, y_test) # Calculate metrics
-                self.update(progress=90)
-
-                # Log into mlflow
-                signature = infer_signature(X_test, y_pred)
-                if self.mlflow_enabled:
-                    mlflow.log_metric("accuracy", acc)
-                    mlflow.sklearn.log_model(
-                        sk_model=self.pipeline,
-                        name=self.cfg.model_name,
-                        registered_model_name=self.cfg.registered_model_name,
-                        signature=signature
-                    )
-
-                self.update(status=Status.COMPLETED.value, 
-                            progress=100, 
-                            result=json.dumps({"accuracy": acc})
-                            )
-
-        except Exception as e:
-            self.update(status=Status.FAILED.value, 
-                        error=f"An error occurred: {e}"
-                        )
+        df = self.retrieve_data() # Load uploaded dataset
+        X = df.iloc[:, :-1]
+        y = df.iloc[:, -1:]
+        
+         # Create pipeline
+        pipeline = Pipeline([
+            ('classifier', LogisticRegression())
+        ])
+        return X, y, pipeline
     
     def metrics(self, y_pred, y_test) -> float:
         """
