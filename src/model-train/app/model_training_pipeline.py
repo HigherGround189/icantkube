@@ -57,7 +57,7 @@ def training_template(func):
             run_context = nullcontext()
             if self.mlflow_enabled:
                 mlflow.set_experiment(self.cfg.experiment_name)
-                run_context = mlflow.start_run(f"{self.cfg.pipeline_name}-{self.trackingId}")
+                run_context = mlflow.start_run(run_name=f"{self.cfg.pipeline_name}-{self.trackingId}")
             
             with run_context:
                 pipeline.fit(X_train, y_train) # Train model
