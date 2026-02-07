@@ -97,7 +97,7 @@ def save_dataset(raw_bytes, contentType, filename: str, jobId: str, ) -> str:
                 "Bucket":bucket_name,
                 "Key":key,
                 "ContentType":contentType,
-                "Metadata":metadata,
+                # "Metadata":metadata,
             },
             ExpiresIn=300,
         )
