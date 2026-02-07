@@ -7,6 +7,7 @@ import json
 from typing import Optional
 import uuid
 from botocore.exceptions import ClientError
+import urllib.parse
 
 from app.tasks import start_model_training
 
@@ -54,7 +55,7 @@ def retrieve_id(trackingId: str) -> Optional[dict]:
         return None
     return job
 
-def save_dataset(raw_bytes, contentType, filename: str, jobId: str, ) -> str:
+def save_dataset(raw_bytes, contentType, machineName: str, jobId: str, ) -> str:
     """
     Docstring for save_dataset
     
@@ -63,7 +64,7 @@ def save_dataset(raw_bytes, contentType, filename: str, jobId: str, ) -> str:
             File uploaded
         contentType: str
             Content type of file
-        filename: str
+        machineName: str
             Machine name to be name on file
         jobId: str
             trackingId to be assigned to object key
@@ -74,26 +75,27 @@ def save_dataset(raw_bytes, contentType, filename: str, jobId: str, ) -> str:
     """
     try:
         id = jobId.removeprefix("job:")
-        key = f"{id}.csv"
+        key = f"{machineName}_{id}.csv"
         size = str(len(raw_bytes))
         if size == 0:
             return jsonify({"error": "Uploaded data has 0 bytes"}), 400
 
         create_or_connect_bucket(rustfs, bucket_name=bucket_name)
 
-        metadata = {
+        metadata_dict = {
             "jobId":jobId,
-            "filename": filename,
-            "size": size,
+            "machineName": machineName,
             "uploadedAt": datetime.now(timezone.utc),
             }
+        
+        tags_string = urllib.parse.urlencode(metadata_dict)
 
         rustfs.put_object(
             Bucket=bucket_name,
             Key=key,
             Body=BytesIO(raw_bytes),
             ContentType=contentType,
-            # Metadata=metadata,
+            Tagging=tags_string,
         )
 
         logger.info(f"Upload {key} to storage successfully")
