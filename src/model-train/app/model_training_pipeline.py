@@ -11,6 +11,8 @@ import json
 import os
 import mlflow
 from mlflow.models import infer_signature
+from io import BytesIO
+from botocore.exceptions import ClientError
 
 import pandas as pd
 
@@ -21,10 +23,15 @@ logging_setup()
 import logging
 logger = logging.getLogger(__name__)
 
+from app.config import load_apps
+
+APPS = load_apps()
+
 class ModelTrainingPipeline():
     def __init__(self, 
                  update, 
                  mlflow_conn, 
+                 rustfs_conn,
                  object_key: str,
                  trackingId: str, 
                  cfg: PipelineConfig,
@@ -36,14 +43,17 @@ class ModelTrainingPipeline():
         
         self.sample_dataset = sample_dataset
         self.update = update
-        self.object_key = object_key
         self.trackingId = trackingId.removeprefix("job:")
+
+        self.object_key = object_key
+        self.bucket_name = APPS["rustfs-connection"]["bucket"]
 
         self.random_number = random_number
         self.test_size = test_size
 
         self.pipeline = None
 
+        self.rustfs_enabled = rustfs_conn
         self.mlflow_enabled = mlflow_conn
 
         self.cfg = SAMPLE_CFG if sample_dataset else cfg
@@ -129,14 +139,35 @@ class ModelTrainingPipeline():
             self.update(status=Status.FAILED.value, 
                         error=f"An error occurred: {e}"
                         )
+        
+    def retrieve_data(self) -> pd.DataFrame:
+        try:
+            client = self.rustfs_enabled.get_object(Bucket=self.bucket_name, Key=self.object_key)
+
+            data_bytes = client["Body"].read()
+
+            if not data_bytes:
+                raise ValueError(f"Object is empty: s3://{self.bucket_name}/{self.object_key}")
+
+            bio = BytesIO(data_bytes)
+
+            df = pd.read_csv(bio)
+
+            return df
+
+        except ClientError as e:
+            logger.error(f"Failed to download object {self.bucket_name}/{self.object_key}")
+            raise 
+
     
-    def model_train():
+    def model_train(self):
         """
         Actual model training pipeline to create model.
 
         Auto update the status and progress at each stage.
         """
-        pass
+        df = self.retrieve_data()
+        logger.debug(df.head(1))
     
     def metrics(self, y_pred, y_test) -> float:
         """

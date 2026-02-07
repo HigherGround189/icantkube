@@ -37,11 +37,6 @@ app = Flask(__name__)
 def health():
     return jsonify({"status": "running"})
 
-@app.route("/")
-def index():    # Temporary
-    """Testing file upload locally"""
-    return render_template("index.html")
-
 def retrieve_id(trackingId: str) -> Optional[dict]:
     """ 
     Retrieve job state based on specified trackingId.

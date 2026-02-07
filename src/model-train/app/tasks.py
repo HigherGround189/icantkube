@@ -1,6 +1,10 @@
 from celery import Celery
 from app.model_training_pipeline import ModelTrainingPipeline
-from app.connections import connect_redis, connect_mlflow
+from app.connections import (
+    connect_redis, 
+    connect_mlflow,
+    connect_rustfs, 
+    )
 from app.constants import PipelineConfig
 from app.logging import logging_setup
 logging_setup()
@@ -18,6 +22,7 @@ port = r1.connection_pool.connection_kwargs['port']
 
 app = Celery('tasks', broker=f'redis://{host}:{port}/1')
 mlfow = connect_mlflow()
+rustfs = connect_rustfs()
 
 @app.task(bind=True)
 def start_model_training(self, object_key: str, machine_name: str, trackingId: str):
@@ -51,9 +56,11 @@ def start_model_training(self, object_key: str, machine_name: str, trackingId: s
     )
 
     logger.info("Initiating Model Training...")
-    pipeline = ModelTrainingPipeline(sample_dataset=True, 
+    pipeline = ModelTrainingPipeline(
+                                    #  sample_dataset=True, 
                                      update=state_update, 
-                                     mlflow_conn=mlfow, 
+                                     mlflow_conn=mlfow,
+                                     rustfs_conn=rustfs,
                                      object_key=object_key,
                                      trackingId=trackingId, 
                                      cfg=CFG,
