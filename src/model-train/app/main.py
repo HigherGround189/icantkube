@@ -93,7 +93,7 @@ def save_dataset(raw_bytes, contentType, filename: str, jobId: str, ) -> str:
         rustfs.put_object(
             Bucket=bucket_name,
             Key=key,
-            Body=raw_bytes,
+            Body=BytesIO(raw_bytes),
             ContentType=contentType,
             ExtraArgs=metadata,
         )
