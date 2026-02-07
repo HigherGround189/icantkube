@@ -74,7 +74,7 @@ def save_dataset(raw_bytes, contentType, filename: str, jobId: str, ) -> str:
     """
     try:
         id = jobId.removeprefix("job:")
-        key = f"{id}/{filename}"
+        key = f"{id}.csv"
         size = str(len(raw_bytes))
         if size == 0:
             return jsonify({"error": "Uploaded data has 0 bytes"}), 400
