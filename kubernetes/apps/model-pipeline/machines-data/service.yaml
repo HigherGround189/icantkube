@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: machines-data
+  namespace: model-pipeline
+  labels:
+    app: machines-data
+spec:
+  type: ClusterIP
+  selector:
+    app: machines-data
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+      protocol: TCP

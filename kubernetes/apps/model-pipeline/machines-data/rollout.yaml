@@ -1,0 +1,20 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: machines-data-rollout
+  namespace: model-pipeline
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: machines-data
+  workloadRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: machines-data
+    scaleDown: onsuccess
+  strategy:
+    canary:
+      steps:
+        - setWeight: 80
+        - pause: {duration: 10s}
