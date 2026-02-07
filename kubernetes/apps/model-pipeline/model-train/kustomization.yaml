@@ -10,6 +10,6 @@ resources:
 
 images:
 - name: icantkube/model-train
-  newTag: v0.59
+  newTag: v0.60
 - name: icantkube/celery-app
-  newTag: v0.38
+  newTag: v0.39
