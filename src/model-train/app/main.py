@@ -136,7 +136,7 @@ def job_initiation():
     
     try:
         # df = pd.read_csv(BytesIO(raw_bytes))
-        object_key = save_dataset(raw_bytes, contentType=content_type, filename=machine_name, jobId=trackingId)
+        object_key = save_dataset(raw_bytes, contentType=content_type, machineName=machine_name, jobId=trackingId)
         task = start_model_training.delay(object_key, machine_name, trackingId)
         logger.info(f"Task: {task}")
         logger.info(f"Registered trackingId: {trackingId}")
