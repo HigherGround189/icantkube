@@ -1,0 +1,11 @@
+[project]
+name = "machines-data"
+version = "0.1.0"
+description = "Machines data API"
+requires-python = ">=3.12"
+dependencies = [
+    "fastapi>=0.128.0",
+    "gunicorn>=24.1.1",
+    "pymysql>=1.1.1",
+    "uvicorn>=0.40.0",
+]

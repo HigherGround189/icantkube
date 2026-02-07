@@ -8,6 +8,11 @@ frontend:
   autoBuild: true
   currentTag: "v0.18"
 
+machines-data:
+  autoUpdate: true
+  autoBuild: true
+  currentTag: "v0.2"
+
 model-train:
   autoUpdate: true
   autoBuild: true

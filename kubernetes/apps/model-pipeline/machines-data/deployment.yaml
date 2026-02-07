@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: machines-data
+  namespace: model-pipeline
+spec:
+  replicas: 0
+  selector:
+    matchLabels:
+      app: machines-data
+  template:
+    metadata:
+      labels:
+        app: machines-data
+    spec:
+      containers:
+        - name: machines-data
+          image: icantkube/machines-data
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          env:
+            - name: DB_HOST
+              value: mariadb
+            - name: DB_PORT
+              value: "3306"
+            - name: DB_NAME
+              value: machines
+            - name: DB_TABLE
+              value: machines
+            - name: DB_USER
+              value: admin
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mariadb-credentials-secret
+                  key: MARIADB_ROOT_PASSWORD
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 6
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 20
+            periodSeconds: 20
+            timeoutSeconds: 3
+            failureThreshold: 6

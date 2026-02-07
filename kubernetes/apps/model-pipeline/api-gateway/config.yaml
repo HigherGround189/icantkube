@@ -12,3 +12,5 @@ data:
         url: http://model-train
       sensor-data:
         url: http://sensor-data
+      machines-data:
+        url: http://machines-data
