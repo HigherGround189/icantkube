@@ -11,9 +11,12 @@ from functools import wraps
 from typing import Tuple
 import json
 import os
+from io import BytesIO
+
 import mlflow
 from mlflow.models import infer_signature
-from io import BytesIO
+from mlflow.data.pandas_dataset import from_pandas
+
 from botocore.exceptions import ClientError
 
 import pandas as pd
@@ -74,7 +77,7 @@ class ModelTrainingPipeline():
                                                             random_state=self.random_number)
         return X_train, X_test, y_train, y_test
     
-    def retrieve_data(self) -> pd.DataFrame:
+    def retrieve_data(self) -> Tuple[BytesIO, pd.DataFrame]:
         """
         Retrieve the dataset to be used to train a model
         
@@ -100,17 +103,17 @@ class ModelTrainingPipeline():
                         error=f"An error occurred: Failed to download object {self.bucket_name}/{self.object_key}\n{e}"
                         )
     
-    def training_template(self, func):
+    def training_template(func):
         """
         Training skeleton to replicate the procedure from loading data to model training and 
         evaluation to logging metrics and artifacts
         """
         @wraps(func)
-        def wrapper(*args, **kwargs):
+        def wrapper(self, *args, **kwargs):
             try:
                 self.update(status=Status.RUNNING.value, progress=0)
 
-                X, y, _ = func(*args, **kwargs) # Retrieve Features and label
+                df, X, y, _ = func(*args, **kwargs) # Retrieve Features and label
                 self.update(progress=10)
 
                 # Split into train and test dataset
@@ -118,7 +121,7 @@ class ModelTrainingPipeline():
                 self.update(progress=30)
 
                 # Retrieve pipeline
-                _, _, pipeline = func(*args, **kwargs)
+                _, _, _, pipeline = func(*args, **kwargs)
                 self.update(progress=50)
                 
                 # Start mlflow and set experiment
@@ -147,10 +150,21 @@ class ModelTrainingPipeline():
                             registered_model_name=self.cfg.registered_model_name,
                             signature=signature
                         )
-                        # mlflow.log_artifact()
-                    
-                    if self.object_key:
-                        pass
+                        if self.sample_dataset:
+                            dataset = from_pandas(
+                                    df,
+                                    source="sklearn.datasets.load_iris()",
+                                    name="iris_sample_dataset",
+                                )
+                        else:
+                            csv_buffer = BytesIO()
+                            df.to_csv(csv_buffer, index=False)
+                            csv_bytes = csv_buffer.getvalue()
+                            mlflow.log_bytes(csv_bytes, f"{self.cfg.model_name}.csv", artifact_path="datasets")
+                            dataset = from_pandas(df)
+                        
+                        mlflow.log_input(dataset, context="training")
+                        self.rustfs_enabled.delete_object(Bucket=self.bucket_name, Key=self.object_key)
 
                     self.update(status=Status.COMPLETED.value, 
                                 progress=100, 
@@ -182,7 +196,7 @@ class ModelTrainingPipeline():
             ('classifier', LogisticRegression())
         ])
 
-        return X, y, pipeline
+        return iris, X, y, pipeline
             
     @training_template
     def model_train(self) -> Tuple[pd.DataFrame, pd.Series, Pipeline]:
@@ -193,13 +207,14 @@ class ModelTrainingPipeline():
         """
         df = self.retrieve_data() # Load uploaded dataset
         X = df.iloc[:, :-1]
-        y = df.iloc[:, -1:]
+        y = df.iloc[:, -1]
         
          # Create pipeline
         pipeline = Pipeline([
-            ('classifier', LogisticRegression())
+            # Code
+            # ...
         ])
-        return X, y, pipeline
+        return df, X, y, pipeline
     
     def metrics(self, y_pred, y_test) -> float:
         """
