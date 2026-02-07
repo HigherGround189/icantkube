@@ -79,16 +79,17 @@ def training_template(func):
                         registered_model_name=self.cfg.registered_model_name,
                         signature=signature
                     )
+                    csv_buffer = BytesIO()
+                    df.to_csv(csv_buffer, index=False)
+                    csv_bytes = csv_buffer.getvalue()
                     if self.sample_dataset:
+                        mlflow.log_bytes(csv_bytes, f"iris.csv", artifact_path="datasets")
                         dataset = from_pandas(
                                 df,
                                 source="sklearn.datasets.load_iris()",
                                 name="iris_sample_dataset",
                             )
                     else:
-                        csv_buffer = BytesIO()
-                        df.to_csv(csv_buffer, index=False)
-                        csv_bytes = csv_buffer.getvalue()
                         mlflow.log_bytes(csv_bytes, f"{self.cfg.model_name}.csv", artifact_path="datasets")
                         dataset = from_pandas(df)
                     
