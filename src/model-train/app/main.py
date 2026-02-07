@@ -1,5 +1,6 @@
 from flask import Flask, jsonify, request, render_template
 from io import BytesIO
+import requests
 from datetime import datetime, timezone
 import pandas as pd
 import redis
@@ -90,14 +91,23 @@ def save_dataset(raw_bytes, contentType, filename: str, jobId: str, ) -> str:
             },
         }
 
-        rustfs.put_object(
-            Bucket=bucket_name,
-            Key=key,
-            # Body=BytesIO(raw_bytes),
-            Body=b"test",
-            ContentType=contentType,
-            ExtraArgs=metadata,
+        url = rustfs.generate_presigned_url(
+            ClientMethod='put_object',
+            Params={
+                "Bucket":bucket_name,
+                "Key":key,
+                "ContentType":contentType,
+                "Metadata":metadata,
+            },
+            ExpiresIn=300,
         )
+
+        requests.put(
+            url,
+            headers={"ContentType": contentType},
+            data=raw_bytes
+        )
+        # Body=BytesIO(raw_bytes)
 
         logger.info(f"Upload {key} to storage successfully")
         return key
