@@ -93,10 +93,9 @@ def save_dataset(raw_bytes, contentType, filename: str, jobId: str, ) -> str:
         rustfs.put_object(
             Bucket=bucket_name,
             Key=key,
-            # Body=BytesIO(raw_bytes),
-            Body=b"test",
+            Body=BytesIO(raw_bytes),
             ContentType=contentType,
-            # ExtraArgs=metadata,
+            ExtraArgs=metadata,
         )
 
         logger.info(f"Upload {key} to storage successfully")
