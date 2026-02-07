@@ -73,6 +73,32 @@ class ModelTrainingPipeline():
                                                             test_size=self.test_size, 
                                                             random_state=self.random_number)
         return X_train, X_test, y_train, y_test
+    
+    def retrieve_data(self) -> pd.DataFrame:
+        """
+        Retrieve the dataset to be used to train a model
+        
+        Return:
+            df: pd.DataFrame
+                Return the retrieved dataset
+        """
+        try:
+            client = self.rustfs_enabled.get_object(Bucket=self.bucket_name, Key=self.object_key)
+            data_bytes = client["Body"].read()
+
+            if not data_bytes:
+                self.update(status=Status.FAILED.value, 
+                        error=f"An error occurred: Object is empty: s3://{self.bucket_name}/{self.object_key}"
+                        )
+
+            bio = BytesIO(data_bytes)
+            df = pd.read_csv(bio)
+            return df
+
+        except ClientError as e:
+            self.update(status=Status.FAILED.value, 
+                        error=f"An error occurred: Failed to download object {self.bucket_name}/{self.object_key}\n{e}"
+                        )
 
     def model_train_sample(self) -> None:
         """
@@ -139,26 +165,6 @@ class ModelTrainingPipeline():
             self.update(status=Status.FAILED.value, 
                         error=f"An error occurred: {e}"
                         )
-        
-    def retrieve_data(self) -> pd.DataFrame:
-        try:
-            client = self.rustfs_enabled.get_object(Bucket=self.bucket_name, Key=self.object_key)
-
-            data_bytes = client["Body"].read()
-
-            if not data_bytes:
-                raise ValueError(f"Object is empty: s3://{self.bucket_name}/{self.object_key}")
-
-            bio = BytesIO(data_bytes)
-
-            df = pd.read_csv(bio)
-
-            return df
-
-        except ClientError as e:
-            logger.error(f"Failed to download object {self.bucket_name}/{self.object_key}")
-            raise 
-
     
     def model_train(self):
         """
@@ -166,8 +172,61 @@ class ModelTrainingPipeline():
 
         Auto update the status and progress at each stage.
         """
-        df = self.retrieve_data()
-        logger.debug(df.head(1))
+        try:
+            self.update(status=Status.RUNNING.value, progress=0)
+
+            df = self.retrieve_data() # Load uploaded dataset
+            X = df.iloc[:, :-1]
+            y = df.iloc[:, -1:]
+
+            self.update(progress=10)
+
+            # Split into train and test dataset
+            X_train, X_test, y_train, y_test = self.data_preparation(X, y)
+            self.update(progress=30)
+
+            # Create pipeline
+            self.pipeline = Pipeline([
+                ('classifier', LogisticRegression())
+            ])
+            self.update(progress=50)
+            
+            # Start mlflow and set experiment
+            run_context = nullcontext()
+            if self.mlflow_enabled:
+                mlflow.set_experiment(self.cfg.experiment_name)
+                run_context = mlflow.start_run(f"{self.cfg.pipeline_name}-{self.trackingId}")
+            
+            with run_context:
+                self.pipeline.fit(X_train, y_train) # Train model
+                self.update(progress=70)
+
+                y_pred = self.pipeline.predict(X_test) # Predict output
+                self.update(progress=80)
+
+                acc = self.metrics(y_pred, y_test) # Calculate metrics
+                self.update(progress=90)
+
+                # Log into mlflow
+                signature = infer_signature(X_test, y_pred)
+                if self.mlflow_enabled:
+                    mlflow.log_metric("accuracy", acc)
+                    mlflow.sklearn.log_model(
+                        sk_model=self.pipeline,
+                        name=self.cfg.model_name,
+                        registered_model_name=self.cfg.registered_model_name,
+                        signature=signature
+                    )
+
+                self.update(status=Status.COMPLETED.value, 
+                            progress=100, 
+                            result=json.dumps({"accuracy": acc})
+                            )
+
+        except Exception as e:
+            self.update(status=Status.FAILED.value, 
+                        error=f"An error occurred: {e}"
+                        )
     
     def metrics(self, y_pred, y_test) -> float:
         """
