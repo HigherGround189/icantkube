@@ -93,7 +93,7 @@ def save_dataset(raw_bytes, contentType, filename: str, jobId: str, ) -> str:
             Key=key,
             Body=BytesIO(raw_bytes),
             ContentType=contentType,
-            Metadata=metadata,
+            # Metadata=metadata,
         )
 
         logger.info(f"Upload {key} to storage successfully")
