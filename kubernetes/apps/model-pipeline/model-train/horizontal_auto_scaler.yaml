@@ -30,7 +30,7 @@ spec:
         periodSeconds: 15
       selectPolicy: Max
     scaleUp:
-      stabilizationWindowSeconds: 0
+      stabilizationWindowSeconds: 300
       policies:
       - type: Percent
         value: 100
