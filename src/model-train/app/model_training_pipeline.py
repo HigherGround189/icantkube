@@ -4,6 +4,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 from sklearn.linear_model import LogisticRegression
+from sklearn.tree import DecisionTreeRegressor
 from sklearn.metrics import accuracy_score
 
 from contextlib import nullcontext
@@ -215,7 +216,7 @@ class ModelTrainingPipeline():
          # Create pipeline
         pipeline = Pipeline([
             # Code
-            # ...
+            ('regressor', DecisionTreeRegressor())
         ])
         return df, X, y, pipeline
     
