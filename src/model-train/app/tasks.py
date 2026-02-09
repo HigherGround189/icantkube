@@ -57,7 +57,7 @@ def start_model_training(self, object_key: str, machine_name: str, trackingId: s
 
     logger.info("Initiating Model Training...")
     pipeline = ModelTrainingPipeline(
-                                     sample_dataset=True, 
+                                    #  sample_dataset=True, 
                                      update=state_update, 
                                      mlflow_conn=mlfow,
                                      rustfs_conn=rustfs,
