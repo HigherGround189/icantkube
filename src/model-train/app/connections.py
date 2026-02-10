@@ -1,7 +1,7 @@
 import redis
 import os
 import mlflow
-import mariadb
+import pymysql
 from sqlalchemy import create_engine
 import boto3
 from botocore.client import Config
@@ -151,7 +151,7 @@ def connect_mariadb():
     for i, cfg in enumerate(candidates):
         try:
             engine = create_engine(
-                f"mariadb+mariadbconnector://admin:{password}@{cfg['host']}:{cfg['port']}/{cfg['database']}",
+                f"mysql+pymysql://admin:{password}@{cfg['host']}:{cfg['port']}/{cfg['database']}",
             )
             response = engine.connect()
             if response:
