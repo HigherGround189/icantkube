@@ -1,4 +1,6 @@
 from pydantic import BaseModel
 
 class Server(BaseModel):
-    mlflow_name: str
+    machine_name: str
+    replica_count: int = 1
+    
