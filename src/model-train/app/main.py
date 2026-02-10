@@ -137,9 +137,9 @@ def job_initiation():
             INSERT INTO {table_name} (machine, status, training_progress)
             VALUES (%s, %s, %i)
             """ 
-    cursor = mariadb.cursor()
-    cursor.execute(query, newMachineInstance)
-    mariadb.commit()
+    with mariadb.connect() as conn:
+        conn.execute(query, newMachineInstance)
+        conn.commit()
 
     logger.info("Retrieving Content...")
     
