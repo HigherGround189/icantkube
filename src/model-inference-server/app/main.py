@@ -1,14 +1,9 @@
-from fastapi import FastAPI
 import mlflow
-import os
+import requests
 
-mlflow.set_tracking_uri("http://mlflow.icantkube.help/")
+MACHINE_DATA_ENDPOINT = "machines-data/all"
+SENSOR_DATA_ENDPOINT = "sensor-data-service/get_next_line"
 
-MODEL = os.getenv("MODEL_NAME")
-app = FastAPI(title=f"{MODEL} Inference Server", redirect_slashes=False)
+machines_list = requests.get(MACHINE_DATA_ENDPOINT)
+print(machines_list)
 
-
-@app.get("/inference/health")
-def health() -> dict[str, str]:
-    """Health check endpoint."""
-    return {"message": "health ok"}
