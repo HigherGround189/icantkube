@@ -35,13 +35,6 @@ spec:
         - name: http
           containerPort: 8080
           protocol: TCP
-        resources:
-          requests:
-            cpu: 150m
-            memory: 200Mi
-          limits:
-            cpu: 300m
-            memory: 2000Mi
         securityContext:
           allowPrivilegeEscalation: false
           readOnlyRootFilesystem: true
