@@ -24,3 +24,4 @@ print("Model loaded")
 
 predictions = model.predict({"5.4","3.4","1.5","0.4","setosa"})
 print(predictions)
+
