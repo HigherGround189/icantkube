@@ -25,11 +25,13 @@ APPS = load_apps()
 from app.connections import (
     connect_redis, 
     connect_rustfs, 
-    create_or_connect_bucket
+    create_or_connect_bucket,
+    connect_mariadb
     )
 r = connect_redis(db=0)
 rustfs = connect_rustfs()
 bucket_name = APPS["rustfs-connection"]["bucket"]
+mariadb = connect_mariadb()
 
 app = Flask(__name__)
 
