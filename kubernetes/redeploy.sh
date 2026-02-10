@@ -3,10 +3,12 @@
 # Setup ArgoCD
 cd /kubernetes/apps/argocd/helm
 helm repo add argo https://argoproj.github.io/argo-helm
+export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
 helm install argocd argo/argo-cd -f values-override.yaml -n argocd --create-namespace
 
 # Setup Sealed Secrets, to add the ArgoCD's Github Repo
 cd /kubernetes/apps/sealed-secrets/helm
+helm repo add sealed-secrets https://bitnami-labs.github.io/sealed-secrets
 helm install sealed-secrets sealed-secrets/sealed-secrets -f values-override.yaml -n sealed-secrets --create-namespace
 
 # Encrypt ArgoCD's Github Repo and deploy it
