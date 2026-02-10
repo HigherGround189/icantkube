@@ -13,7 +13,6 @@ from contextlib import asynccontextmanager
 logger = logging.getLogger(__name__)
 
 
-REDIS_KEY = "csv_last_index"
 S3_ENDPOINT = "http://rustfs"
 BUCKET = "datasets"
 REDIS_KEY_PREFIX = "csv_last_index"
@@ -98,8 +97,8 @@ r = connect_redis()
 s3 = boto3.client(
     "s3",
     endpoint_url=S3_ENDPOINT,
-    aws_access_key_id=os.environ.get("rustfs-credentials-secret"),
-    aws_secret_access_key=os.environ.get("rustfs-credentials-secret"),
+    aws_access_key_id=os.environ.get("access_key_id"),
+    aws_secret_access_key=os.environ.get("secret_access_key"),
 )
 
 def redis_key(name: str) -> str:

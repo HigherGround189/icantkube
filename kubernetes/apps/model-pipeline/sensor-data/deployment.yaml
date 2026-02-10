@@ -18,3 +18,10 @@ spec:
           image: icantkube/sensor-data:v0.1
           ports:
             - containerPort: 80
+          envFrom:
+          - secretRef:
+              name: mlflow-credentials-secret
+          - secretRef:
+              name: rustfs-credentials-secret
+          - secretRef:
+              name: mariadb-credentials-secret
