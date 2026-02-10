@@ -8,6 +8,7 @@ from typing import Optional
 import uuid
 from botocore.exceptions import ClientError
 import urllib.parse
+from sqlalchemy import text
 
 from app.tasks import start_model_training
 
@@ -133,13 +134,13 @@ def job_initiation():
 
     # Initiate machine progress in mariadb
     newMachineInstance = {"machine": machine_name, 'status':Status.PENDING.value, 'training_progress':0}
-    query = f"""
+    query = text(f"""
             INSERT INTO {table_name} (machine, status, training_progress)
-            VALUES (%s, %s, %i)
-            """ 
-    cursor = mariadb.cursor()
-    cursor.execute(query, newMachineInstance)
-    mariadb.commit()
+            VALUES (:machine, :status, :training_progress)
+            """ )
+    with mariadb.connect() as conn:
+        conn.execute(query, newMachineInstance)
+        conn.commit()
 
     logger.info("Retrieving Content...")
     

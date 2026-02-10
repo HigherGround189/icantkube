@@ -7,7 +7,7 @@ data:
   apps.yaml: |
     apps:
       mlflow-connection: 
-        url: https://mlflow.icantkube.help
+        url: http://mlflow
       redis-connection:
         url: redis-master
         port: 6379

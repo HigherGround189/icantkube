@@ -137,7 +137,7 @@ class ModelTrainingPipeline():
         self.cfg = SAMPLE_CFG if sample_dataset else cfg
 
     
-    def data_preparation(self, X, y):
+    def data_preparation(self, X, y) -> Tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]:
         """
         Split dataset into train and test dataset
         

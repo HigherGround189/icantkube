@@ -14,6 +14,7 @@ logger = logging.getLogger(__name__)
 
 import pandas as pd
 from time import sleep
+from sqlalchemy import text
 
 from app.config import load_apps
 
@@ -67,18 +68,18 @@ def start_model_training(self, object_key: str, machine_name: str, trackingId: s
 
         for key, value in kwargs.items():
             if key in field_map:
-                fields.append(f"{field_map[key]} = %s")
+                fields.append(f"{field_map[key]} = :{field_map[key]}")
                 values.append(value)
         
-        query = f"""
+        query = text(f"""
                 UPDATE {table_name}
                 SET {', '.join(fields)}
                 WHERE machine = {machine_name}
-                """
+                """)
 
-        cursor = mariadb.cursor()
-        cursor.execute(query, values)
-        mariadb.commit()
+        with mariadb.connect() as conn:
+            conn.execute(query, fields)
+            conn.commit()
     
     CFG = PipelineConfig(
         experiment_name=machine_name,
