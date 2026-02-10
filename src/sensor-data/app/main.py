@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 REDIS_KEY = "csv_last_index"
-S3_ENDPOINT = "s3://rustfs"
+S3_ENDPOINT = "http://rustfs"
 BUCKET = "datasets"
 REDIS_KEY_PREFIX = "csv_last_index"
 
