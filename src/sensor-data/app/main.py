@@ -23,7 +23,7 @@ lock = threading.Lock()
 
 def connect_redis(db=0):
     candidates = [
-        {"host": "redis", "port":6379} 
+        {"host": "redis-master", "port":6379} 
     ]
     for i, cfg in enumerate(candidates):
         try:
