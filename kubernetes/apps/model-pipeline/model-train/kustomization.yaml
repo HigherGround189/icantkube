@@ -6,7 +6,6 @@ resources:
 - rollout.yaml
 - deployment.yaml
 - service.yaml
-- horizontal_auto_scaler.yaml
 
 images:
 - name: icantkube/model-train
