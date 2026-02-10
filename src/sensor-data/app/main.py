@@ -156,14 +156,5 @@ def get_next_line(name: str):
 @app.get("/health")
 def health():
     return {
-        "status": "ok",
-        "datasets": {
-            name: {
-                "rows": len(rows),
-                "last_index": (
-                    r.get(redis_key(name)) if r else "redis_disabled"
-                ),
-            }
-            for name, rows in CSV_DATA.items()
-        },
+        "status": "ok"
     }
