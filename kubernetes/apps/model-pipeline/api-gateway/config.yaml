@@ -10,7 +10,7 @@ data:
         url: http://sample-echo-microservice.sample-echo-microservice.svc.cluster.local
       model-train:
         url: http://model-train
-      sensor-data:
+      sensor-data-service:
         url: http://sensor-data
       machines-data:
         url: http://machines-data
