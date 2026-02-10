@@ -51,21 +51,9 @@ prometheus:
               storage: 20Gi
           selector: {}
 
-kubeEtcd:
-  enabled: true
-  endpoints: 
-    - 98.94.203.156
-  service:
-    enabled: true
-    port: 2381
-    targetPort: 2381
-  serviceMonitor:
-    scheme: https
-    insecureSkipVerify: false
-    serverName: localhost
-    caFile: /etc/prometheus/secrets/etcd-secrets/ca.crt
-    certFile: /etc/prometheus/secrets/etcd-secrets/server.crt
-    keyFile: /etc/prometheus/secrets/etcd-secrets/server.key
-
 alertmanager:
   enabled: false
+
+defaultRules:
+  rules:
+    etcd: false
