@@ -4,6 +4,7 @@ from app.connections import (
     connect_redis, 
     connect_mlflow,
     connect_rustfs, 
+    connect_mariadb
     )
 from app.constants import PipelineConfig
 from app.logging import logging_setup
@@ -14,6 +15,10 @@ logger = logging.getLogger(__name__)
 import pandas as pd
 from time import sleep
 
+from app.config import load_apps
+
+APPS = load_apps()
+
 r = connect_redis(0)
 
 r1 = connect_redis(1)
@@ -23,6 +28,9 @@ port = r1.connection_pool.connection_kwargs['port']
 app = Celery('tasks', broker=f'redis://{host}:{port}/1')
 mlfow = connect_mlflow()
 rustfs = connect_rustfs()
+mariadb = connect_mariadb()
+
+table_name = APPS["mariadb-connection"]["table"]
 
 @app.task(bind=True)
 def start_model_training(self, object_key: str, machine_name: str, trackingId: str):
@@ -46,7 +54,31 @@ def start_model_training(self, object_key: str, machine_name: str, trackingId: s
                     }
                 Retrieve real time update for specified key
         """
+        # Update in redis
         r.hset(trackingId, mapping=kwargs)
+
+        # Update in mariadb
+        field_map = {
+            "status": "status",
+            "progress": "training_progress",
+        }
+        fields = []
+        values = []
+
+        for key, value in kwargs.items():
+            if key in field_map:
+                fields.append(f"{field_map[key]} = %s")
+                values.append(value)
+        
+        query = f"""
+                UPDATE {table_name}
+                SET {', '.join(fields)}
+                WHERE machine = {machine_name}
+                """
+
+        cursor = mariadb.cursor()
+        cursor.execute(query, values)
+        mariadb.commit()
     
     CFG = PipelineConfig(
         experiment_name=machine_name,

@@ -6,10 +6,9 @@ resources:
 - rollout.yaml
 - deployment.yaml
 - service.yaml
-- horizontal_auto_scaler.yaml
 
 images:
 - name: icantkube/model-train
-  newTag: v0.81
+  newTag: v0.83
 - name: icantkube/celery-app
-  newTag: v0.60
+  newTag: v0.62
