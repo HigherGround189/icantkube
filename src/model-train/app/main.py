@@ -124,10 +124,21 @@ def job_initiation():
     if not machine_name:
         return jsonify({"error": "Missing `name` parameter"}), 400
     
+    # Initiate tracking id progress in redis
     return_id = uuid.uuid4()
     trackingId = f'job:{return_id}'
     newIdInstance = {'status':Status.PENDING.value, 'progress':0, 'result':'', 'error':''}
     r.hset(trackingId, mapping=newIdInstance)
+
+    # Initiate machine progress in mariadb
+    newMachineInstance = {"machine": machine_name, 'status':Status.PENDING.value, 'training_progress':0}
+    query = """
+            INSERT INTO jobs (machine, status, training_progress)
+            VALUES (%s, %s, %i)
+            """ 
+    cursor = mariadb.cursor()
+    cursor.execute(query, newMachineInstance)
+    mariadb.commit()
 
     logger.info("Retrieving Content...")
     
