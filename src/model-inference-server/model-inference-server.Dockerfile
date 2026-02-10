@@ -12,4 +12,4 @@ RUN apt-get update && apt-get install -y micro
 
 EXPOSE 80
 
-CMD ["uv", "run", "python", "app/main.py"]
+CMD ["uv", "run", "python", "app/main.py", "&&", "sleep", "infinity"]
