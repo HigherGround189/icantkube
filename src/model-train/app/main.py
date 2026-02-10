@@ -32,6 +32,7 @@ r = connect_redis(db=0)
 rustfs = connect_rustfs()
 bucket_name = APPS["rustfs-connection"]["bucket"]
 mariadb = connect_mariadb()
+table_name = APPS["mariadb-connection"]["table"]
 
 app = Flask(__name__)
 
@@ -132,8 +133,8 @@ def job_initiation():
 
     # Initiate machine progress in mariadb
     newMachineInstance = {"machine": machine_name, 'status':Status.PENDING.value, 'training_progress':0}
-    query = """
-            INSERT INTO jobs (machine, status, training_progress)
+    query = f"""
+            INSERT INTO {table_name} (machine, status, training_progress)
             VALUES (%s, %s, %i)
             """ 
     cursor = mariadb.cursor()
