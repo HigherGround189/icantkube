@@ -1,7 +1,8 @@
 import redis
 import os
 import mlflow
-import minio
+import mariadb
+from sqlalchemy import create_engine
 import boto3
 from botocore.client import Config
 from botocore.exceptions import ClientError
@@ -135,3 +136,31 @@ def create_or_connect_bucket(client, bucket_name: str):
             client.create_bucket(Bucket=bucket_name)
             logger.info(f"Bucket created: {bucket_name}")
             return
+
+def connect_mariadb():
+    """
+    Find connection to mariadb database
+    """
+    password = os.environ.get("MARIADB_ROOT_PASSWORD")
+
+    mariadb_con = APPS["mariadb-connection"]
+
+    candidates = [
+        {"host": mariadb_con["url"], "port":mariadb_con["port"], "database":mariadb_con["db"]},
+    ]
+    for i, cfg in enumerate(candidates):
+        try:
+            engine = create_engine(
+                f"mariadb+mariadbconnector://admin:{password}@{cfg['host']}:{cfg['port']}/{cfg['database']}",
+            )
+            response = engine.connect()
+            if response:
+                logger.info(f"Connected to Mariadb Successfully at {cfg["host"]}:{cfg["port"]}")
+                return engine
+        except Exception as conerr:
+            logger.warning(f"Failed to connect to Mariadb at {cfg["host"]}:{cfg["port"]}: {conerr}")
+            if i < len(candidates) - 1:
+                logger.info("Trying next Mariadb candidate...")
+
+    logger.error("Mariadb cannot be found unavailable")
+    raise RuntimeError("Cannot connect to Mariadb")
