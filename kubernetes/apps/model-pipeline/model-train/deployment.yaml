@@ -65,7 +65,7 @@ spec:
             - secretRef:
                 name: rustfs-credentials-secret
             - secretRef:
-              name: mariadb-credentials-secret
+                name: mariadb-credentials-secret
           volumeMounts:
             - name: model-train-config
               mountPath: /config

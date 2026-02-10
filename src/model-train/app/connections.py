@@ -151,7 +151,7 @@ def connect_mariadb():
     for i, cfg in enumerate(candidates):
         try:
             engine = create_engine(
-                f"mariadb+pymysql://admin:{password}@{cfg['host']}:{cfg['port']}/{cfg['database']}",
+                f"mariadb+mariadbconnector://admin:{password}@{cfg['host']}:{cfg['port']}/{cfg['database']}",
             )
             response = engine.connect()
             if response:
