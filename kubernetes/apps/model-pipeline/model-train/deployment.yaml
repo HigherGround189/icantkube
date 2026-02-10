@@ -23,6 +23,8 @@ spec:
               name: mlflow-credentials-secret
           - secretRef:
               name: rustfs-credentials-secret
+          - secretRef:
+              name: mariadb-credentials-secret
           volumeMounts:
             - name: model-train-config
               mountPath: /config
@@ -62,6 +64,8 @@ spec:
                 name: mlflow-credentials-secret
             - secretRef:
                 name: rustfs-credentials-secret
+            - secretRef:
+              name: mariadb-credentials-secret
           volumeMounts:
             - name: model-train-config
               mountPath: /config
