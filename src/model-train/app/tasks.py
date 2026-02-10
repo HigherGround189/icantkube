@@ -67,7 +67,7 @@ def start_model_training(self, object_key: str, machine_name: str, trackingId: s
 
         for key, value in kwargs.items():
             if key in field_map:
-                fields.append(f"{key} = %s")
+                fields.append(f"{field_map[key]} = %s")
                 values.append(value)
         
         query = f"""
