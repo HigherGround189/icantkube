@@ -1,41 +1,41 @@
-# apiVersion: autoscaling/v2
-# kind: HorizontalPodAutoscaler
-# metadata:
-#   name: model-train
-#   namespace: model-pipeline
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: model-train
+  namespace: model-pipeline
 
-# spec:
-#   scaleTargetRef:
-#     apiVersion: argoproj.io/v1alpha1  
-#     kind: Rollout
-#     name: model-train-rollout
+spec:
+  scaleTargetRef:
+    apiVersion: argoproj.io/v1alpha1  
+    kind: Rollout
+    name: model-train-rollout
 
-#   minReplicas: 1
-#   maxReplicas: 4
+  minReplicas: 1
+  maxReplicas: 4
 
-#   metrics:
-#     - type: Resource
-#       resource:
-#         name: cpu
-#         target:
-#           type: Utilization
-#           averageUtilization: 99
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 99
 
-#   behavior:
-#     scaleDown:
-#       stabilizationWindowSeconds: 300
-#       policies:
-#       - type: Percent
-#         value: 100
-#         periodSeconds: 15
-#       selectPolicy: Max
-#     scaleUp:
-#       stabilizationWindowSeconds: 300
-#       policies:
-#       - type: Percent
-#         value: 100
-#         periodSeconds: 15
-#       - type: Pods
-#         value: 1
-#         periodSeconds: 15
-#       selectPolicy: Max
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+      - type: Percent
+        value: 100
+        periodSeconds: 15
+      selectPolicy: Max
+    scaleUp:
+      stabilizationWindowSeconds: 300
+      policies:
+      - type: Percent
+        value: 100
+        periodSeconds: 15
+      - type: Pods
+        value: 1
+        periodSeconds: 15
+      selectPolicy: Max
