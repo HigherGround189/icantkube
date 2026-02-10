@@ -133,10 +133,10 @@ def job_initiation():
     r.hset(trackingId, mapping=newIdInstance)
 
     # Initiate machine progress in mariadb
-    newMachineInstance = {"machine": machine_name, 'status':Status.PENDING.value, 'training_progress':0}
+    newMachineInstance = {"name": machine_name, 'status':Status.PENDING.value, 'training_progress':0}
     query = text(f"""
-            INSERT INTO {table_name} (machine, status, training_progress)
-            VALUES (:machine, :status, :training_progress)
+            INSERT INTO {table_name} (name, status, training_progress)
+            VALUES (:name, :status, :training_progress)
             """ )
     with mariadb.connect() as conn:
         conn.execute(query, newMachineInstance)
