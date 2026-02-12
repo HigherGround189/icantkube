@@ -18,8 +18,11 @@ spec:
           image: icantkube/model-inference-server
           ports:
             - containerPort: 80
+          env:
+            - name: MODEL_NAME
+              value: "Wittman"
           envFrom:
-          - secretRef:
-              name: mlflow-credentials-secret
-          - configMapRef:
-              name: mlflow-server-link-config
+            - secretRef:
+                name: mlflow-credentials-secret
+            - configMapRef:
+                name: mlflow-server-link-config
