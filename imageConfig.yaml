@@ -35,9 +35,9 @@ sensor-data:
 inference-gateway:
   autoUpdate: true
   autoBuild: true
-  currentTag: "v0.17"
+  currentTag: "v0.18"
 
 model-inference-server:
   autoUpdate: true
   autoBuild: true
-  currentTag: "v0.26"
+  currentTag: "v0.27"
