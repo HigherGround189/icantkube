@@ -51,6 +51,16 @@ def template_deployment(model_name: str, replicas: int, prediction_interval: str
                     "configMapRef": {
                     "name": "mlflow-server-link-config"
                     }
+                },
+                                {
+                    "secretRef": {
+                    "name": "mariadb-credentials-secret"
+                    }
+                },
+                {
+                    "configMapRef": {
+                    "name": "mariadb-config"
+                    }
                 }
                 ]
             }
