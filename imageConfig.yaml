@@ -40,4 +40,4 @@ inference-gateway:
 model-inference-server:
   autoUpdate: true
   autoBuild: true
-  currentTag: "v0.13"
+  currentTag: "v0.14"
