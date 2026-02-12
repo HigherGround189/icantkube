@@ -90,7 +90,8 @@ def training_template(func):
                         csv_buffer = BytesIO()
                         df.to_csv(csv_buffer, index=False)
                         csv_bytes = csv_buffer.getvalue()
-                        mlflow.log_text(csv_bytes, f"datasets/{self.cfg.model_name}/{self.cfg.model_name}.csv")
+                        csv_string = csv_bytes.decode('utf-8')
+                        mlflow.log_text(csv_string, f"datasets/{self.cfg.model_name}/{self.cfg.model_name}.csv")
                         dataset = from_pandas(df)
                     
                     mlflow.log_input(dataset, context="training")
