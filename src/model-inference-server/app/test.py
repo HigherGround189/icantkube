@@ -8,7 +8,7 @@ model = mlflow.sklearn.load_model(model_uri)
 
 print("Model loaded")
 
-X = np.array([[5.4, 3.4, 1.5, 0.4]])
+X = np.array([[5.4, 3.4, 1.5]])
 predictions = model.predict(X)
 
 print(predictions)
