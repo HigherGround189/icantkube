@@ -855,16 +855,16 @@ name = "model-inference-server"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
-    { name = "fastapi" },
     { name = "mlflow" },
-    { name = "uvicorn" },
+    { name = "numpy" },
+    { name = "requests" },
 ]
 
 [package.metadata]
 requires-dist = [
-    { name = "fastapi", specifier = ">=0.128.0" },
     { name = "mlflow", specifier = ">=3.9.0" },
-    { name = "uvicorn", specifier = ">=0.40.0" },
+    { name = "numpy", specifier = ">=2.4.2" },
+    { name = "requests", specifier = ">=2.32.5" },
 ]
 
 [[package]]
