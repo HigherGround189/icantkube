@@ -1,20 +1,31 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: <NAME>
-  namespace: inference
+  name: <MODEL-NAME>-inference-server
+  namespace: model-pipeline
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: <NAME>-inference-server
+      app: <MODEL-NAME>-inference-server
   template:
     metadata:
       labels:
-        app: <NAME>-inference-server
+        app: <MODEL-NAME>-inference-server
     spec:
       containers:
-        - name: <NAME>-inference-server
+        - name: <MODEL-NAME>-inference-server
           image: icantkube/model-inference-server
           ports:
             - containerPort: 80
+          env:
+            - name: MODEL_NAME
+              value: "Wittman"
+            - name: PREDICTION_INTERVAL
+              value: "5"
+          envFrom:
+            - secretRef:
+                name: mlflow-credentials-secret
+            - configMapRef:
+                name: mlflow-server-link-config
+                
