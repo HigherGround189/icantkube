@@ -28,10 +28,8 @@ try:
 except Exception as e:
     print(f"Error accessing model registry: {e}")
 
-artifact_uri = mlflow.get_artifact_uri()
-print(f"Artifact uri: {artifact_uri}")
-
-model_uri = f"runs:/{run_id}/{artifact_uri}"
+latest_version = latest_versions[0].version
+model_uri = f"runs:/{run_id}/{latest_version}"
 model = mlflow.sklearn.load_model(model_uri)
 print("Model loaded")
 
