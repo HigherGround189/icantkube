@@ -1,5 +1,6 @@
 import mlflow
 from mlflow.tracking import MlflowClient
+import mlflow.sklearn
 
 # Set the MLflow tracking URI if it's not already set by an environment variable
 # mlflow.set_tracking_uri("http://your-mlflow-server.com")
@@ -31,7 +32,7 @@ artifact_uri = mlflow.get_artifact_uri()
 print(f"Artifact uri: {artifact_uri}")
 
 model_uri = f"runs:/{run_id}/{artifact_uri}"
-model = mlflow.pyfunc.load_model(model_uri)
+model = mlflow.sklearn.load_model(model_uri)
 print("Model loaded")
 
 predictions = model.predict({"5.4","3.4","1.5","0.4","setosa"})
