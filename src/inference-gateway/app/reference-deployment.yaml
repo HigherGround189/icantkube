@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: <MODEL-NAME>-inference-server
-          image: icantkube/model-inference-server:v0.26
+          image: icantkube/model-inference-server:v0.27
           ports:
             - containerPort: 80
           env:
