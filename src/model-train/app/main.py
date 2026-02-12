@@ -101,8 +101,8 @@ def save_dataset(raw_bytes, contentType, machineName: str, jobId: str, ) -> str:
                 Tagging=tags_string,
             )
 
-        logger.info(f"Upload {key} to storage successfully")
-        return key
+        logger.info(f"Upload {keys[0]} to storage successfully")
+        return keys[0]
     except ClientError as e:
         logger.error(f"Error uploading {key}: {e}")
         return jsonify({'error':f'Failed to upload {key}'}), 500
