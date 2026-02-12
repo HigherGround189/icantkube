@@ -1,27 +1,35 @@
 import mlflow
-import os
 from mlflow.tracking import MlflowClient
 
+# Set the MLflow tracking URI if it's not already set by an environment variable
+# mlflow.set_tracking_uri("http://your-mlflow-server.com")
+
 client = MlflowClient()
-print("Client initialised")
 
-artifact_uri = mlflow.get_artifact_uri()
-print(f"Artifact uri: {artifact_uri}")
+model_name = "Wittman"
 
-registered_models = client.search_registered_models()
-print(registered_models)
+try:
+    # Get the latest version(s) of the registered model
+    latest_versions = client.get_latest_model_versions(model_name, stages=["None", "Staging", "Production", "Archived"]) # Get versions from all stages
+    
+    if latest_versions:
+        # The first item in the list is typically the latest (based on creation time if not ordered otherwise)
+        # To be absolutely sure about the *latest creation*, you might need to sort.
+        # However, client.get_latest_model_versions often handles this implicitly.
+        # Let's get the version object directly
+        latest_version_details = latest_versions[0]
+        run_id = latest_version_details.run_id
+        
+        print(f"The latest run ID for model '{model_name}' is: {run_id}")
+    else:
+        print(f"No versions found for model '{model_name}'.")
 
-model_name = "IrisPipelineModel"
-model_version_details = client.get_model_version(name=model_name, version="1")
-model_uri = model_version_details.source 
-print(f"Model URI for version 1: {model_uri}")
+except Exception as e:
+    print(f"Error accessing model registry: {e}")
 
-artifact_uri = mlflow.get_artifact_uri()
-print(f"Artifact uri: {artifact_uri}")
-
+model_uri = f"runs:/{run_id}/model"
 model = mlflow.pyfunc.load_model(model_uri)
 print("Model loaded")
 
 predictions = model.predict({"5.4","3.4","1.5","0.4","setosa"})
 print(predictions)
-
