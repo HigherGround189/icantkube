@@ -137,6 +137,9 @@ def job_initiation():
     query = text(f"""
             INSERT INTO {table_name} (name, status, training_progress)
             VALUES (:name, :status, :training_progress)
+            ON DUPLICATE KEY UPDATE
+                status = :status,
+                training_progress = :training_progress;
             """ )
     with mariadb.connect() as conn:
         conn.execute(query, newMachineInstance)
