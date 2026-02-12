@@ -14,9 +14,9 @@ NAMESPACE = "model-pipeline"
 @app.post("/inference/create-server")
 async def create_server(server: CreateServer):
     logger.info(server.model_name, server.replicas, server.prediction_interval)
-    deployment = template_deployment(server.model_name, server.replicas, server.prediction_interval)
+    deployment = template_deployment(server.model_name.lower(), server.replicas, server.prediction_interval)
     deployment.create()
-    
+
     return {
         "message": "Created deployment with the following parameters",
         "Model Name": server.model_name,
