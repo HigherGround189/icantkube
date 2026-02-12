@@ -16,12 +16,12 @@ machines-data:
 model-train:
   autoUpdate: true
   autoBuild: true
-  currentTag: "v0.90"
+  currentTag: "v0.91"
 
 celery-app:
   autoUpdate: true
   autoBuild: true
-  currentTag: "v0.69"
+  currentTag: "v0.70"
 
 sample-echo-microservice:
   autoUpdate: false
