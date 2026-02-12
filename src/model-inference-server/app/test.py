@@ -10,7 +10,7 @@ model_name = "Wittman"
 
 try:
     # Get the latest version(s) of the registered model
-    latest_versions = client.get_latest_model_versions(model_name, stages=["None", "Staging", "Production", "Archived"]) # Get versions from all stages
+    latest_versions = client.get_latest_versions(model_name, stages=["None", "Staging", "Production", "Archived"]) # Get versions from all stages
     
     if latest_versions:
         # The first item in the list is typically the latest (based on creation time if not ordered otherwise)
@@ -27,7 +27,10 @@ try:
 except Exception as e:
     print(f"Error accessing model registry: {e}")
 
-model_uri = f"runs:/{run_id}/model"
+artifact_uri = mlflow.get_artifact_uri()
+print(f"Artifact uri: {artifact_uri}")
+
+model_uri = f"runs:/{run_id}/{artifact_uri}"
 model = mlflow.pyfunc.load_model(model_uri)
 print("Model loaded")
 
