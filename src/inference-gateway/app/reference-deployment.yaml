@@ -28,4 +28,8 @@ spec:
                 name: mlflow-credentials-secret
             - configMapRef:
                 name: mlflow-server-link-config
+            - secretRef:
+                name: mariadb-credentials-secret
+            - configMapRef:
+                name: mariadb-config
                 
