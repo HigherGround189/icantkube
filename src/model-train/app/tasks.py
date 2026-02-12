@@ -74,7 +74,7 @@ def start_model_training(self, object_key: str, machine_name: str, trackingId: s
         query = text(f"""
                 UPDATE {table_name}
                 SET {', '.join(fields)}
-                WHERE machine = {machine_name}
+                WHERE name = {machine_name}
                 """)
 
         with mariadb.connect() as conn:
