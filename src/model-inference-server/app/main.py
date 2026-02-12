@@ -6,7 +6,6 @@ import os
 import logging
 from app.logging_setup import logging_setup
 
-
 logging_setup()
 logger = logging.getLogger(__name__)
 
