@@ -21,6 +21,8 @@ spec:
           env:
             - name: MODEL_NAME
               value: "Wittman"
+            - name: PREDICTION_INTERVAL
+              value: 5
           envFrom:
             - secretRef:
                 name: mlflow-credentials-secret
