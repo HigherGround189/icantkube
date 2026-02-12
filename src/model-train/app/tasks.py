@@ -64,12 +64,12 @@ def start_model_training(self, object_key: str, machine_name: str, trackingId: s
             "progress": "training_progress",
         }
         fields = []
-        values = []
+        values = {}
 
         for key, value in kwargs.items():
             if key in field_map:
                 fields.append(f"{field_map[key]} = :{field_map[key]}")
-                values.append(value)
+                values["field_map[key]"] = value
         
         query = text(f"""
                 UPDATE {table_name}
@@ -78,7 +78,7 @@ def start_model_training(self, object_key: str, machine_name: str, trackingId: s
                 """)
 
         with mariadb.connect() as conn:
-            conn.execute(query, fields)
+            conn.execute(query, values)
             conn.commit()
     
     CFG = PipelineConfig(
