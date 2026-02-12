@@ -43,7 +43,6 @@ spec:
                 -u "$DB_USER" \
                 -p"$DB_PASSWORD" \
                 "$DB_NAME" <<'EOF'
-              DROP TABLE IF EXISTS machines;
               CREATE TABLE IF NOT EXISTS machines (
                 name VARCHAR(255) PRIMARY KEY NOT NULL,
                 status VARCHAR(255),

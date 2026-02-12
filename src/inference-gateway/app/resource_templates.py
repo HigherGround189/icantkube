@@ -25,7 +25,7 @@ def template_deployment(model_name: str, replicas: int, prediction_interval: str
             "containers": [
             {
                 "name": f"{model_name}-inference-server",
-                "image": "icantkube/model-inference-server:v0.26",
+                "image": "icantkube/model-inference-server:v0.27",
                 "ports": [
                 {
                     "containerPort": 80
