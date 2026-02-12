@@ -64,7 +64,7 @@ def start_model_training(self, object_key: str, machine_name: str, trackingId: s
             "progress": "training_progress",
         }
         fields = []
-        values = {}
+        values = {"name": machine_name}
 
         for key, value in kwargs.items():
             if key in field_map:
@@ -74,7 +74,7 @@ def start_model_training(self, object_key: str, machine_name: str, trackingId: s
         query = text(f"""
                 UPDATE {table_name}
                 SET {', '.join(fields)}
-                WHERE name = {machine_name}
+                WHERE name = :name
                 """)
 
         with mariadb.connect() as conn:
