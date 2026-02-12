@@ -11,4 +11,4 @@ data:
   DB_NAME:
     machines
   DB_PORT:
-    3306
+    "3306"
