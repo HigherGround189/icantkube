@@ -34,7 +34,7 @@ def template_deployment(model_name: str, replicas: int, prediction_interval: str
                 "env": [
                 {
                     "name": "MODEL_NAME",
-                    "value": str(model_name)
+                    "value": str(model_name.capitalize())
                 },
                 {
                     "name": "PREDICTION_INTERVAL",
