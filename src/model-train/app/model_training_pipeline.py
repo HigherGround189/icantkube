@@ -87,11 +87,6 @@ def training_template(func):
                                 name="iris_sample_dataset",
                             )
                     else:
-                        csv_buffer = BytesIO()
-                        df.to_csv(csv_buffer, index=False)
-                        csv_bytes = csv_buffer.getvalue()
-                        csv_string = csv_bytes.decode('utf-8')
-                        mlflow.log_text(csv_string, f"datasets/{self.cfg.model_name}/{self.cfg.model_name}.csv")
                         dataset = from_pandas(df)
                     
                     mlflow.log_input(dataset, context="training")

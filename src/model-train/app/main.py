@@ -74,7 +74,10 @@ def save_dataset(raw_bytes, contentType, machineName: str, jobId: str, ) -> str:
     """
     try:
         id = jobId.removeprefix("job:")
-        key = f"staging/{machineName}/{id}.csv"
+        keys = (
+            f"staging/{machineName}/{id}.csv", # Temporarily store for training
+            f"{machineName}.csv", #  Actually store dataset
+        )
         size = str(len(raw_bytes))
         if size == 0:
             return jsonify({"error": "Uploaded data has 0 bytes"}), 400
@@ -89,13 +92,14 @@ def save_dataset(raw_bytes, contentType, machineName: str, jobId: str, ) -> str:
         
         tags_string = urllib.parse.urlencode(metadata_dict)
 
-        rustfs.put_object(
-            Bucket=bucket_name,
-            Key=key,
-            Body=BytesIO(raw_bytes),
-            ContentType=contentType,
-            Tagging=tags_string,
-        )
+        for key in keys:
+            rustfs.put_object(
+                Bucket=bucket_name,
+                Key=key,
+                Body=BytesIO(raw_bytes),
+                ContentType=contentType,
+                Tagging=tags_string,
+            )
 
         logger.info(f"Upload {key} to storage successfully")
         return key
