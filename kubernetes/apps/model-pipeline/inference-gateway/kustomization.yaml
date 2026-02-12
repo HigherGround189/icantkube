@@ -9,7 +9,6 @@ resources:
 - rollout.yaml
 - service.yaml
 - serviceaccount.yaml
-- reference-deployment.yaml
 - config.yaml
 - horizontal_auto_scaler.yaml
 
