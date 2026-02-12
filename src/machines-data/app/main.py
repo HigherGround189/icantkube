@@ -108,7 +108,7 @@ def get_all():
                 "name": row.get("name"),
                 "status": row.get("status"),
                 "lastInferenceResults": parse_csv_numbers(row.get("last_inference_results")),
-                "trainingProgress": parse_number(row.get("training_progress")),
+                "trainingProgress": row.get("training_progress"),
             }
         )
 

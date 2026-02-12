@@ -11,7 +11,7 @@ frontend:
 machines-data:
   autoUpdate: true
   autoBuild: true
-  currentTag: "v0.2"
+  currentTag: "v0.3"
 
 model-train:
   autoUpdate: true
