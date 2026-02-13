@@ -1,4 +1,4 @@
-from kr8s.objects import Deployment, Service
+from kr8s.objects import Deployment
 
 def template_deployment(model_name: str, replicas: int, prediction_interval: str):
     return Deployment({
@@ -6,7 +6,11 @@ def template_deployment(model_name: str, replicas: int, prediction_interval: str
     "kind": "Deployment",
     "metadata": {
         "name": f"{model_name}-inference-server",
-        "namespace": "model-pipeline"
+        "namespace": "model-pipeline",
+        "annotations": {
+            "inference-server": "True",
+            "model-name": str(model_name)
+        }
     },
     "spec": {
         "replicas": replicas,
@@ -25,7 +29,7 @@ def template_deployment(model_name: str, replicas: int, prediction_interval: str
             "containers": [
             {
                 "name": f"{model_name}-inference-server",
-                "image": "icantkube/model-inference-server:v0.29",
+                "image": "icantkube/model-inference-server:v0.30",
                 "ports": [
                 {
                     "containerPort": 80

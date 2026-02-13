@@ -3,6 +3,9 @@ kind: Deployment
 metadata:
   name: <MODEL-NAME>-inference-server
   namespace: model-pipeline
+  annotations:
+    inference-server: "True"
+    model-name: "<MODEL-NAME>"
 spec:
   replicas: 1
   selector:
@@ -15,7 +18,7 @@ spec:
     spec:
       containers:
         - name: <MODEL-NAME>-inference-server
-          image: icantkube/model-inference-server:v0.29
+          image: icantkube/model-inference-server
           ports:
             - containerPort: 80
           env:
