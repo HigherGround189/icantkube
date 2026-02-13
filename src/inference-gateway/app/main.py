@@ -1,7 +1,7 @@
 import logging
 import kr8s.asyncio
 from fastapi import FastAPI
-from app.validation import CreateServer, DeleteServer, check_if_deployment_exists, check_if_model_is_registered_on_mlflow
+from app.validation import CreateServer, DeleteServer, model_is_registered_on_mlflow
 from app.resource_templates import template_deployment
 from app.logging_setup import logging_setup
 
@@ -14,24 +14,24 @@ NAMESPACE = "model-pipeline"
 @app.post("/inference/create-server")
 async def create_server(server: CreateServer):
     logger.info(server.model_name, server.replicas, server.prediction_interval)
-    check_if_model_is_registered_on_mlflow()
-    deployment = template_deployment(server.model_name.lower(), server.replicas, server.prediction_interval)
-    deployment.create()
 
-    return {
-        "message": "Created deployment with the following parameters",
-        "Model Name": server.model_name,
-        "Replicas": server.replicas,
-        "Prediction Interval": server.prediction_interval
-        }
+    if model_is_registered_on_mlflow():
+        deployment = template_deployment(server.model_name.lower(), server.replicas, server.prediction_interval)
+        deployment.create()
+
+        return {
+            "message": "Created deployment with the following parameters",
+            "Model Name": server.model_name,
+            "Replicas": server.replicas,
+            "Prediction Interval": server.prediction_interval
+            }
 
 @app.post("/inference/delete-server")
 async def delete_server(server: DeleteServer):
     logger.info(server.model_name)
-    check_if_deployment_exists()
 
     async for deploy in kr8s.asyncio.get("deployment", f"{server.model_name.lower()}-inference-server", namespace=NAMESPACE):
-        print(dir(deploy), deploy)
+        logger.info(f"Deployment: {deploy}")
         await deploy.delete()
     
 
@@ -39,7 +39,7 @@ async def delete_server(server: DeleteServer):
 async def get_inference_servers():
     deploy_list = []
     async for deploy in kr8s.asyncio.get("deployments", namespace=NAMESPACE):
-        logger.info(dir(deploy), deploy)
+        logger.info(f"Deployment: {deploy}")
         deploy_list.append(deploy)
 
     return deploy_list
