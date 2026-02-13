@@ -1,7 +1,7 @@
 import logging
 import kr8s.asyncio
 from fastapi import FastAPI
-from app.validation import CreateServer
+from app.validation import CreateServer, DeleteServer, check_if_deployment_exists
 from app.resource_templates import template_deployment
 from app.logging_setup import logging_setup
 
@@ -24,6 +24,13 @@ async def create_server(server: CreateServer):
         "Prediction Interval": server.prediction_interval
         }
 
+@app.post("/inference/delete-server")
+async def delete_server(server: DeleteServer):
+    logger.info(server.model_name)
+    check_if_deployment_exists()
+    deployment = kr8s.asyncio.get("deployment", f"{server.model_name.lower()}-inference-server")
+    deployment.delete()
+    
 
 @app.get("/inference/active-inference-servers")
 async def get_inference_servers():
