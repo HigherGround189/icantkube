@@ -73,11 +73,7 @@ def save_dataset(raw_bytes, contentType, machineName: str, jobId: str, ) -> str:
             object key to use to retrieve uploaded data
     """
     try:
-        id = jobId.removeprefix("job:")
-        keys = (
-            f"staging/{machineName}/{id}.csv", # Temporarily store for training
-            f"{machineName}.csv", #  Actually store dataset
-        )
+        key = f"{machineName}.csv", #  Name of dataset to be stored
         size = str(len(raw_bytes))
         if size == 0:
             return jsonify({"error": "Uploaded data has 0 bytes"}), 400
@@ -85,24 +81,23 @@ def save_dataset(raw_bytes, contentType, machineName: str, jobId: str, ) -> str:
         create_or_connect_bucket(rustfs, bucket_name=bucket_name)
 
         metadata_dict = {
-            "jobId":jobId,
+            "trainingId":jobId,
             "machineName": machineName,
             "uploadedAt": datetime.now(timezone.utc),
             }
         
         tags_string = urllib.parse.urlencode(metadata_dict)
 
-        for key in keys:
-            rustfs.put_object(
-                Bucket=bucket_name,
-                Key=key,
-                Body=BytesIO(raw_bytes),
-                ContentType=contentType,
-                Tagging=tags_string,
-            )
+        rustfs.put_object(
+            Bucket=bucket_name,
+            Key=key,
+            Body=BytesIO(raw_bytes),
+            ContentType=contentType,
+            Tagging=tags_string,
+        )
 
-        logger.info(f"Upload {keys[0]} to storage successfully")
-        return keys[0]
+        logger.info(f"Upload {key} to storage successfully")
+        return key
     except ClientError as e:
         logger.error(f"Error uploading {key}: {e}")
         return jsonify({'error':f'Failed to upload {key}'}), 500
@@ -122,7 +117,7 @@ def job_initiation():
 
     raw_bytes = request.get_data(parse_form_data=True)
     content_type = request.content_type
-    machine_name = request.args.get('name')
+    machine_name = request.args.get('name').capitalize()
 
     if not raw_bytes:
         return jsonify({"error": "Missing data body"}), 400
