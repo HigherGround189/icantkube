@@ -36,4 +36,4 @@ async def inference_server_exists(model_name, namespace):
     ]
 
     logger.info(f"Deployment list: {deploy_list}")
-    return not any(deploy_list)
+    return any(deploy_list)
