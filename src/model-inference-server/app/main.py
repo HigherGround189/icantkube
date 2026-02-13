@@ -6,12 +6,10 @@ from time import sleep
 from app.logging_setup import logging_setup
 from app.database import add_inference_result
 from app.sensor_data import get_input_data
+from app.constants import MODEL_NAME, PREDICTION_INTERVAL
 
 logging_setup()
 logger = logging.getLogger(__name__)
-
-MODEL_NAME = os.getenv("MODEL_NAME")
-PREDICTION_INTERVAL = int(os.getenv("PREDICTION_INTERVAL"))
 
 model_uri = f"models:/{MODEL_NAME}/latest"
 model = mlflow.sklearn.load_model(model_uri)

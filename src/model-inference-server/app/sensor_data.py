@@ -1,6 +1,5 @@
 import requests
-
-SENSOR_DATA_ENDPOINT = "http://sensor-data-service/get_next_line"
+from app.constants import SENSOR_DATA_ENDPOINT
 
 def get_input_data():
     raw_input_data = requests.get(SENSOR_DATA_ENDPOINT, params={"name": "Wittman"})
