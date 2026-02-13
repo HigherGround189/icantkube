@@ -8,8 +8,6 @@ RUN uv sync
 
 COPY app ./app
 
-RUN apt-get update && apt-get install -y micro
-
 EXPOSE 80
 
 CMD ["uv", "run", "python", "-m", "app.main"]
