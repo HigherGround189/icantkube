@@ -19,7 +19,13 @@ def model_is_on_mlflow(model_name: str):
     except:
         return False
 
-def inference_server_exists(model_name, namespace):
-    deployment = kr8s.get("deployment", f"{model_name.lower()}-inference-server", namespace=namespace)
+async def inference_server_exists(model_name, namespace):
+    deploy_list = [
+        deploy.exists() async for deploy in kr8s.asyncio.get(
+            "deployments", 
+            f"{model_name.lower()}-inference-server", 
+            namespace=namespace
+        )
+    ]
 
-    return deployment.exists()
+    return all(deploy_list)
