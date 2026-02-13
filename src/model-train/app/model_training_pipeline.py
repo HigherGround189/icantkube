@@ -90,7 +90,7 @@ def training_template(func):
                         dataset = from_pandas(df)
                     
                     mlflow.log_input(dataset, context="training")
-                    # self.rustfs_enabled.delete_object(Bucket=self.bucket_name, Key=self.object_key)
+                    self.rustfs_enabled.delete_object(Bucket=self.bucket_name, Key=self.object_key)
 
                 self.update(status=Status.COMPLETED.value, 
                             progress=100, 
