@@ -7,5 +7,6 @@ requires-python = ">=3.13"
 dependencies = [
     "fastapi>=0.128.0",
     "kr8s>=0.20.15",
+    "mlflow>=3.9.0",
     "uvicorn>=0.40.0",
 ]
