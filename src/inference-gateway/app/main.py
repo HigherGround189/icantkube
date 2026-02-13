@@ -1,7 +1,7 @@
 import logging
 import kr8s.asyncio
 from fastapi import FastAPI
-from app.validation import CreateServer, DeleteServer, model_is_registered_on_mlflow
+from app.validation import CreateServer, DeleteServer, model_is_on_mlflow, inference_server_exists
 from app.resource_templates import template_deployment
 from app.logging_setup import logging_setup
 
@@ -15,7 +15,7 @@ NAMESPACE = "model-pipeline"
 async def create_server(server: CreateServer):
     logger.info(server.model_name, server.replicas, server.prediction_interval)
 
-    if model_is_registered_on_mlflow():
+    if model_is_on_mlflow(server.model_name) and inference_server_exists(server.model_name, NAMESPACE) == False:
         deployment = template_deployment(server.model_name.lower(), server.replicas, server.prediction_interval)
         deployment.create()
 
