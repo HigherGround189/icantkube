@@ -74,10 +74,7 @@ def save_dataset(raw_bytes, contentType, machineName: str, jobId: str, ) -> str:
     """
     try:
         id = jobId.removeprefix("job:")
-        keys = (
-            f"staging/{machineName}/{id}.csv", # Temporarily store for training
-            f"{machineName}.csv", #  Actually store dataset
-        )
+        keys = f"{machineName}.csv", #  Naming of dataset to be stored
         size = str(len(raw_bytes))
         if size == 0:
             return jsonify({"error": "Uploaded data has 0 bytes"}), 400
@@ -85,7 +82,7 @@ def save_dataset(raw_bytes, contentType, machineName: str, jobId: str, ) -> str:
         create_or_connect_bucket(rustfs, bucket_name=bucket_name)
 
         metadata_dict = {
-            "jobId":jobId,
+            "trackingId":id,
             "machineName": machineName,
             "uploadedAt": datetime.now(timezone.utc),
             }
@@ -101,11 +98,11 @@ def save_dataset(raw_bytes, contentType, machineName: str, jobId: str, ) -> str:
                 Tagging=tags_string,
             )
 
-        logger.info(f"Upload {keys[0]} to storage successfully")
-        return keys[0]
+        logger.info(f"Upload {keys} to storage successfully")
+        return key
     except ClientError as e:
-        logger.error(f"Error uploading {key}: {e}")
-        return jsonify({'error':f'Failed to upload {key}'}), 500
+        logger.error(f"Error uploading {keys}: {e}")
+        return jsonify({'error':f'Failed to upload {keys}'}), 500
         
 
 @app.route('/start', methods=["POST"])
@@ -122,7 +119,7 @@ def job_initiation():
 
     raw_bytes = request.get_data(parse_form_data=True)
     content_type = request.content_type
-    machine_name = request.args.get('name')
+    machine_name = request.args.get('name').capitalize()
 
     if not raw_bytes:
         return jsonify({"error": "Missing data body"}), 400
