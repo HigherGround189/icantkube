@@ -37,6 +37,7 @@ async def delete_server(server: DeleteServer):
         logger.info(f"Deployment: {deploy}")
         await deploy.delete()
     
+    return {"message": f"Deleted {server.model_name.lower()}-inference-server"}
 
 @app.get("/inference/active-inference-servers")
 async def get_inference_servers():
