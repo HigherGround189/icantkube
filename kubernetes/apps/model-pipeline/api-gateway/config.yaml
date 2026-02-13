@@ -14,3 +14,5 @@ data:
         url: http://sensor-data-service
       machines-data:
         url: http://machines-data
+      inference-gateway:
+        url: http://inference-gateway
