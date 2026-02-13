@@ -10,3 +10,5 @@ data:
     mariadb
   DB_NAME:
     machines
+  DB_PORT:
+    "3306"

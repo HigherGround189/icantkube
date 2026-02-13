@@ -8,6 +8,7 @@ import threading
 import os
 import io
 from contextlib import asynccontextmanager
+from botocore.exceptions import ClientError
 
 
 logger = logging.getLogger(__name__)
@@ -79,38 +80,54 @@ def set_last_index(name: str, idx: int):
     if r:
         r.set(redis_key(name), idx)
 
+
+def load_dataset_by_key(key: str) -> bool:
+    if not key.lower().endswith(".csv"):
+        return False
+
+    name = os.path.splitext(os.path.basename(key))[0]
+    logger.info(f"Loading CSV: {name}")
+
+    try:
+        csv_obj = s3.get_object(Bucket=BUCKET, Key=key)
+    except ClientError as err:
+        code = err.response.get("Error", {}).get("Code")
+        if code in {"NoSuchKey", "404"}:
+            logger.info(f"CSV key not found in RustFS: {key}")
+            return False
+        raise
+
+    body = csv_obj["Body"].read()
+    reader = list(csv.DictReader(io.StringIO(body.decode("utf-8"))))
+
+    if not reader:
+        logger.warning(f"{name} is empty, skipping")
+        return False
+
+    CSV_DATA[name] = reader
+
+    if r and not r.exists(redis_key(name)):
+        r.set(redis_key(name), random.randint(0, len(reader) - 1))
+
+    return True
+
+
+def refresh_dataset_by_name(name: str) -> bool:
+    key = f"{name}.csv"
+    return load_dataset_by_key(key)
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
 
-    response = s3.list_objects_v2(Bucket=BUCKET)
+    response = s3.list_objects_v2(Bucket=BUCKET, Delimiter="/")
 
     if "Contents" not in response:
         raise RuntimeError("No files found in bucket")
 
     for obj in response["Contents"]:
         key = obj["Key"]
-
-        if not key.lower().endswith(".csv"):
-            continue
-
-        name = os.path.splitext(os.path.basename(key))[0]
-        logger.info(f"Loading CSV: {name}")
-
-        csv_obj = s3.get_object(Bucket=BUCKET, Key=key)
-        body = csv_obj["Body"].read()
-
-        reader = list(
-            csv.DictReader(io.StringIO(body.decode("utf-8")))
-        )
-
-        if not reader:
-            logger.warning(f"{name} is empty, skipping")
-            continue
-
-        CSV_DATA[name] = reader
-
-        if r and not r.exists(redis_key(name)):
-            r.set(redis_key(name), random.randint(0, len(reader) - 1))
+        load_dataset_by_key(key)
 
     if not CSV_DATA:
         raise RuntimeError("No CSVs loaded")
@@ -128,15 +145,14 @@ app = FastAPI(title="CSV with Redis + RustFS",
 
 @app.get("/get_next_line")
 def get_next_line(name: str):
-    if name not in CSV_DATA:
-        raise HTTPException(
-            status_code=404,
-            detail=f"Dataset '{name}' not found",
-        )
-
-    rows = CSV_DATA[name]
-
     with lock:
+        if name not in CSV_DATA and not refresh_dataset_by_name(name):
+            raise HTTPException(
+                status_code=404,
+                detail=f"Dataset '{name}' not found",
+            )
+
+        rows = CSV_DATA[name]
         idx = get_last_index(name, len(rows))
         line = rows[idx]
 

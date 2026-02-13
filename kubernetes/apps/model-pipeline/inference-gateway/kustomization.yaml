@@ -9,12 +9,11 @@ resources:
 - rollout.yaml
 - service.yaml
 - serviceaccount.yaml
-- reference-deployment.yaml
 - config.yaml
 - horizontal_auto_scaler.yaml
 
 images:
 - name: icantkube/inference-gateway
-  newTag: v0.9
+  newTag: v0.23
 - name: icantkube/model-inference-server
-  newTag: v0.11
+  newTag: v0.30

@@ -1,27 +1,14 @@
 import mlflow
-import os
-from mlflow.tracking import MlflowClient
+import numpy as np
 
-client = MlflowClient()
-print("Client initialised")
+model_name = "Wittman"
 
-artifact_uri = mlflow.get_artifact_uri()
-print(f"Artifact uri: {artifact_uri}")
+model_uri = f"models:/{model_name}/latest"
+model = mlflow.sklearn.load_model(model_uri)
 
-registered_models = client.search_registered_models()
-print(registered_models)
-
-model_name = "IrisPipelineModel"
-model_version_details = client.get_model_version(name=model_name, version="1")
-model_uri = model_version_details.source 
-print(f"Model URI for version 1: {model_uri}")
-
-artifact_uri = mlflow.get_artifact_uri()
-print(f"Artifact uri: {artifact_uri}")
-
-model = mlflow.pyfunc.load_model(model_uri)
 print("Model loaded")
 
-predictions = model.predict({"5.4","3.4","1.5","0.4","setosa"})
-print(predictions)
+X = np.array([[5.4, 3.4, 1.6]])
+predictions = model.predict(X)
 
+print(predictions)

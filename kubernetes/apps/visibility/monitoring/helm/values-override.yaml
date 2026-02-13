@@ -37,9 +37,6 @@ prometheus:
 
   prometheusSpec:
     retention: 31d
-
-    secrets:
-    - etcd-secrets
     
     storageSpec:
       volumeClaimTemplate:
