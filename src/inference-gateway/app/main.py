@@ -30,8 +30,9 @@ async def delete_server(server: DeleteServer):
     logger.info(server.model_name)
     check_if_deployment_exists()
     deployment = kr8s.asyncio.get("deployment", f"{server.model_name.lower()}-inference-server", namespace=NAMESPACE)
-    print(dir(deployment), type(deployment))
-    deployment.delete()
+    async for deploy in deployment:
+        print(dir(deploy), deploy)
+        deploy.delete()
     
 
 @app.get("/inference/active-inference-servers")
