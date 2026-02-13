@@ -19,4 +19,8 @@ spec:
           image: icantkube/inference-gateway
           ports:
             - containerPort: 80
-            
+          envFrom:
+            - configMapRef:
+              name: mlflow-server-link-config
+            - secretRef:
+              name: mlflow-credentials-secret
