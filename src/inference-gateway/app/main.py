@@ -2,7 +2,7 @@ import logging
 import kr8s.asyncio
 from fastapi import FastAPI
 from app.validation import CreateServer
-from app.resource_templates import template_deployment, template_service
+from app.resource_templates import template_deployment
 from app.logging_setup import logging_setup
 
 logging_setup()

@@ -1,6 +1,5 @@
 import os
 import mlflow
-import pymysql
 import logging
 import numpy as np
 from time import sleep
