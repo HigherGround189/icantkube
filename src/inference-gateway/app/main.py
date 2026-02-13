@@ -13,7 +13,7 @@ NAMESPACE = "model-pipeline"
 
 @app.post("/inference/create-server")
 async def create_server(server: CreateServer):
-    logger.info(server.model_name, server.replicas, server.prediction_interval)
+    logger.info(f"Model Name: {server.model_name}, Replicas: {server.replicas}, Prediction Interval: {server.prediction_interval}")
 
     if model_is_on_mlflow(server.model_name) and await inference_server_exists(server.model_name, NAMESPACE) == False:
         deployment = template_deployment(server.model_name.lower(), server.replicas, server.prediction_interval)
