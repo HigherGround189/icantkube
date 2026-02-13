@@ -25,6 +25,9 @@ async def create_server(server: CreateServer):
             "Replicas": server.replicas,
             "Prediction Interval": server.prediction_interval
             }
+    
+    else:
+        return {"message": "Can't create server, conditions not fulfilled"}
 
 @app.post("/inference/delete-server")
 async def delete_server(server: DeleteServer):
