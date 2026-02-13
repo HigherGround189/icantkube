@@ -21,6 +21,6 @@ spec:
             - containerPort: 80
           envFrom:
             - configMapRef:
-              name: mlflow-server-link-config
+                name: mlflow-server-link-config
             - secretRef:
-              name: mlflow-credentials-secret
+                name: mlflow-credentials-secret
