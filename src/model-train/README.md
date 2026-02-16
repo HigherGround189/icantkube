@@ -31,6 +31,7 @@ Steps:
 ### Other (.py files)
 > `connections.py`:
 This module is responsible for initialising and managing external service connections used throughout the application.
+
 Typical responsibilities include:
 - Creating and reusing connections to services such as:
   1. Redis (broker / backend)
@@ -41,6 +42,7 @@ Typical responsibilities include:
 
 > `constants.py`:
 This module stores shared constants and application-wide configuration values to ensure consistency.
+
 Typical contents include:
 - Status values (e.g. job states, progress)
 - Default configuration values
@@ -49,6 +51,7 @@ This set up ensures Flask and Celery agree on the same values and makes code eas
 
 `logging.py`:
 This module defines the centralised logging configuration for the entire application.
+
 Typical responsibilities include:
 - Configuring log format, log level, and handlers
 - Ensuring consistent logs across:
