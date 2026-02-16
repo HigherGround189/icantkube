@@ -3,7 +3,7 @@
 Retrieve uploaded CSV from frontend to initate model training pipeline. Asynchronously return polls statuses and tracking of multiple training jobs. Each successful job stores model artifacts and metrics to MLFlow.
 
 ### Training upload & start (`/api/model-train`)
-- `POST /api/model-train/start`
+- `POST /api/model-train/start` (Call this to start a training job)
   - Fields: `filename` (string).
   - Behavior: Accepts sequential chunks; 
   - Backed responds `{ trackingId }` while initiating and running model training pipeline.
@@ -29,10 +29,29 @@ Steps:
 3. Run predictions on input features and return the result to the client (`.predict(<input data>)`).
 
 ### Other (.py files)
-`connections.py`:
+> `connections.py`:
+This module is responsible for initialising and managing external service connections used throughout the application.
+Typical responsibilities include:
+- Creating and reusing connections to services such as:
+  1. Redis (broker / backend)
+  2. Mariadb (database)
+  3. RustFS (object storage)
+  4. MLFlow
+- Avoiding duplicated connection logic across Flask and Celery code
 
-`constants.py`:
+> `constants.py`:
+This module stores shared constants and application-wide configuration values to ensure consistency.
+Typical contents include:
+- Status values (e.g. job states, progress)
+- Default configuration values
+
+This set up ensures Flask and Celery agree on the same values and makes code easier to read and refactor.
 
 `logging.py`:
-
-`config.py`:
+This module defines the centralised logging configuration for the entire application.
+Typical responsibilities include:
+- Configuring log format, log level, and handlers
+- Ensuring consistent logs across:
+  1. Flask API
+  2. Celery workers
+- Making logs compatible with containerized environments
