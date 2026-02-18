@@ -60,3 +60,49 @@ images:
   newTag: <imageTag> #eg: v0.3
 
 ```
+
+
+### horizontal_auto_scaler.yaml
+The horizontal pod auto scaler scales the number of pods of the designated target in the scaleTargetRef. In this case, we have set it to automatically control scaling of the rollout pods. We can set up the max and min number of pods, time between scaling up and scaling down the number of pods.
+
+apiVersion: autoscaling/v2 - 
+kind: HorizontalPodAutoscaler
+metadata:
+  name: sensor-data-hpa
+
+spec:
+  scaleTargetRef:
+    apiVersion: argoproj.io/v1alpha1
+    kind: Rollout
+    name: sensor-data-rollout
+
+  minReplicas: 1
+  maxReplicas: 4
+
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 99
+
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+      - type: Percent
+        value: 100
+        periodSeconds: 15
+      selectPolicy: Max
+    scaleUp:
+      stabilizationWindowSeconds: 300
+      policies:
+      - type: Percent
+        value: 100
+        periodSeconds: 15
+      - type: Pods
+        value: 1
+        periodSeconds: 15
+      selectPolicy: Max
+
