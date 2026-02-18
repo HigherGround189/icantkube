@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import type { ApiMode, InferenceServerAction } from "../api";
 import type { Machine } from "../types";
 import MachineCard from "./MachineCard";
 
@@ -8,6 +9,10 @@ type MachineGridProps = {
     onSelect: (machine: Machine) => void;
     onAddMachine: () => void;
     isLoading: boolean;
+    mode: ApiMode;
+    activeInferenceServers: Set<string>;
+    onToggleInferenceServer: (machineName: string, action: InferenceServerAction) => void;
+    pendingInferenceMachineName: string | null;
 };
 
 type GridItem = { type: "machine"; machine: Machine } | { type: "add" };
@@ -18,6 +23,10 @@ export default function MachineGrid({
     onSelect,
     onAddMachine,
     isLoading,
+    mode,
+    activeInferenceServers,
+    onToggleInferenceServer,
+    pendingInferenceMachineName,
 }: MachineGridProps) {
     const gridItems = useMemo<GridItem[]>(() => {
         const firstRow = machines.slice(0, 3);
@@ -39,6 +48,14 @@ export default function MachineGrid({
                             machine={item.machine}
                             isSelected={selectedMachine?.name === item.machine.name}
                             onSelect={onSelect}
+                            mode={mode}
+                            isInferenceServerActive={activeInferenceServers.has(
+                                item.machine.name.toLowerCase()
+                            )}
+                            onToggleInferenceServer={onToggleInferenceServer}
+                            isInferenceActionPending={
+                                pendingInferenceMachineName === item.machine.name.toLowerCase()
+                            }
                         />
                     );
                 }
@@ -61,7 +78,7 @@ export default function MachineGrid({
 
             {isLoading && machines.length === 0 && (
                 <div className="absolute -bottom-7 right-2 text-xs text-slate-500">
-                    Loading machine data…
+                    Loading machine data...
                 </div>
             )}
         </section>

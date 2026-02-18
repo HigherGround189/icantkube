@@ -1,6 +1,13 @@
 import { useCallback, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { fetchMachines, getDemoMachines, type ApiMode } from "./api";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+    fetchActiveInferenceServers,
+    fetchMachines,
+    getDemoMachines,
+    setInferenceServer,
+    type ApiMode,
+    type InferenceServerAction,
+} from "./api";
 import AddMachineModal from "./components/AddMachineModal";
 import MachineDetails from "./components/MachineDetails";
 import MachineGrid from "./components/MachineGrid";
@@ -9,10 +16,13 @@ import type { Machine } from "./types";
 const pollIntervalMs = 5000;
 
 export default function App() {
-    const [selectedMachine, setSelectedMachine] = useState<Machine | null>(null);
+    const queryClient = useQueryClient();
+    const [selectedMachineName, setSelectedMachineName] = useState<string | null>(null);
     const [isAddOpen, setIsAddOpen] = useState(false);
     const [mode, setMode] = useState<ApiMode>("live");
     const [apiStatus, setApiStatus] = useState<"live" | "offline">("offline");
+    const [inferenceActionError, setInferenceActionError] = useState<string | null>(null);
+    const [pendingInferenceMachineName, setPendingInferenceMachineName] = useState<string | null>(null);
 
     const queryFn = useCallback(async () => {
         try {
@@ -36,7 +46,48 @@ export default function App() {
         retry: false,
     });
 
+    const { data: activeInferenceServers, error: activeInferenceServersError } = useQuery<Set<string>, Error>({
+        queryKey: ["inference", "active", "live"],
+        queryFn: () => fetchActiveInferenceServers("live"),
+        enabled: mode === "live",
+        refetchInterval: mode === "live" ? pollIntervalMs : false,
+        refetchIntervalInBackground: true,
+        refetchOnWindowFocus: false,
+        placeholderData: (previousData) => previousData ?? new Set<string>(),
+        retry: false,
+    });
+
+    const inferenceMutation = useMutation({
+        mutationFn: async (variables: { machineName: string; action: InferenceServerAction }) =>
+            setInferenceServer(variables.machineName, variables.action, mode),
+        onMutate: (variables) => {
+            setInferenceActionError(null);
+            setPendingInferenceMachineName(variables.machineName.toLowerCase());
+        },
+        onError: (mutationError) => {
+            setInferenceActionError(
+                mutationError instanceof Error
+                    ? mutationError.message
+                    : "Failed to update inference server state."
+            );
+            setPendingInferenceMachineName(null);
+        },
+        onSuccess: async () => {
+            await Promise.all([
+                queryClient.invalidateQueries({ queryKey: ["machines"] }),
+                queryClient.invalidateQueries({ queryKey: ["inference", "active"] }),
+            ]);
+        },
+        onSettled: () => {
+            setPendingInferenceMachineName(null);
+        },
+    });
+
     const machines = mode === "demo" ? getDemoMachines() : data ?? [];
+    const activeServers = mode === "demo" ? new Set<string>() : activeInferenceServers ?? new Set<string>();
+    const selectedMachine = selectedMachineName
+        ? machines.find((machine) => machine.name === selectedMachineName) ?? null
+        : null;
 
     return (
         <div className="min-h-screen bg-[radial-gradient(ellipse_at_top,_#ffffff_0%,_#f2f3f7_55%,_#e5e7eb_100%)] text-slate-900">
@@ -89,20 +140,38 @@ export default function App() {
                         </span>
                     </div>
                 )}
+                {mode === "live" && inferenceActionError && (
+                    <div className="grid gap-2 rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 text-amber-700">
+                        <strong className="text-sm">Inference server action failed.</strong>
+                        <span className="text-sm">{inferenceActionError}</span>
+                    </div>
+                )}
+                {mode === "live" && activeInferenceServersError && (
+                    <div className="grid gap-2 rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 text-amber-700">
+                        <strong className="text-sm">Could not refresh active inference servers.</strong>
+                        <span className="text-sm">{activeInferenceServersError.message}</span>
+                    </div>
+                )}
 
                 <MachineGrid
                     machines={machines}
                     selectedMachine={selectedMachine}
-                    onSelect={setSelectedMachine}
+                    onSelect={(machine: Machine) => setSelectedMachineName(machine.name)}
                     onAddMachine={() => setIsAddOpen(true)}
                     isLoading={isLoading}
+                    mode={mode}
+                    activeInferenceServers={activeServers}
+                    onToggleInferenceServer={(machineName, action) =>
+                        inferenceMutation.mutate({ machineName, action })
+                    }
+                    pendingInferenceMachineName={pendingInferenceMachineName}
                 />
             </div>
 
             {selectedMachine && (
                 <MachineDetails
                     machine={selectedMachine}
-                    onDismiss={() => setSelectedMachine(null)}
+                    onDismiss={() => setSelectedMachineName(null)}
                 />
             )}
 

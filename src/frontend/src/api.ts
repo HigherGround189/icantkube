@@ -5,6 +5,39 @@ type MachinesResponse = {
 };
 
 export type ApiMode = "live" | "demo";
+export type InferenceServerAction = "start" | "stop";
+const apiTimeoutMs = 15000;
+
+type ApiErrorPayload = {
+    detail?: string;
+    message?: string;
+};
+
+const withTimeout = async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), apiTimeoutMs);
+
+    try {
+        return await fetch(input, {
+            ...init,
+            signal: controller.signal,
+            credentials: "same-origin",
+        });
+    } catch (error) {
+        if (error instanceof DOMException && error.name === "AbortError") {
+            throw new Error("Request timed out. Please try again.");
+        }
+
+        throw error;
+    } finally {
+        window.clearTimeout(timeout);
+    }
+};
+
+const toApiErrorMessage = async (response: Response, fallback: string): Promise<string> => {
+    const body = (await response.json().catch(() => null)) as ApiErrorPayload | null;
+    return body?.detail ?? body?.message ?? `${fallback} (${response.status})`;
+};
 
 const normalizeResults = (value: unknown): number[] | null => {
     if (Array.isArray(value)) {
@@ -74,15 +107,57 @@ const demoMachines: Machine[] = [
     },
 ];
 
+type ActiveInferenceServerResponse = unknown[] | { deployments?: unknown };
+
+const extractString = (...candidates: unknown[]): string | null => {
+    for (const candidate of candidates) {
+        if (typeof candidate === "string" && candidate.trim()) {
+            return candidate.trim();
+        }
+    }
+    return null;
+};
+
+const toActiveInferenceServerModelName = (item: unknown): string | null => {
+    if (!item || typeof item !== "object") {
+        return null;
+    }
+
+    const record = item as Record<string, unknown>;
+    const metadata =
+        record.metadata && typeof record.metadata === "object"
+            ? (record.metadata as Record<string, unknown>)
+            : null;
+    const annotations =
+        metadata?.annotations && typeof metadata.annotations === "object"
+            ? (metadata.annotations as Record<string, unknown>)
+            : null;
+    const deploymentName = extractString(metadata?.name, record.name);
+    const annotationModelName = extractString(
+        annotations?.["model-name"],
+        annotations?.model_name
+    );
+
+    if (annotationModelName) {
+        return annotationModelName;
+    }
+
+    if (deploymentName && deploymentName.endsWith("-inference-server")) {
+        return deploymentName.replace(/-inference-server$/i, "");
+    }
+
+    return null;
+};
+
 export const fetchMachines = async (mode: ApiMode): Promise<Machine[]> => {
     if (mode === "demo") {
         return demoMachines;
     }
 
-    const response = await fetch("/api/machines-data/all");
+    const response = await withTimeout("/api/machines-data/all");
 
     if (!response.ok) {
-        throw new Error(`Failed to load machines (${response.status})`);
+        throw new Error(await toApiErrorMessage(response, "Failed to load machines"));
     }
 
     const data: MachinesResponse | unknown[] = await response.json();
@@ -103,13 +178,44 @@ export const fetchMachines = async (mode: ApiMode): Promise<Machine[]> => {
 
 export const getDemoMachines = (): Machine[] => demoMachines;
 
+export const fetchActiveInferenceServers = async (mode: ApiMode): Promise<Set<string>> => {
+    if (mode === "demo") {
+        return new Set<string>();
+    }
+
+    const response = await withTimeout("/api/inference-gateway/inference/active-inference-servers");
+
+    if (!response.ok) {
+        throw new Error(await toApiErrorMessage(response, "Failed to load active inference servers"));
+    }
+
+    const data: ActiveInferenceServerResponse = await response.json();
+    const items = Array.isArray(data)
+        ? data
+        : Array.isArray((data as { deployments?: unknown }).deployments)
+            ? ((data as { deployments: unknown[] }).deployments as unknown[])
+            : [];
+
+    const modelNames = items
+        .map(toActiveInferenceServerModelName)
+        .filter((modelName): modelName is string => Boolean(modelName))
+        .map((modelName) => modelName.toLowerCase());
+
+    return new Set(modelNames);
+};
+
 export const trainMachine = async (name: string, csvFile: File, mode: ApiMode) => {
     if (mode === "demo") {
         return { ok: true };
     }
 
+    const machineName = name.trim();
+    if (!machineName) {
+        throw new Error("Machine name is required.");
+    }
+
     const csvBody = await csvFile.text();
-    const response = await fetch(`/api/model-train/start?name=${encodeURIComponent(name.trim())}`, {
+    const response = await withTimeout(`/api/model-train/start?name=${encodeURIComponent(machineName)}`, {
         method: "POST",
         headers: {
             "Content-Type": "text/csv",
@@ -118,8 +224,57 @@ export const trainMachine = async (name: string, csvFile: File, mode: ApiMode) =
     });
 
     if (!response.ok) {
-        throw new Error(`Model train request failed (${response.status})`);
+        throw new Error(await toApiErrorMessage(response, "Model train request failed"));
     }
 
     return response;
+};
+
+export const setInferenceServer = async (
+    modelName: string,
+    action: InferenceServerAction,
+    mode: ApiMode
+) => {
+    if (mode === "demo") {
+        return { ok: true };
+    }
+
+    const normalizedModelName = modelName.trim();
+    if (!normalizedModelName) {
+        throw new Error("Model name is required.");
+    }
+
+    const endpoint =
+        action === "start"
+            ? "/api/inference-gateway/inference/create-server"
+            : "/api/inference-gateway/inference/delete-server";
+    const payload =
+        action === "start"
+            ? { model_name: normalizedModelName, replicas: 1, prediction_interval: 5 }
+            : { model_name: normalizedModelName };
+
+    const response = await withTimeout(endpoint, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+        throw new Error(await toApiErrorMessage(response, `Failed to ${action} inference server`));
+    }
+
+    const responsePayload = (await response.json().catch(() => null)) as
+        | { message?: string }
+        | null;
+
+    if (
+        action === "start" &&
+        responsePayload?.message?.toLowerCase().includes("can't create server")
+    ) {
+        throw new Error(responsePayload.message);
+    }
+
+    return { ok: true };
 };

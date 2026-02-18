@@ -106,7 +106,7 @@ export default function AddMachineModal({ onSubmitted, onClose, mode }: AddMachi
                         type="submit"
                         disabled={submitState.status === "loading"}
                     >
-                        {submitState.status === "loading" ? "Sending…" : "Send for training"}
+                        {submitState.status === "loading" ? "Sending..." : "Send for training"}
                     </button>
                     <button
                         className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm font-semibold text-slate-700"
