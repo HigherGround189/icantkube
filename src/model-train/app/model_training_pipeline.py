@@ -5,7 +5,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeRegressor
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, root_mean_squared_error
 
 from contextlib import nullcontext
 from functools import wraps
@@ -73,7 +73,7 @@ def training_template(func):
                 # Log into mlflow
                 signature = infer_signature(X_test, y_pred)
                 if self.mlflow_enabled:
-                    mlflow.log_metric("accuracy", acc)
+                    mlflow.log_metric("rmse", acc)
                     mlflow.sklearn.log_model(
                         sk_model=pipeline,
                         name=self.cfg.model_name,
@@ -94,7 +94,7 @@ def training_template(func):
 
                 self.update(status=Status.COMPLETED.value, 
                             progress=100, 
-                            result=json.dumps({"accuracy": acc})
+                            result=json.dumps({"rmse": acc})
                             )
 
         except Exception as e:
@@ -231,7 +231,7 @@ class ModelTrainingPipeline():
             acc: float
                 Measured accuracy result
         """
-        acc = accuracy_score(y_pred, y_test)
+        acc = root_mean_squared_error(y_pred, y_test)
         return acc
     
     def run(self) -> None:
