@@ -15,4 +15,4 @@ images:
 - name: icantkube/inference-gateway
   newTag: v0.43
 - name: icantkube/model-inference-server
-  newTag: v0.35
+  newTag: v0.36
