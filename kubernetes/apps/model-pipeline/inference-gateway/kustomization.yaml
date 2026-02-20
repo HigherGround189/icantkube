@@ -13,6 +13,6 @@ resources:
 
 images:
 - name: icantkube/inference-gateway
-  newTag: v0.44
+  newTag: v0.45
 - name: icantkube/model-inference-server
-  newTag: v0.36
+  newTag: v0.37
