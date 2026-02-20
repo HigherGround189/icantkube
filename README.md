@@ -12,14 +12,15 @@ Include System Architecture diagram here.
 
 ### Model Pipeline
 
-Explain what model pipeline does (preferably each part)
+Explain what model pipeline does (preferably each part, maybe in a table?)
+
+### Microservices
+Create table with description of each microservice and its purpose
 
 # Instructions to build and run system
 
-Not sure if needed, waiting for response by Ms Seah
-
-# Microservices
-Create table with description of each microservice and its purpose
+Add script to install everything.
+Remember to list prerequisites (eg: kubseal)
 
 # Dataset information and sources
 I got no clue for this one 
@@ -28,7 +29,18 @@ I got no clue for this one
 Dependency on cloudflare
 
 # Additional K8s Features
-Add table of additional k8s features here.
+
+| Name | Purpose |
+| :--- | :--- |
+| ArgoCD | Syncs Kubernetes cluster state with manifests stored on Github. It automates deployments and detects state drift.                                                      |
+| SealedSecrets | Encrypts Kubernetes Secret manifests so they can be safely stored on Github. Secrets are decrypted only by the cluster, thus protecting sensitive data.                                                                              |
+| Cloudflare Ingress | Ingress that automatically creates and deletes Cloudflare Tunnels, which are used to expose web applications.                                                      |
+| Dynamic LocalPV Provisioner | Automatically provisions PersistentVolumes when workloads request storage, simplifying local disk usage.                                                        |
+| Prometheus | Scrapes metrics from Kubernetes and services for performance and health insight.                                                                             
+| Autoscaling (HPA) | Automatically scales the number of pod replicas based on observed metrics like CPU/ memory or custom metrics to match demand.                                                                               |
+| Argo Rollouts | Orchestrates advanced deployment strategies like blue-green or canary for  Kubernetes Deployments.                                                                      |
+| KubeBox | Web Console to provide easy access to cluster resources and tools via a web UI.
+
 
 
 
