@@ -1,9 +1,81 @@
 # ICANTKUBE 🥀🥀🥀
 
-## TBD
-Add contribution table here
-Add table of resources used (eg: deployment, statefulset etc)
+# Project overview and objectives
 
+## Problem Statement
+
+Our problem statement for project (machine failure)
+
+## System Architecture
+
+Include System Architecture diagram here. 
+
+### Model Pipeline
+
+Explain what model pipeline does (preferably each part)
+
+# Instructions to build and run system
+
+Not sure if needed, waiting for response by Ms Seah
+
+# Microservices
+Create table with description of each microservice and its purpose
+
+# Dataset information and sources
+I got no clue for this one 
+
+# Any known issues or limitations
+Dependency on cloudflare
+
+# Additional K8s Features
+Add table of additional k8s features here.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<br><bn><br><bn><br><bn><br><bn><br><bn><br><bn><br><bn><br><bn><br><bn><br><bn>
+
+# RESTRUCTURING IN PROGRESS (EVERYTHING ABOVE THIS PART IS A SUBMISSION REQUIREMENT)
+
+## TBD
+
+* Add contribution table here.
+* Add table of resources used (eg: deployment, statefulset etc)
+* Template out all yamls from helm
+
+## Slides Order
+
+* Problem Statement
+* Individual Contributions
+* System Architecture
+  * What Argocd does
+  * How Cloudflare Ingress works
+  * What Promtheus + Grafana do
+  * Model Training as a whole
+  * How models are tracked in mlflow
+
+Note: "Describe how your architecture ensures scalability, modularity, and fault tolerance."
+
+## Links
+
+* [Website](https://home.icantkube.help/)
+* [ArgoCD](https://argocd.icantkube.help/)
+* [Mlflow](https://mlflow.icantkube.help/)
+* [Grafana](https://grafana.icantkube.help/)
+* [Prometheus](https://prometheus.icantkube.help/)
+* [Kubebox](https://kubebox.icantkube.help/)
+* [PHPMyAdmin](https://phpmyadmin.icantkube.help/)
+* [RustFS](https://rustfs.icantkube.help/)
 
 ## Kubernetes 
 The [kubernetes/](kubernetes/) folder is the single source of truth for our kubernetes cluster. ArgoCD continuously watches the folder and automatically reconciles cluster resources to match what is committed in Git.
