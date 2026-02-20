@@ -16,7 +16,7 @@ logger.info("Model loaded")
 
 while True:
     X = get_input_data()
-    X.reshape(1, -1)
+    X = np.array(X).reshape(1, -1)
     predictions = model.predict(X)
     prediction_value = int(np.asarray(predictions).ravel()[0])
     update_result = add_inference_result(prediction_value)
