@@ -12,3 +12,9 @@ variable "instance_type" {
   type    = string
   default = "m7i-flex.large"
 }
+
+variable "key_name" {
+  type        = string
+  default     = null
+  description = "Existing AWS EC2 Key Pair name used for SSH access to the Ubuntu instance."
+}

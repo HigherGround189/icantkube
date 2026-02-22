@@ -52,13 +52,13 @@ resource "aws_security_group" "allow_all" {
   }
 }
 
-data "aws_ami" "talos" {
+data "aws_ami" "ubuntu" {
   most_recent = true
-  owners      = ["540036508848"] # Sidero Labs (Talos)
+  owners      = ["099720109477"] # Canonical
 
   filter {
     name   = "name"
-    values = ["talos-*"]
+    values = ["ubuntu/images/hvm-ssd-gp3/ubuntu-noble-24.04-amd64-server-*"]
   }
 
   filter {
@@ -72,39 +72,40 @@ data "aws_ami" "talos" {
   }
 }
 
-resource "aws_instance" "talos" {
-  ami                         = data.aws_ami.talos.id
+resource "aws_instance" "control_plane" {
+  ami                         = data.aws_ami.ubuntu.id
   instance_type               = var.instance_type
   subnet_id                   = aws_subnet.public.id
   vpc_security_group_ids      = [aws_security_group.allow_all.id]
   associate_public_ip_address = true
+  key_name                    = var.key_name
 
   tags = {
-    Name = "Talos-II"
+    Name = "icantkube-k3s-control-plane"
   }
 }
 
-resource "aws_eip" "talos" {
+resource "aws_eip" "control_plane" {
   domain = "vpc"
 }
 
-resource "aws_eip_association" "talos" {
-  instance_id   = aws_instance.talos.id
-  allocation_id = aws_eip.talos.id
+resource "aws_eip_association" "control_plane" {
+  instance_id   = aws_instance.control_plane.id
+  allocation_id = aws_eip.control_plane.id
 }
 
-resource "aws_ebs_volume" "talos_data" {
+resource "aws_ebs_volume" "data" {
   availability_zone = var.az
   size              = 80
   type              = "gp3"
 
   tags = {
-    Name = "talos-data"
+    Name = "icantkube-k3s-data"
   }
 }
 
-resource "aws_volume_attachment" "talos_data" {
+resource "aws_volume_attachment" "data" {
   device_name = "/dev/xvdf"
-  volume_id   = aws_ebs_volume.talos_data.id
-  instance_id = aws_instance.talos.id
+  volume_id   = aws_ebs_volume.data.id
+  instance_id = aws_instance.control_plane.id
 }

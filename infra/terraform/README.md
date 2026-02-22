@@ -1,104 +1,47 @@
-# Terraform (AWS EC2 + Talos)
+# Terraform (AWS EC2 + Ubuntu + k3s)
+
 ## Overview
+This folder provisions AWS infrastructure for a single Ubuntu EC2 node used as the k3s control-plane host.
 
-The tf/ folder contains Terraform code that provisions minimal AWS infrastructure to run a single Talos Linux EC2 instance.
-
-This setup contains:
+Infrastructure includes:
 - One VPC
 - One public subnet
-- One EC2 instance
-- One Elastic IP
-- One security group that allows everything
+- One Internet Gateway and route table
+- One security group (currently wide open)
+- One Ubuntu EC2 instance
+- One Elastic IP attached to the instance
+- One additional EBS data volume
 
+## Files
+- `main.tf`: VPC, subnet, security group, EC2 instance, EIP, and EBS resources
+- `variables.tf`: region, AZ, instance type, and optional SSH key pair name
+- `output.tf`: Elastic IP and SSH username output
+- `versions.tf`: Terraform and provider version constraints
 
-## Infrastructure Managed Here
-### VPC
-
-- CIDR: 10.0.0.0/16
-- DNS enabled
-- Internet Gateway attached
-
-### Subnet
-
-- Single public subnet (10.0.0.0/24)
-- Single AZ
-- Auto-assign public IPs
-
-### Security Group
-
-- Allows all inbound traffic
-- Allows all outbound traffic
-- No port restrictions
-- No protocol restrictions
-
-> [!WARNING]
-> This security group is fully open. This is intentional as once the Talos master is configured properly, nobody without the credentials can connect to it.
-
-### EC2 Instance
-
-- AMI: Talos Linux (official Sidero Labs image, auto-discovered)
-- Instance type: t3.small
-- Public EC2
-- Elastic IP attached
-
-### Elastic IP
-
-An Elastic IP is allocated and attached to the instance to provide:
-- Stable public endpoint
-- IP persistence across reboots
-
-> [!NOTE]
-> Elastic IPs incur cost if allocated and not attached.
-
-Directory Structure
-```yaml
-tf/
-├── main.tf        # Resources (VPC, subnet, EC2, EIP, SG)
-├── variables.tf  # Region, AZ, instance type
-├── outputs.tf    # Public IP / Elastic IP outputs
-└── versions.tf   # Provider + Terraform version constraints
-```
+## Prerequisites
+- Terraform
+- AWS credentials configured (for example with `aws configure`)
+- Existing AWS EC2 key pair name set through `TF_VAR_key_name` (recommended for SSH access)
 
 ## Usage
-### Prerequisites
-
-- Terraform installed
-- AWS CLI installed
-- AWS credentials configured via:
-```bash
-aws configure
-```
-
-
-Terraform automatically uses credentials from:
-
-- ~/.aws/credentials
-- environment variables
-
-
-### Deploy
-
 From repo root:
+
 ```bash
-cd tf
+cd infra/terraform
 terraform init
 terraform apply
 ```
 
-Approve when prompted.
+Useful outputs:
+- `elastic_ip`: public IP for SSH and kubeconfig endpoint
+- `ssh_user`: default SSH username (`ubuntu`)
 
-### Outputs
+Destroy:
 
-After apply, Terraform will print:
-
-- EC2 instance ID
-- Elastic IP address
-
-Use the Elastic IP as the stable endpoint.
-
-### Destroy
 ```bash
 terraform destroy
 ```
 
-This removes all AWS resources created by this folder.
+## Notes
+- The security group currently allows all inbound and outbound traffic.
+- k3s installation and Kubernetes bootstrap are handled by `infra/create_cluster.sh` and `infra/redeploy.sh`, not Terraform directly.

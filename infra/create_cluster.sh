@@ -1,71 +1,65 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# --- prerequisites ---
-command -v terraform >/dev/null
-command -v talosctl >/dev/null
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+TF_DIR="${SCRIPT_DIR}/terraform"
+GEN_DIR="${SCRIPT_DIR}/generated"
+KUBECONFIG_PATH="${GEN_DIR}/k3s.yaml"
+SSH_KEY_PATH="${SSH_KEY_PATH:-}"
 
-# # --- paths ---
-TF_DIR="terraform"
-PATCH_DIR="patches"
-GEN_DIR="generated"
-SECRETS_FILE="${GEN_DIR}/secrets.yaml"
+for cmd in terraform ssh kubectl helm kubeseal; do
+  command -v "${cmd}" >/dev/null || {
+    echo "Missing required command: ${cmd}"
+    exit 1
+  }
+done
 
-# --- terraform ---
-cd "${TF_DIR}"
-terraform init -input=false
-terraform apply -auto-approve -input=false
+mkdir -p "${GEN_DIR}"
 
-IP="$(terraform output -raw elastic_ip)"
-cd ..
+terraform -chdir="${TF_DIR}" init -input=false
+terraform -chdir="${TF_DIR}" apply -auto-approve -input=false
 
-if [[ -z "${IP}" ]]; then
-  echo "ERROR: elastic_ip output is empty"
+IP="$(terraform -chdir="${TF_DIR}" output -raw elastic_ip)"
+SSH_USER="$(terraform -chdir="${TF_DIR}" output -raw ssh_user)"
+
+if [[ -z "${IP}" || -z "${SSH_USER}" ]]; then
+  echo "ERROR: missing terraform outputs (elastic_ip / ssh_user)"
   exit 1
 fi
 
-# --- generate secrets ---
-mkdir -p "${GEN_DIR}"
-talosctl gen secrets --output-file "${SECRETS_FILE}" --force
+SSH_OPTS=(
+  -o StrictHostKeyChecking=no
+  -o UserKnownHostsFile=/dev/null
+  -o ConnectTimeout=10
+)
 
-# --- generate talos config ---
-talosctl gen config \
-  --force \
-  icantkube-cluster "https://${IP}" \
-  --with-secrets "${SECRETS_FILE}" \
-  --config-patch @"${PATCH_DIR}/allow-controlplane-workloads.yaml" \
-  --config-patch @"${PATCH_DIR}/dhcp.yaml" \
-  --config-patch @"${PATCH_DIR}/kubelet-cert-rotation.yaml" \
-  --config-patch @"${PATCH_DIR}/predictable-interface-names.yaml" \
-  --config-patch @"${PATCH_DIR}/extra-mounts.yaml" \
-  --config-patch @"${PATCH_DIR}/add-disk.yaml" \
-  --config-patch @"${PATCH_DIR}/bind-addresses.yaml" \
-  --output "${GEN_DIR}"
+if [[ -n "${SSH_KEY_PATH}" ]]; then
+  SSH_OPTS+=(-i "${SSH_KEY_PATH}")
+fi
 
-cp "${GEN_DIR}/talosconfig" ~/.talos/config
-
-# --- talos client config ---
-talosctl config endpoints "${IP}"
-talosctl config node "${IP}"
-
-# --- apply config ---
-talosctl apply-config \
-  -f "${GEN_DIR}/controlplane.yaml" \
-  -n "${IP}" \
-  --insecure
-
-until talosctl bootstrap -n "$IP"; do
-  echo "Waiting for Talos bootstrap to become available..."
-  sleep 15
+echo "Waiting for SSH on ${SSH_USER}@${IP}..."
+until ssh "${SSH_OPTS[@]}" "${SSH_USER}@${IP}" "echo ssh-ready" >/dev/null 2>&1; do
+  sleep 5
 done
-# --- wait for kube-apiserver ---
-talosctl health \
-  -n "${IP}" \
-  --wait-timeout 10m || true
 
-# --- fetch kubeconfig ---
-talosctl kubeconfig \
-  -n "${IP}" \
-  --force
+echo "Installing k3s on server..."
+ssh "${SSH_OPTS[@]}" "${SSH_USER}@${IP}" \
+  "curl -sfL https://get.k3s.io | sh -s - --disable traefik --disable local-storage --disable servicelb --disable metrics-server --disable-cloud-controller"
 
-echo "Cluster ready at ${IP}"
+echo "Fetching kubeconfig..."
+ssh "${SSH_OPTS[@]}" "${SSH_USER}@${IP}" "sudo cat /etc/rancher/k3s/k3s.yaml" > "${KUBECONFIG_PATH}"
+sed -i "s/127.0.0.1/${IP}/g" "${KUBECONFIG_PATH}"
+sed -i "s/localhost/${IP}/g" "${KUBECONFIG_PATH}"
+chmod 600 "${KUBECONFIG_PATH}"
+
+KUBECONFIG="${KUBECONFIG_PATH}" kubectl wait --for=condition=Ready node --all --timeout=5m
+
+"${SCRIPT_DIR}/redeploy.sh" "${KUBECONFIG_PATH}"
+
+cat <<EOF
+Cluster is ready.
+Kubeconfig: ${KUBECONFIG_PATH}
+
+Use:
+  export KUBECONFIG="${KUBECONFIG_PATH}"
+EOF
