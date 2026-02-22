@@ -8,14 +8,22 @@ How can we predict machine failure breakdown based on how many hours it has left
 
 ## System Architecture
 
-Include System Architecture diagram here. 
+![System Architecture Diagram](./system-architecture.jpeg)
 
 ### Model Pipeline
 
-Explain what model pipeline does (preferably each part, maybe in a table?)
+The model pipeline ingests sensor CSV data, kicks off asynchronous model training jobs, tracks artifacts and metrics in MLflow, and serves live predictions by creating per-model inference servers on demand; the frontend interacts through the API gateway to monitor machine state and control training and inference workflows.
 
 ### Microservices
-Create table with description of each microservice and its purpose
+| Microservice | Purpose |
+| :--- | :--- |
+| API Gateway | Routes `/api/{service}` requests to the correct internal model-pipeline service. |
+| Frontend | Provides the UI to start training, manage inference servers, and view machine status. |
+| Sensor Data | Streams the next sensor-data row from CSV datasets stored in object storage. |
+| Model Train | Runs asynchronous model-training jobs and logs outputs to MLflow. |
+| Inference Gateway | Creates, lists, and deletes model-specific inference-server deployments in Kubernetes. |
+| Model Inference Server | Loads a trained model from MLflow and writes periodic predictions to MariaDB. |
+| Machines Data | Exposes machine records and latest inference/training state from MariaDB. |
 
 # Instructions to build and run system
 
