@@ -44,4 +44,4 @@ terraform destroy
 
 ## Notes
 - The security group currently allows all inbound and outbound traffic.
-- k3s installation and Kubernetes bootstrap are handled by `infra/create_cluster.sh` and `infra/redeploy.sh`, not Terraform directly.
+- k3s installation and Kubernetes bootstrap are handled by `infra/deploy-cloud.sh`, not Terraform directly.

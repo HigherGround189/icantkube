@@ -10,8 +10,9 @@ ArgoCD continuously watches this folder and automatically reconciles cluster res
 kubernetes/ 
 ├── apps
 ├── argocd-boostrap
-├── create-apps 
-└── data-sources
+├── create-apps
+├── data-sources
+└── secrets
 ```
 
 ## ```apps/```
@@ -29,3 +30,7 @@ Each Application defines what the resources to be deployed and their sources.
 ## ```data-sources/```
 Contains YAMLs that declare ArgoCD repositories (Git, Helm, etc)
 Each Repository represents an external source ArgoCD has access to (eg: This Github Repo, Helm Repos, etc).
+
+## ```secrets/```
+Contains YAMLs that are kubernetes secrets
+Each file represents a secret that will be added to the cluster when the deployment script is run.

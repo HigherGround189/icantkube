@@ -32,43 +32,46 @@ The model pipeline ingests sensor CSV data, kicks off asynchronous model trainin
 # Instructions to build and run system
 
 ## Prerequisites
-- AWS account + credentials configured locally (`aws configure`)
-- AWS EC2 Key Pair name (set as `TF_VAR_key_name`)
-- `terraform`
-- `ssh`
+- `minikube`
 - `kubectl`
 - `helm`
 - `kubeseal`
 - `bash`
 
-## Build and Run (Fresh Cluster)
+## Build and Run (Local)
+Before first deploy, create these plaintext secret files in `kubernetes/secrets`:
+
+- `kubernetes/secrets/core/cloudflare-credentials.unsealed.yaml`
+  - Set: `account_id`, `api_token`, `tunnel_name`
+- `kubernetes/secrets/model-pipeline/mariadb-credentials.unsealed.yaml`
+  - Set: `MARIADB_ROOT_PASSWORD`
+- `kubernetes/secrets/model-pipeline/mlflow-credentials.unsealed.yaml`
+  - Set: `MLFLOW_FLASK_SERVER_SECRET_KEY`, `MLFLOW_TRACKING_USERNAME`, `MLFLOW_TRACKING_PASSWORD`, `username`, `password`
+- `kubernetes/secrets/model-pipeline/mlflow-postgresql-credentials.unsealed.yaml`
+  - Set: `username`, `password`
+- `kubernetes/secrets/model-pipeline/phpmyadmin-credentials.unsealed.yaml`
+  - Set: `PMA_USER`, `PMA_PASSWORD`
+- `kubernetes/secrets/model-pipeline/rustfs-credentials.unsealed.yaml`
+  - Set: `access_key_id`, `secret_access_key`
+- `kubernetes/secrets/visibility/grafana-auth-credentials.unsealed.yaml`
+  - Set: `username`, `password`
+
+When you run deploy, these are automatically sealed into matching `*.sealed.yaml` files by `kubeseal`.
+
 From repo root:
 
 ```bash
-export TF_VAR_key_name="<your-aws-keypair-name>"
-export SSH_KEY_PATH="<path-to-private-key.pem>"
-bash infra/create_cluster.sh
+bash infra/deploy-local.sh
 ```
 
 What this does:
-- Provisions AWS infrastructure with Terraform
-- Installs k3s on the Ubuntu server using:
-  - `--disable traefik --disable local-storage --disable servicelb --disable metrics-server --disable-cloud-controller`
-- Fetches kubeconfig to `infra/generated/k3s.yaml`
+- Starts a local Minikube cluster
 - Installs ArgoCD + Sealed Secrets, seals/apply repo secret, and bootstraps ArgoCD apps
 
 Use the cluster:
 
 ```bash
-export KUBECONFIG="infra/generated/k3s.yaml"
 kubectl get nodes
-```
-
-## Re-run Bootstrap Only
-If infrastructure and k3s already exist:
-
-```bash
-bash infra/redeploy.sh infra/generated/k3s.yaml
 ```
 
 # Dataset information and sources
