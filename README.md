@@ -4,7 +4,7 @@
 
 ## Problem Statement
 
-Our problem statement for project (machine failure)
+How can we predict machine failure breakdown based on how many hours it has left by using sensor data such as temperature and humidity?
 
 ## System Architecture
 
