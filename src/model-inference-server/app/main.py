@@ -10,11 +10,13 @@ from app.constants import MODEL_NAME, PREDICTION_INTERVAL
 logging_setup()
 logger = logging.getLogger(__name__)
 
+# Pull Model from MLFlow
 model_uri = f"models:/{MODEL_NAME}/latest"
 model = mlflow.sklearn.load_model(model_uri)
 logger.info("Model loaded")
 
 while True:
+    # Perform Inference
     X = get_input_data()
     X = np.array(X).reshape(1, -1)
     predictions = model.predict(X)

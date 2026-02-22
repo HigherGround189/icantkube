@@ -18,6 +18,15 @@ class DeleteServer(BaseModel):
     model_name: str
 
 def model_is_on_mlflow(model_name: str):
+    """
+    Check whether a model is registered in MLflow.
+
+    Args:
+        model_name (str): Name of the MLflow registered model.
+
+    Returns:
+        bool: Returns True if the model exists in MLflow.
+    """
     try:
         client.get_registered_model(model_name)
         logger.info(f"{model_name} found in Mlflow")
@@ -27,6 +36,16 @@ def model_is_on_mlflow(model_name: str):
         return False
 
 async def inference_server_exists(model_name, namespace):
+    """
+    Check whether an inference server deployment already exists in Kubernetes.
+
+    Args:
+        model_name (str): Name of the inference server deployment.
+        namespace (str): Kubernetes namespace to query.
+
+    Returns:
+        bool: Returns True if at least one matching deployment exists in the namespace.
+    """
     deploy_list = [
         deploy.exists() async for deploy in kr8s.asyncio.get(
             "deployments", 
