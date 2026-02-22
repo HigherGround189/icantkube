@@ -5,6 +5,19 @@
 * [Home (Train models)](https://home.icantkube.help/)
 * [Kubebox (View cluster)](https://kubebox.icantkube.help/)
 
+## Useful Links
+
+| Name | Purpose | Link |
+|---|---|---|
+| Website | Train Models | [https://home.icantkube.help/](https://home.icantkube.help/) |
+| ArgoCD | Resource Deployment Dashboard | [https://argocd.icantkube.help/](https://argocd.icantkube.help/) |
+| Mlflow | Manage Trained Models | [https://mlflow.icantkube.help/](https://mlflow.icantkube.help/) |
+| Grafana | Compute Resource Utilisation Dashboard | [https://grafana.icantkube.help/](https://grafana.icantkube.help/) |
+| Prometheus | Promtheus Querying | [https://prometheus.icantkube.help/](https://prometheus.icantkube.help/) |
+| Kubebox | K8s Web Console | [https://kubebox.icantkube.help/](https://kubebox.icantkube.help/) |
+| PHPMyAdmin | Manage MariaDB | [https://phpmyadmin.icantkube.help/](https://phpmyadmin.icantkube.help/) |
+| RustFS | Manage Stored Objects | [https://rustfs.icantkube.help/](https://rustfs.icantkube.help/) |
+
 # Project overview and objectives
 
 ## Problem Statement
@@ -43,7 +56,7 @@ The model pipeline ingests sensor CSV data, kicks off asynchronous model trainin
 ## Build and Run (Local)
 
 > [!WARNING]
-> The cluster requires 2CPU cores and 8GB of RAM at minimum to function properly, assuming no models would be trained. Please consider running it with at least 4CPU cores and 12GB of RAM.
+> The cluster requires **2CPU cores** and **8GB of RAM** at minimum to function properly, assuming no models would be trained. Please consider running it with at least **4CPU cores** and **12GB of RAM**.
 
 Before installation,  plaintext secret files in `kubernetes/secrets` must be created:
 
@@ -150,61 +163,63 @@ with open(file_path, "w", newline="") as f:
 | Argo Rollouts | Orchestrates advanced deployment strategies like blue-green or canary for  Kubernetes Deployments.                                                                      |
 | KubeBox | Web Console to provide easy access to cluster resources and tools via a web UI.
 
+# Table of K8s resources used
+
+> [!NOTE]
+> The resource counts in the tables below are calculated with this command 
+`grep -hR --include='*.y*ml' --exclude='templated.yaml' '^kind:' kubernetes | sed 's/^kind:[[:space:]]*//' | sort | uniq -c`
+
+## Native Resources
+| Resource | Count | Example |
+|----------|-------|------|
+| Service | 14 | [Services](https://github.com/search?q=repo%3AHigherGround189%2Ficantkube+kind%3A+Service&type=code) |
+| Secret | 13 | [Secrets](https://github.com/search?q=repo%3AHigherGround189%2Ficantkube+kind%3A+Secret&type=code) |
+| Deployment | 11 | [Deployments](https://github.com/search?q=repo%3AHigherGround189%2Ficantkube+kind%3A+Deployment&type=code) |
+| Namespace | 9 | [Namespaces](https://github.com/search?q=repo%3AHigherGround189%2Ficantkube+kind%3A+Namespace&type=code) |
+| HorizontalPodAutoscaler | 6 | [HorizontalPodAutoscalers](https://github.com/search?q=repo%3AHigherGround189%2Ficantkube+kind%3A+HorizontalPodAutoscaler&type=code) |
+| Ingress | 6 | [Ingresses](https://github.com/search?q=repo%3AHigherGround189%2Ficantkube+kind%3A+Ingress&type=code) |
+| Kustomization | 6 | [Kustomizations](https://github.com/search?q=repo%3AHigherGround189%2Ficantkube+kind%3A+Kustomization&type=code) |
+| ConfigMap | 4 | [ConfigMaps](https://github.com/search?q=repo%3AHigherGround189%2Ficantkube+kind%3A+ConfigMap&type=code) |
+| ServiceAccount | 4 | [ServiceAccounts](https://github.com/search?q=repo%3AHigherGround189%2Ficantkube+kind%3A+ServiceAccount&type=code) |
+| Job | 3 | [Jobs](https://github.com/search?q=repo%3AHigherGround189%2Ficantkube+kind%3A+Job&type=code) |
+| StatefulSet | 3 | [StatefulSets](https://github.com/search?q=repo%3AHigherGround189%2Ficantkube+kind%3A+StatefulSet&type=code) |
+| ClusterRole | 2 | [ClusterRoles](https://github.com/search?q=repo%3AHigherGround189%2Ficantkube+kind%3A+ClusterRole&type=code) |
+| ClusterRoleBinding | 2 | [ClusterRoleBindings](https://github.com/search?q=repo%3AHigherGround189%2Ficantkube+kind%3A+ClusterRoleBinding&type=code) |
+| DaemonSet | 1 | [DaemonSet](https://github.com/search?q=repo%3AHigherGround189%2Ficantkube+kind%3A+DaemonSet&type=code) |
+| Role | 1 | [Role](https://github.com/search?q=repo%3AHigherGround189%2Ficantkube+kind%3A+Role&type=code) |
+| RoleBinding | 1 | [RoleBinding](https://github.com/search?q=repo%3AHigherGround189%2Ficantkube+kind%3A+RoleBinding&type=code) |
+| StorageClass | 1 | [StorageClass](https://github.com/search?q=repo%3AHigherGround189%2Ficantkube+kind%3A+StorageClass&type=code) |
+
+## CRD Resouces
+| Resource | Count | Example |
+|---|---|---|
+| Application | 24 | [Applications](https://github.com/search?q=repo%3AHigherGround189%2Ficantkube+kind%3A+Application&type=code) |
+| Rollout | 9 | [Rollouts](https://github.com/search?q=repo%3AHigherGround189%2Ficantkube+kind%3A+Rollout&type=code) |
+| SealedSecret | 7 | [SealedSecrets](https://github.com/search?q=repo%3AHigherGround189%2Ficantkube+kind%3A+SealedSecret&type=code) |
+| ServiceMonitor | 1 | [ServiceMonitor](https://github.com/search?q=repo%3AHigherGround189%2Ficantkube+kind%3A+ServiceMonitor&type=code) |
 
 
+# Folder Guide
 
+Our repo consists of the following folders:
+```bash
+.
+├── .github    # <-- Github Actions
+├── infra      # <-- Terraform Files for Cloud Deployment
+├── kubernetes # <-- K8s Manifest Files, tracked by ArgoCD
+└── src        # <-- Application Source Code
+```
 
-
-
-
-
-
-
-
-
-
-
-<br><bn><br><bn><br><bn><br><bn><br><bn><br><bn><br><bn><br><bn><br><bn><br><bn>
-
-# RESTRUCTURING IN PROGRESS (EVERYTHING ABOVE THIS PART IS A SUBMISSION REQUIREMENT)
-
-## TBD
-
-* Add contribution table here.
-* Add table of resources used (eg: deployment, statefulset etc)
-* Template out all yamls from helm
-
-## Slides Order
-
-* Problem Statement
-* Individual Contributions
-* System Architecture
-  * What Argocd does
-  * How Cloudflare Ingress works
-  * What Promtheus + Grafana do
-  * Model Training as a whole
-  * How models are tracked in mlflow
-
-Note: "Describe how your architecture ensures scalability, modularity, and fault tolerance."
-
-## Links
-
-* [Website](https://home.icantkube.help/)
-* [ArgoCD](https://argocd.icantkube.help/)
-* [Mlflow](https://mlflow.icantkube.help/)
-* [Grafana](https://grafana.icantkube.help/)
-* [Prometheus](https://prometheus.icantkube.help/)
-* [Kubebox](https://kubebox.icantkube.help/)
-* [PHPMyAdmin](https://phpmyadmin.icantkube.help/)
-* [RustFS](https://rustfs.icantkube.help/)
+## Infrastructure
+The [infra/](infra/) folder contains all Terraform files used to spin up the cluster on an AWS EC2 Instance, along with a few convenience scripts
 
 ## Kubernetes 
-The [kubernetes/](kubernetes/) folder is the single source of truth for our kubernetes cluster. ArgoCD continuously watches the folder and automatically reconciles cluster resources to match what is committed in Git.
+The [kubernetes/](kubernetes/) folder stores all manifestfiles, and acts as the single source of truth for our kubernetes cluster. ArgoCD continuously watches the folder and automatically reconciles cluster resources to match what is committed in Git.
 
 ## Application Code
 The [src/](src/) folder contains the source code for user-built microservices (AI inference, Website, Model Training, etc..)
 
-## Image Auto-Build & Auto-Update
+# Image Auto-Build & Auto-Update
 To improve developer experience, we use github actions to automatically build container images, and to update image tags in Kubernetes deployments. 
 
 Auto update and auto build can be enabled once you have: 
@@ -258,49 +273,3 @@ images:
   newTag: <imageTag> #eg: v0.3
 
 ```
-
-
-### horizontal_auto_scaler.yaml
-The horizontal pod auto scaler scales the number of pods of the designated target in the scaleTargetRef. In this case, we have set it to automatically control scaling of the rollout pods. We can set up the max and min number of pods, time between scaling up and scaling down the number of pods.
-
-apiVersion: autoscaling/v2 - 
-kind: HorizontalPodAutoscaler
-metadata:
-  name: sensor-data-hpa
-
-spec:
-  scaleTargetRef:
-    apiVersion: argoproj.io/v1alpha1
-    kind: Rollout
-    name: sensor-data-rollout
-
-  minReplicas: 1
-  maxReplicas: 4
-
-  metrics:
-    - type: Resource
-      resource:
-        name: cpu
-        target:
-          type: Utilization
-          averageUtilization: 99
-
-  behavior:
-    scaleDown:
-      stabilizationWindowSeconds: 300
-      policies:
-      - type: Percent
-        value: 100
-        periodSeconds: 15
-      selectPolicy: Max
-    scaleUp:
-      stabilizationWindowSeconds: 300
-      policies:
-      - type: Percent
-        value: 100
-        periodSeconds: 15
-      - type: Pods
-        value: 1
-        periodSeconds: 15
-      selectPolicy: Max
-
