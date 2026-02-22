@@ -1,0 +1,26 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: argocd-bootstrap-local
+  namespace: argocd
+spec:
+  project: default
+
+  source:
+    # Local bootstrap keeps data-sources and create-apps, but excludes secrets-app.
+    repoURL: https://github.com/HigherGround189/icantkube.git
+    targetRevision: main
+    path: kubernetes/
+    directory:
+      recurse: true
+      include: '{data-sources/*,create-apps/*}'
+      exclude: 'create-apps/core/secrets-app.yaml'
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
