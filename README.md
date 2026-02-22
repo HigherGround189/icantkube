@@ -58,8 +58,6 @@ The model pipeline ingests sensor CSV data, kicks off asynchronous model trainin
 
 Before installation,  plaintext secret files in `kubernetes/secrets` must be created:
 
-Here’s your content converted into a table:
-
 | File Path | Keys to Set |
 |---|---|
 | `kubernetes/secrets/core/cloudflare-credentials.unsealed.yaml` | `account_id`, `api_token`, `tunnel_name` |
