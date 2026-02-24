@@ -2,8 +2,6 @@
 
 > [!TIP]
 > Cluster is up and running!
-* [Home (Train models)](https://home.icantkube.help/)
-* [Kubebox (View cluster)](https://kubebox.icantkube.help/)
 
 ## Useful Links
 
