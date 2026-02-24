@@ -34,6 +34,7 @@ from app.config import load_apps
 APPS = load_apps()
 
 def training_template(func):
+    print("hi")
     """
     Training skeleton to replicate the procedure from loading data to model training and 
     evaluation to logging metrics and artifacts
