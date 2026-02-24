@@ -6,7 +6,7 @@
 ## Useful Links
 
 | Name | Purpose | Link |
-|---|---|---|
+|:---|:---|:---|
 | Website | Train Models | [https://home.icantkube.help/](https://home.icantkube.help/) |
 | ArgoCD | Resource Deployment Dashboard | [https://argocd.icantkube.help/](https://argocd.icantkube.help/) |
 | Mlflow | Manage Trained Models | [https://mlflow.icantkube.help/](https://mlflow.icantkube.help/) |
@@ -59,7 +59,7 @@ The model pipeline ingests sensor CSV data, kicks off asynchronous model trainin
 Before installation,  plaintext secret files in `kubernetes/secrets` must be created:
 
 | File Path | Keys to Set |
-|---|---|
+|:---|:---|
 | `kubernetes/secrets/core/cloudflare-credentials.unsealed.yaml` | `account_id`, `api_token`, `tunnel_name` |
 | `kubernetes/secrets/model-pipeline/mariadb-credentials.unsealed.yaml` | `MARIADB_ROOT_PASSWORD` |
 | `kubernetes/secrets/model-pipeline/mlflow-credentials.unsealed.yaml` | `MLFLOW_FLASK_SERVER_SECRET_KEY`, `MLFLOW_TRACKING_USERNAME`, `MLFLOW_TRACKING_PASSWORD`, `username`, `password` |
@@ -167,7 +167,7 @@ with open(file_path, "w", newline="") as f:
 
 ## Native Resources
 | Resource | Count | Example |
-|----------|-------|------|
+|:---|:---|:---|
 | Service | 14 | [Services](https://github.com/search?q=repo%3AHigherGround189%2Ficantkube+kind%3A+Service&type=code) |
 | Secret | 13 | [Secrets](https://github.com/search?q=repo%3AHigherGround189%2Ficantkube+kind%3A+Secret&type=code) |
 | Deployment | 11 | [Deployments](https://github.com/search?q=repo%3AHigherGround189%2Ficantkube+kind%3A+Deployment&type=code) |
