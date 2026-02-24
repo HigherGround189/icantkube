@@ -2,11 +2,10 @@ import os
 import pymysql
 import logging
 from app.logging_setup import logging_setup
+from app.constants import MODEL_NAME
 
 logging_setup()
 logger = logging.getLogger(__name__)
-
-MODEL_NAME = os.getenv("MODEL_NAME")
 
 def _get_db_config() -> dict:
     db_port = int(os.getenv("DB_PORT", "3306"))

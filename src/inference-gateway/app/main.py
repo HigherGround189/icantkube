@@ -13,6 +13,22 @@ NAMESPACE = "model-pipeline"
 
 @app.post("/inference/create-server")
 async def create_server(server: CreateServer):
+    """
+    Communicates with the Kuberentes API Server to create a new Inference Server Deployment.
+
+    Args:
+        server (CreateServer): Request body containing:
+            model_name (str): Name of the registered MLflow model.
+            replicas (int): Number of deployment replicas.
+            prediction_interval (int): Interval between predictions.
+
+    Returns:
+        dict: A dictionary containing:
+            - message (str): Status message indicating result.
+            - Model Name (str): Name of the model (if created).
+            - Replicas (int): Number of replicas (if created).
+            - Prediction Interval (int): Prediction interval (if created).
+    """
     logger.info(f"Model Name: {server.model_name}, Replicas: {server.replicas}, Prediction Interval: {server.prediction_interval}")
 
     if model_is_on_mlflow(server.model_name) and await inference_server_exists(server.model_name, NAMESPACE) is False:
@@ -31,6 +47,17 @@ async def create_server(server: CreateServer):
 
 @app.post("/inference/delete-server")
 async def delete_server(server: DeleteServer):
+    """
+    Communicates with the Kuberentes API Server to delete an existing Inference Server Deployment.
+
+    Args:
+        server (DeleteServer): Request body containing:
+            model_name (str): Name of the model whose inference server should be deleted.
+
+    Returns:
+        dict: A dictionary containing:
+            message (str): Confirmation message indicating which deployment was deleted.
+    """
     logger.info(server.model_name)
 
     async for deploy in kr8s.asyncio.get("deployment", f"{server.model_name.lower()}-inference-server", namespace=NAMESPACE):
@@ -41,6 +68,12 @@ async def delete_server(server: DeleteServer):
 
 @app.get("/inference/active-inference-servers")
 async def get_inference_servers():
+    """
+    Retrieves all active inference server deployments.
+
+    Returns:
+        list: A list of Kubernetes deployment objects currently active in the namespace.
+    """
     deploy_list = []
     async for deploy in kr8s.asyncio.get("deployments", namespace=NAMESPACE):
         logger.info(f"Deployment: {deploy}")
