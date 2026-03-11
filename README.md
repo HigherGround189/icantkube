@@ -1,7 +1,7 @@
 # ICANTKUBE 🥀🥀🥀
 
 > [!TIP]
-> Cluster is up and running!
+> Cluster is not up and running, the following links do not work as of 12th March 2026:
 
 ## Useful Links
 
